@@ -1,0 +1,180 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 24 5% 6%;
+    --foreground: 24 10% 95%;
+
+    --card: 24 5% 10%;
+    --card-foreground: 24 10% 95%;
+
+    --popover: 24 5% 6%;
+    --popover-foreground: 24 10% 95%;
+
+    --primary: 24 100% 50%;
+    --primary-foreground: 24 10% 10%;
+
+    --secondary: 24 5% 15%;
+    --secondary-foreground: 24 10% 95%;
+
+    --muted: 24 5% 15%;
+    --muted-foreground: 24 5% 65%;
+
+    --accent: 24 100% 50%;
+    --accent-foreground: 24 10% 10%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 24 10% 95%;
+
+    --border: 24 5% 20%;
+    --input: 24 5% 20%;
+    --ring: 24 100% 50%;
+
+    --radius: 0.75rem;
+    
+    /* Social Media Colors */
+    --twitter: 203 89% 53%;
+    --facebook: 221 44% 41%;
+    --linkedin: 210 90% 40%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+  
+  /* Adding styles for blog content */
+  .prose h1, .prose h2, .prose h3, .prose h4 {
+    @apply text-white font-bold;
+  }
+  
+  .prose h1 {
+    @apply text-3xl md:text-4xl;
+  }
+  
+  .prose h2 {
+    @apply text-2xl md:text-3xl mt-8 mb-4;
+  }
+  
+  .prose h3 {
+    @apply text-xl md:text-2xl mt-6 mb-3;
+  }
+  
+  .prose p {
+    @apply text-gray-300 mb-4;
+  }
+  
+  .prose a {
+    @apply text-saas-orange hover:text-orange-500 transition-colors;
+  }
+  
+  .prose ul, .prose ol {
+    @apply text-gray-300 mb-4 pl-6;
+  }
+  
+  .prose ul {
+    @apply list-disc;
+  }
+  
+  .prose ol {
+    @apply list-decimal;
+  }
+  
+  .prose blockquote {
+    @apply border-l-4 border-saas-orange pl-4 italic my-6 text-gray-300;
+  }
+  
+  .prose code {
+    @apply bg-saas-darkGray px-1 py-0.5 rounded text-gray-300;
+  }
+  
+  .prose pre {
+    @apply bg-saas-darkGray p-4 rounded-lg mb-6 overflow-x-auto;
+  }
+  
+  .prose img {
+    @apply rounded-lg my-6;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-saas-orange hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary hover:bg-saas-darkGray text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200;
+  }
+
+  .section-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24;
+  }
+
+  .card-shadow {
+    @apply shadow-[0_8px_30px_rgb(0,0,0,0.12)];
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent;
+  }
+  
+  /* Add animation utilities */
+  .animate-fade-in {
+    @apply opacity-0 translate-y-4 animate-[fadeIn_0.5s_ease-out_forwards];
+  }
+  
+  /* Adding line-clamp utilities */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  /* Add hover effects for cards */
+  .hover-zoom {
+    @apply transition-transform duration-300 hover:scale-105;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Add additional orange glow animation */
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(249, 115, 22, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(249, 115, 22, 0);
+  }
+}
+
+.pulse-orange {
+  animation: pulseGlow 2s infinite;
+}

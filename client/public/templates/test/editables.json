@@ -1,0 +1,18 @@
+{
+  "meta_title": {
+    "type": "text",
+    "label": "Page title"
+  },
+  "hero_title": {
+    "type": "text",
+    "label": "Main heading"
+  },
+  "hero_subtitle": {
+    "type": "longtext",
+    "label": "Subtitle text"
+  },
+  "logo_src": {
+    "type": "image",
+    "label": "Logo image URL"
+  }
+}

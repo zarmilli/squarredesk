@@ -1,0 +1,193 @@
+{
+  "meta_title": { "type": "text", "label": "Page title" },
+  "meta_description": { "type": "longtext", "label": "Meta description" },
+
+  "css_vendor_href": { "type": "text", "label": "Vendor CSS href" },
+  "css_styles_href": { "type": "text", "label": "Styles CSS href" },
+
+  "favicon_apple": { "type": "image", "label": "Apple touch icon (180x180)" },
+  "favicon_32": { "type": "image", "label": "Favicon 32x32" },
+  "favicon_16": { "type": "image", "label": "Favicon 16x16" },
+  "site_manifest": { "type": "file", "label": "Site manifest (site.webmanifest)" },
+
+  "logo_src": { "type": "image", "label": "Primary logo (svg/png)" },
+  "logo_alt": { "type": "text", "label": "Logo alt text" },
+  "logo_link": { "type": "url", "label": "Logo link (home)" },
+
+  "header_nav": {
+    "type": "repeat",
+    "label": "Header navigation",
+    "fields": {
+      "label": { "type": "text", "label": "Label" },
+      "href": { "type": "text", "label": "Href (anchor or URL)" },
+      "active": { "type": "boolean", "label": "Set as current" }
+    }
+  },
+
+  "contact_phone_display": { "type": "text", "label": "Header phone display (human)" },
+  "contact_phone_href": { "type": "text", "label": "Header phone href (tel:...)" },
+
+  "intro_overline": { "type": "text", "label": "Intro overline" },
+  "intro_title_line1": { "type": "text", "label": "Intro title line 1" },
+  "intro_title_line2": { "type": "text", "label": "Intro title line 2" },
+
+  "intro_primary_image": {
+    "type": "object",
+    "label": "Intro primary image",
+    "fields": {
+      "src": { "type": "image", "label": "Primary image (1x)" },
+      "src2x": { "type": "image", "label": "Primary image (2x)" },
+      "alt": { "type": "text", "label": "Primary image alt" }
+    }
+  },
+
+  "intro_secondary_image": {
+    "type": "object",
+    "label": "Intro secondary image",
+    "fields": {
+      "src": { "type": "image", "label": "Secondary image (1x)" },
+      "src2x": { "type": "image", "label": "Secondary image (2x)" },
+      "alt": { "type": "text", "label": "Secondary image alt" }
+    }
+  },
+
+  "intro_description": { "type": "longtext", "label": "Intro description" },
+
+  "intro_social": {
+    "type": "repeat",
+    "label": "Intro social links",
+    "fields": {
+      "label": { "type": "text", "label": "Short label (FB, IG, etc.)" },
+      "url": { "type": "url", "label": "URL" },
+      "target": { "type": "select", "label": "Link target", "options": ["_self", "_blank"], "default": "_blank" }
+    }
+  },
+
+  "intro_scroll_target": { "type": "text", "label": "Intro scroll anchor (e.g. #about)" },
+  "intro_scroll_label": { "type": "text", "label": "Intro scroll accessible label" },
+
+  "about_section_title": { "type": "text", "label": "About section title" },
+
+  "about_primary_image": {
+    "type": "object",
+    "label": "About primary image",
+    "fields": {
+      "src": { "type": "image", "label": "About image (1x)" },
+      "src2x": { "type": "image", "label": "About image (2x)" },
+      "alt": { "type": "text", "label": "About image alt" }
+    }
+  },
+
+  "about_paragraphs": {
+    "type": "repeat",
+    "label": "About paragraphs",
+    "fields": {
+      ".": { "type": "longtext", "label": "Paragraph text" }
+    }
+  },
+
+  "menu_section_title": { "type": "text", "label": "Menu section title" },
+
+  "menu_categories": {
+    "type": "repeat",
+    "label": "Menu categories",
+    "fields": {
+      "id": { "type": "text", "label": "Category ID (slug, used for anchors)" },
+      "category_name": { "type": "text", "label": "Category name" },
+      "items": {
+        "type": "repeat",
+        "label": "Menu items",
+        "fields": {
+          "title": { "type": "text", "label": "Item title" },
+          "description": { "type": "longtext", "label": "Item description" },
+          "price": { "type": "number", "label": "Price" },
+          "currency_symbol": { "type": "text", "label": "Currency symbol", "default": "$" }
+        }
+      }
+    }
+  },
+
+  "gallery_section_title": { "type": "text", "label": "Gallery section title" },
+
+  "gallery_items": {
+    "type": "repeat",
+    "label": "Gallery items",
+    "fields": {
+      "thumb_url": { "type": "image", "label": "Thumbnail (gallery grid)" },
+      "thumb_2x_url": { "type": "image", "label": "Thumbnail 2x (optional)" },
+      "large_url": { "type": "image", "label": "Large image (lightbox)" },
+      "alt": { "type": "text", "label": "Image alt text" }
+    }
+  },
+
+  "testimonials_title": { "type": "text", "label": "Testimonials section title" },
+
+  "testimonials": {
+    "type": "repeat",
+    "label": "Testimonials",
+    "fields": {
+      "author_name": { "type": "text", "label": "Author name" },
+      "author_location": { "type": "text", "label": "Author location" },
+      "avatar": {
+        "type": "object",
+        "label": "Author avatar",
+        "fields": {
+          "src": { "type": "image", "label": "Avatar image" },
+          "alt": { "type": "text", "label": "Avatar alt text" }
+        }
+      },
+      "quote": { "type": "longtext", "label": "Quote / testimonial text" }
+    }
+  },
+
+  "footer_newsletter_title": { "type": "text", "label": "Footer newsletter title" },
+  "newsletter_action": { "type": "text", "label": "Newsletter form action URL" },
+  "newsletter_method": { "type": "text", "label": "Newsletter form method", "default": "POST" },
+  "newsletter_placeholder": { "type": "text", "label": "Newsletter placeholder text" },
+  "newsletter_button_text": { "type": "text", "label": "Newsletter button text", "default": "Subscribe" },
+  "newsletter_status_text": { "type": "text", "label": "Newsletter status text (default)" },
+
+  "social_links": {
+    "type": "repeat",
+    "label": "Footer social links",
+    "fields": {
+      "label": { "type": "text", "label": "Label (Facebook, Instagram...)" },
+      "url": { "type": "url", "label": "URL" },
+      "target": { "type": "select", "label": "Target", "options": ["_self", "_blank"], "default": "_blank" },
+      "icon_svg": { "type": "html", "label": "SVG markup (inline icon)" }
+    }
+  },
+
+  "footer_location_title": { "type": "text", "label": "Footer location title", "default": "Location" },
+  "footer_address_line1": { "type": "text", "label": "Address line 1" },
+  "footer_address_line2": { "type": "text", "label": "Address line 2" },
+
+  "footer_contacts_title": { "type": "text", "label": "Footer contacts title", "default": "Contacts" },
+  "footer_contact_email": { "type": "text", "label": "Contact email" },
+  "footer_contact_phone_display": { "type": "text", "label": "Contact phone display" },
+  "footer_contact_phone_href": { "type": "text", "label": "Contact phone href (tel:...)" },
+
+  "footer_hours_title": { "type": "text", "label": "Opening hours title", "default": "Opening Hours" },
+  "opening_hours": {
+    "type": "repeat",
+    "label": "Opening hours",
+    "fields": {
+      "days": { "type": "text", "label": "Days range (e.g., Weekdays)" },
+      "time": { "type": "text", "label": "Time text (e.g., 10:00am - 9:00pm)" }
+    }
+  },
+
+  "copyright_name": { "type": "text", "label": "Copyright name (brand)", "default": "Lounge" },
+  "copyright_year": { "type": "text", "label": "Copyright year", "default": "2025" },
+  "designer_name": { "type": "text", "label": "Designer name", "default": "StyleShout" },
+  "designer_url": { "type": "url", "label": "Designer url" },
+  "distributor_name": { "type": "text", "label": "Distributor name", "default": "Squarre" },
+  "distributor_url": { "type": "url", "label": "Distributor url" },
+  "distributor_target": { "type": "select", "label": "Distributor link target", "options": ["_self", "_blank"], "default": "_blank" },
+
+  "back_to_top_title": { "type": "text", "label": "Back to top link title", "default": "Back to Top" },
+  "back_to_top_text": { "type": "text", "label": "Back to top visible text", "default": "Back To Top" },
+
+  "js_plugins_href": { "type": "text", "label": "JS plugins script href" },
+  "js_main_href": { "type": "text", "label": "JS main script href" }
+}
