@@ -12,6 +12,13 @@ interface Template {
   template_slug: string
 }
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+}
+
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
@@ -103,6 +110,10 @@ async function deployToNetlify(siteId: string, html: string) {
 
 serve(async (req) => {
 
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders })
+  }
+
   try {
 
     const { siteId } = await req.json()
@@ -110,7 +121,10 @@ serve(async (req) => {
     if (!siteId) {
       return new Response(
         JSON.stringify({ error: "Missing siteId" }),
-        { status: 400 }
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        }
       )
     }
 
@@ -123,7 +137,10 @@ serve(async (req) => {
     if (siteError || !site) {
       return new Response(
         JSON.stringify({ error: "Site not found" }),
-        { status: 404 }
+        {
+          status: 404,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        }
       )
     }
 
@@ -132,7 +149,10 @@ serve(async (req) => {
     if (!typedSite.template_id) {
       return new Response(
         JSON.stringify({ error: "Template missing" }),
-        { status: 400 }
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        }
       )
     }
 
@@ -145,7 +165,10 @@ serve(async (req) => {
     if (templateError || !template) {
       return new Response(
         JSON.stringify({ error: "Template not found" }),
-        { status: 404 }
+        {
+          status: 404,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        }
       )
     }
 
@@ -199,6 +222,7 @@ serve(async (req) => {
       }),
       {
         headers: {
+          ...corsHeaders,
           "Content-Type": "application/json"
         }
       }
@@ -212,7 +236,13 @@ serve(async (req) => {
       JSON.stringify({
         error: "Publish failed"
       }),
-      { status: 500 }
+      {
+        status: 500,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json"
+        }
+      }
     )
   }
 })
