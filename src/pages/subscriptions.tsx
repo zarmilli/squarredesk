@@ -7,9 +7,9 @@ import { Progress } from "@/components/ui/progress";
 import { Check, X, Download, X as CloseIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
-import squeakImage from "/images/squeak.jpeg";
-import happyImage from "/images/happy.jpeg";
-import speakingImage from "/images/speaking.jpeg";
+import squeakImage from "/images/squeakImage.png";
+import happyImage from "/images/happy.png";
+import speakingImage from "/images/speaking.png";
 
 const subscriptionPlans = [
   {

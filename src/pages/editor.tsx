@@ -7,9 +7,13 @@ import { Card } from "@/components/ui/card";
 import { BadgeWithDot } from "@/components/base/badges/badges";
 import { useToast } from "@/hooks/use-toast";
 
+import happyImage from "/images/happy.png";
+import squeakImage from "/images/speaking.png";
+
 type EditableField = {
   label: string;
-  type: "text" | "longtext" | "url" | "boolean" | "image";
+  type: "text" | "longtext" | "url" | "boolean" | "image" | "repeatable";
+  fields?: Record<string, EditableField>;
 };
 
 export default function Editor() {
@@ -29,6 +33,10 @@ export default function Editor() {
   const [userId, setUserId] = useState("");
   const [dirty, setDirty] = useState(false);
   const [lastSaved, setLastSaved] = useState<string | null>(null);
+
+  const [deployModalOpen, setDeployModalOpen] = useState(false);
+  const [deployStatus, setDeployStatus] = useState<"deploying" | "success" | "error">("deploying");
+  const [deployUrl, setDeployUrl] = useState("");
 
   useEffect(() => {
     init();
@@ -64,9 +72,7 @@ export default function Editor() {
 
     setTemplateSlug(template.template_slug);
 
-    const res = await fetch(
-      `/templates/${template.template_slug}/editables.json`
-    );
+    const res = await fetch(`/templates/${template.template_slug}/editables.json`);
     const fields = await res.json();
 
     setEditables(fields);
@@ -84,46 +90,62 @@ export default function Editor() {
     };
   }, [templateSlug]);
 
-  /* ───────── Image handing ───────── */
+  /* ───────── APPLY CONTENT ───────── */
+
   function applyContent(values: Record<string, any>) {
-  const doc = iframeRef.current?.contentDocument;
-  if (!doc) return;
+    const doc = iframeRef.current?.contentDocument;
+    if (!doc) return;
 
-  Object.entries(values).forEach(([key, value]) => {
-    if (value == null) return;
+    Object.entries(values).forEach(([key, value]) => {
 
-    const el = doc.querySelector(
-      `[data-edit="${key}"]`
-    ) as HTMLElement | null;
+      if (Array.isArray(value)) {
 
-    if (!el) return;
+        const repeatContainer = doc.querySelector(`[data-repeat="${key}"]`);
+        if (!repeatContainer) return;
 
-    const role = el.dataset.editRole;
+        const template = repeatContainer.querySelector("[data-repeat-item]");
+        if (!template) return;
 
-    /* ───────── IMAGE ROLE ───────── */
+        repeatContainer.innerHTML = "";
 
-    if (role === "img") {
-      if (el instanceof HTMLImageElement) {
-        el.src = value;
+        value.forEach((item: any) => {
+
+          const clone = template.cloneNode(true) as HTMLElement;
+
+          Object.entries(item).forEach(([subKey, subValue]) => {
+            const el = clone.querySelector(`[data-edit="${subKey}"]`);
+            if (el) el.textContent = subValue as string;
+          });
+
+          repeatContainer.appendChild(clone);
+        });
+
+        return;
       }
-      return;
-    }
 
-    /* ───────── BACKGROUND ROLE ───────── */
+      if (value == null) return;
 
-    if (role === "background") {
-      el.style.backgroundImage = `url("${value}")`;
-      el.style.backgroundSize = "cover";
-      el.style.backgroundPosition = "center";
-      el.style.backgroundRepeat = "no-repeat";
-      return;
-    }
+      const el = doc.querySelector(`[data-edit="${key}"]`) as HTMLElement | null;
+      if (!el) return;
 
-    /* ───────── DEFAULT: TEXT ───────── */
+      const role = el.dataset.editRole;
 
-    el.textContent = value;
-  });
-}
+      if (role === "img") {
+        if (el instanceof HTMLImageElement) el.src = value;
+        return;
+      }
+
+      if (role === "background") {
+        el.style.backgroundImage = `url("${value}")`;
+        el.style.backgroundSize = "cover";
+        el.style.backgroundPosition = "center";
+        el.style.backgroundRepeat = "no-repeat";
+        return;
+      }
+
+      el.textContent = value;
+    });
+  }
 
   function updateField(key: string, value: any, type: string) {
     setDirty(true);
@@ -144,6 +166,38 @@ export default function Editor() {
     if (type === "boolean") {
       el.style.display = value ? "" : "none";
     }
+  }
+
+  /* ───────── REPEATABLE HELPERS ───────── */
+
+  function addRepeatableItem(key: string) {
+    setContent(prev => {
+      const arr = [...(prev[key] || [])];
+      arr.push({});
+      const updated = { ...prev, [key]: arr };
+      applyContent(updated);
+      return updated;
+    });
+  }
+
+  function removeRepeatableItem(key: string, index: number) {
+    setContent(prev => {
+      const arr = [...(prev[key] || [])];
+      arr.splice(index, 1);
+      const updated = { ...prev, [key]: arr };
+      applyContent(updated);
+      return updated;
+    });
+  }
+
+  function updateRepeatableField(parentKey: string, index: number, field: string, value: any) {
+    setContent(prev => {
+      const arr = [...(prev[parentKey] || [])];
+      arr[index] = { ...arr[index], [field]: value };
+      const updated = { ...prev, [parentKey]: arr };
+      applyContent(updated);
+      return updated;
+    });
   }
 
   /* ───────── AUTOSAVE ───────── */
@@ -177,6 +231,35 @@ export default function Editor() {
     }
 
     if (showToast) toast({ title: "Saved" });
+  }
+
+  async function publishSite() {
+
+    if (!siteId) return;
+
+    await persist();
+
+    setDeployModalOpen(true);
+    setDeployStatus("deploying");
+
+    try {
+
+      const { data, error } = await supabase.functions.invoke(
+        "publish-site",
+        { body: { siteId } }
+      );
+
+      if (error) throw error;
+
+      setDeployUrl(data.url);
+      setDeployStatus("success");
+
+    } catch (err) {
+
+      console.error(err);
+      setDeployStatus("error");
+
+    }
   }
 
   async function handleBack() {
@@ -237,47 +320,80 @@ export default function Editor() {
             {dirty ? "Unsaved changes" : formatSaved()}
           </BadgeWithDot>
 
-          <Button size="sm">Publish</Button>
+          <Button size="sm" onClick={publishSite}>
+            Publish
+          </Button>
         </div>
       </div>
 
       <div className="flex flex-1 overflow-hidden">
         {/* LEFT PANEL */}
         <div className="w-[360px] border-r bg-white flex flex-col">
-          {/* Static header */}
+
           <div className="p-4 border-b">
             <h2 className="font-semibold">{siteName}</h2>
           </div>
 
-          {/* Scrollable accordion area */}
           <div className="flex-1 overflow-y-auto p-4">
             {Object.entries(editables).map(([key, field]) => (
               <Card key={key} className="p-3 mb-3">
-                <p className="text-sm font-medium mb-2">
-                  {field.label}
-                </p>
+                <p className="text-sm font-medium mb-2">{field.label}</p>
+
+                {field.type === "repeatable" && (
+                  <div>
+                    {(content[key] || []).map((item: any, index: number) => (
+                      <Card key={index} className="p-3 mb-3 border">
+
+                        {Object.entries(field.fields || {}).map(([subKey, subField]) => (
+                          <div key={subKey} className="mb-2">
+                            <p className="text-xs mb-1">{subField.label}</p>
+
+                            <Input
+                              value={item?.[subKey] || ""}
+                              onChange={(e) =>
+                                updateRepeatableField(
+                                  key,
+                                  index,
+                                  subKey,
+                                  e.target.value
+                                )
+                              }
+                            />
+                          </div>
+                        ))}
+
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => removeRepeatableItem(key, index)}
+                        >
+                          Delete
+                        </Button>
+
+                      </Card>
+                    ))}
+
+                    <Button size="sm" onClick={() => addRepeatableItem(key)}>
+                      Add Item
+                    </Button>
+                  </div>
+                )}
 
                 {field.type === "image" && (
                   <Input
                     type="file"
                     accept="image/*"
-                    onChange={e =>
-                      e.target.files &&
-                      uploadImage(e.target.files[0], key)
+                    onChange={(e) =>
+                      e.target.files && uploadImage(e.target.files[0], key)
                     }
                   />
                 )}
 
-                {(field.type === "text" ||
-                  field.type === "url") && (
+                {(field.type === "text" || field.type === "url") && (
                   <Input
                     value={content[key] || ""}
-                    onChange={e =>
-                      updateField(
-                        key,
-                        e.target.value,
-                        field.type
-                      )
+                    onChange={(e) =>
+                      updateField(key, e.target.value, field.type)
                     }
                   />
                 )}
@@ -287,12 +403,8 @@ export default function Editor() {
                     className="w-full border rounded p-2"
                     rows={4}
                     value={content[key] || ""}
-                    onChange={e =>
-                      updateField(
-                        key,
-                        e.target.value,
-                        field.type
-                      )
+                    onChange={(e) =>
+                      updateField(key, e.target.value, field.type)
                     }
                   />
                 )}
@@ -301,12 +413,8 @@ export default function Editor() {
                   <input
                     type="checkbox"
                     checked={!!content[key]}
-                    onChange={e =>
-                      updateField(
-                        key,
-                        e.target.checked,
-                        field.type
-                      )
+                    onChange={(e) =>
+                      updateField(key, e.target.checked, field.type)
                     }
                   />
                 )}
@@ -318,6 +426,61 @@ export default function Editor() {
         {/* IFRAME */}
         <iframe ref={iframeRef} className="flex-1 border-0" />
       </div>
+
+      {/* DEPLOY MODAL */}
+
+      {deployModalOpen && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+
+          <Card className="p-8 w-[420px] text-center">
+
+            <img
+              src={deployStatus === "error" ? squeakImage : happyImage}
+              className="w-28 mx-auto mb-4"
+            />
+
+            {deployStatus === "deploying" && (
+              <>
+                <h2 className="text-lg font-semibold mb-3">
+                  Site is deploying
+                </h2>
+
+                <div className="h-10 bg-gray-200 rounded animate-pulse" />
+              </>
+            )}
+
+            {deployStatus === "success" && (
+              <>
+                <h2 className="text-lg font-semibold mb-3">
+                  Squeak see's your site is live!
+                </h2>
+
+                <a
+                  href={deployUrl}
+                  target="_blank"
+                  className="text-blue-600 underline break-all"
+                >
+                  {deployUrl}
+                </a>
+              </>
+            )}
+
+            {deployStatus === "error" && (
+              <>
+                <h2 className="text-lg font-semibold mb-3">
+                  Oh oh! Squeak couldn't deploy that, try again
+                </h2>
+
+                <Button onClick={publishSite}>
+                  Try again
+                </Button>
+              </>
+            )}
+
+          </Card>
+
+        </div>
+      )}
     </div>
   );
 }

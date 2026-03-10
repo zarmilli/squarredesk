@@ -87,6 +87,7 @@ serve(async (req: Request) => {
       billing_date: billingDate,
       recurring_amount: selectedPlan.amount,
       frequency: "3",
+      cycles: "0",
     }
 
     const signature = await generateSignature(
