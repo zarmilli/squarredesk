@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
-import { zip } from "https://deno.land/x/zip@v1.2.5/mod.ts"
 
 interface UserSite {
   id: string
@@ -28,6 +27,10 @@ const supabase = createClient(
 
 const NETLIFY_TOKEN = Deno.env.get("NETLIFY_API_TOKEN")!
 const TEMPLATE_BASE_URL = Deno.env.get("TEMPLATE_BASE_URL")!
+
+/* -----------------------------
+CONTENT INJECTION
+------------------------------*/
 
 function applyContent(
   templateHtml: string,
@@ -63,6 +66,10 @@ function applyContent(
   return html
 }
 
+/* -----------------------------
+CREATE NETLIFY SITE
+------------------------------*/
+
 async function createNetlifySite(siteName: string) {
 
   const response = await fetch(
@@ -82,6 +89,7 @@ async function createNetlifySite(siteName: string) {
   const data = await response.json()
 
   if (!data.id) {
+    console.error("Netlify create error:", data)
     throw new Error("Failed to create Netlify site")
   }
 
@@ -91,35 +99,42 @@ async function createNetlifySite(siteName: string) {
   }
 }
 
+/* -----------------------------
+DEPLOY TO NETLIFY
+------------------------------*/
+
 async function deployToNetlify(siteId: string, html: string) {
 
-  const encoder = new TextEncoder()
-  const htmlBytes = encoder.encode(html)
+  const form = new FormData()
 
-  const zipped = await zip({
-    "index.html": htmlBytes
-  })
+  const file = new Blob([html], { type: "text/html" })
+
+  form.append("file", file, "index.html")
 
   const response = await fetch(
     `https://api.netlify.com/api/v1/sites/${siteId}/deploys`,
     {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${NETLIFY_TOKEN}`,
-        "Content-Type": "application/zip"
+        Authorization: `Bearer ${NETLIFY_TOKEN}`
       },
-      body: zipped
+      body: form
     }
   )
 
   const data = await response.json()
 
-  if (!data.ssl_url) {
+  if (!data.deploy_ssl_url && !data.ssl_url) {
+    console.error("Netlify deploy error:", data)
     throw new Error("Netlify deploy failed")
   }
 
-  return data.ssl_url as string
+  return data.deploy_ssl_url || data.ssl_url
 }
+
+/* -----------------------------
+EDGE FUNCTION
+------------------------------*/
 
 serve(async (req) => {
 
@@ -205,6 +220,8 @@ serve(async (req) => {
 
     let netlifySiteId = typedSite.netlify_site_id
 
+    /* CREATE SITE FIRST TIME */
+
     if (!netlifySiteId) {
 
       const cleanName = typedSite.site_name
@@ -224,6 +241,8 @@ serve(async (req) => {
         })
         .eq("id", typedSite.id)
     }
+
+    /* DEPLOY */
 
     const deployUrl = await deployToNetlify(
       netlifySiteId,
