@@ -3,6 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 
 interface UserSite {
   id: string
+  site_name: string
   template_id: string | null
   content: Record<string, string> | null
   netlify_site_id: string | null
@@ -79,33 +80,39 @@ async function createNetlifySite(siteName: string) {
 
   const data = await response.json()
 
-  return data.id as string
+  if (!data.id) {
+    throw new Error("Failed to create Netlify site")
+  }
+
+  return {
+    siteId: data.id as string,
+    url: data.ssl_url as string
+  }
 }
 
 async function deployToNetlify(siteId: string, html: string) {
 
-  const form = new FormData()
-
-  form.append(
-    "file",
-    new Blob([html], { type: "text/html" }),
-    "index.html"
-  )
+  const base64Html = btoa(html)
 
   const response = await fetch(
     `https://api.netlify.com/api/v1/sites/${siteId}/deploys`,
     {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${NETLIFY_TOKEN}`
+        Authorization: `Bearer ${NETLIFY_TOKEN}`,
+        "Content-Type": "application/json"
       },
-      body: form
+      body: JSON.stringify({
+        files: {
+          "/index.html": base64Html
+        }
+      })
     }
   )
 
   const data = await response.json()
 
-  return data.deploy_ssl_url as string
+  return data.ssl_url as string
 }
 
 serve(async (req) => {
@@ -130,7 +137,7 @@ serve(async (req) => {
 
     const { data: site, error: siteError } = await supabase
       .from("user_sites")
-      .select("id, template_id, content, netlify_site_id")
+      .select("id, site_name, template_id, content, netlify_site_id")
       .eq("id", siteId)
       .single()
 
@@ -190,10 +197,13 @@ serve(async (req) => {
 
     if (!netlifySiteId) {
 
-      const generatedName =
-        `${typedSite.id.slice(0, 8)}`
+      const cleanName = typedSite.site_name
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, "-")
 
-      netlifySiteId = await createNetlifySite(generatedName)
+      const netlifySite = await createNetlifySite(cleanName)
+
+      netlifySiteId = netlifySite.siteId
 
       await supabase
         .from("user_sites")

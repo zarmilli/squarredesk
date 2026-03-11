@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 
 import happyImage from "/images/happy.png";
 import squeakImage from "/images/speaking.png";
+import Confetti from "react-confetti"
 
 type EditableField = {
   label: string;
@@ -432,43 +433,74 @@ export default function Editor() {
       {deployModalOpen && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
 
-          <Card className="p-8 w-[420px] text-center">
+          {deployStatus === "success" && <Confetti recycle={false} numberOfPieces={300} />}
+
+          <Card className="relative p-8 w-[420px] text-center space-y-4">
+
+            {/* Close button */}
+            <button
+              onClick={() => deployStatus !== "deploying" && setDeployModalOpen(false)}
+              className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-xl disabled:opacity-40"
+              disabled={deployStatus === "deploying"}
+            >
+              ✕
+            </button>
 
             <img
               src={deployStatus === "error" ? squeakImage : happyImage}
-              className="w-28 mx-auto mb-4"
+              className="w-28 mx-auto"
             />
 
+            {/* DEPLOYING */}
             {deployStatus === "deploying" && (
               <>
-                <h2 className="text-lg font-semibold mb-3">
-                  Site is deploying
+                <h2 className="text-lg font-semibold">
+                  Squeak is deploying your site...
                 </h2>
 
                 <div className="h-10 bg-gray-200 rounded animate-pulse" />
               </>
             )}
 
+            {/* SUCCESS */}
             {deployStatus === "success" && (
               <>
-                <h2 className="text-lg font-semibold mb-3">
-                  Squeak see's your site is live!
+                <h2 className="text-lg font-semibold">
+                  🎉 Your site is live!
                 </h2>
 
-                <a
-                  href={deployUrl}
-                  target="_blank"
-                  className="text-blue-600 underline break-all"
-                >
+                <p className="text-sm text-gray-500">
+                  Squeak pushed your website to the internet.
+                </p>
+
+                <div className="bg-gray-100 p-3 rounded break-all text-sm">
                   {deployUrl}
-                </a>
+                </div>
+
+                <div className="flex gap-2 justify-center">
+
+                  <Button
+                    onClick={() => navigator.clipboard.writeText(deployUrl)}
+                    variant="outline"
+                  >
+                    Copy URL
+                  </Button>
+
+                  <Button
+                    onClick={() => window.open(deployUrl, "_blank")}
+                  >
+                    View Site
+                  </Button>
+
+                </div>
               </>
             )}
 
+            {/* ERROR */}
             {deployStatus === "error" && (
               <>
-                <h2 className="text-lg font-semibold mb-3">
-                  Oh oh! Squeak couldn't deploy that, try again
+                <h2 className="text-lg font-semibold">
+                  Oh oh! Squeak couldn't deploy that
                 </h2>
 
                 <Button onClick={publishSite}>
