@@ -73,16 +73,16 @@ CREATE NETLIFY SITE
 async function createNetlifySite(siteName: string) {
 
   const response = await fetch(
-    "https://api.netlify.com/api/v1/sites",
+    "https://api.netlify.com/api/v1/sites/${siteId}",
     {
-      method: "POST",
+      method: "PATCH",
       headers: {
         Authorization: `Bearer ${NETLIFY_TOKEN}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        name: siteName
-      })
+      name: siteName + "-" + crypto.randomUUID().slice(0,6)
+    })
     }
   )
 
