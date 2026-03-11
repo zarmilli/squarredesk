@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { zip } from "https://deno.land/x/zip@v1.2.5/mod.ts"
 
 interface UserSite {
   id: string
@@ -92,7 +93,12 @@ async function createNetlifySite(siteName: string) {
 
 async function deployToNetlify(siteId: string, html: string) {
 
-  const base64Html = btoa(html)
+  const encoder = new TextEncoder()
+  const htmlBytes = encoder.encode(html)
+
+  const zipped = await zip({
+    "index.html": htmlBytes
+  })
 
   const response = await fetch(
     `https://api.netlify.com/api/v1/sites/${siteId}/deploys`,
@@ -100,17 +106,17 @@ async function deployToNetlify(siteId: string, html: string) {
       method: "POST",
       headers: {
         Authorization: `Bearer ${NETLIFY_TOKEN}`,
-        "Content-Type": "application/json"
+        "Content-Type": "application/zip"
       },
-      body: JSON.stringify({
-        files: {
-          "/index.html": base64Html
-        }
-      })
+      body: zipped
     }
   )
 
   const data = await response.json()
+
+  if (!data.ssl_url) {
+    throw new Error("Netlify deploy failed")
+  }
 
   return data.ssl_url as string
 }
@@ -186,6 +192,10 @@ serve(async (req) => {
 
     const templateRes = await fetch(templateUrl)
 
+    if (!templateRes.ok) {
+      throw new Error("Failed to fetch template HTML")
+    }
+
     const templateHtml = await templateRes.text()
 
     const finalHtml = applyContent(
@@ -200,6 +210,8 @@ serve(async (req) => {
       const cleanName = typedSite.site_name
         .toLowerCase()
         .replace(/[^a-z0-9-]/g, "-")
+        .replace(/-+/g, "-")
+        .slice(0, 30)
 
       const netlifySite = await createNetlifySite(cleanName)
 

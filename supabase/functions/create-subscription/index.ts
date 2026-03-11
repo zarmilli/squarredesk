@@ -3,11 +3,17 @@ import md5 from "https://esm.sh/blueimp-md5@2.19.0"
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 }
 
-const PLANS = {
+type PlanKey = "basic" | "pro"
+
+const PLANS: Record<
+  PlanKey,
+  { name: string; amount: string }
+> = {
   basic: {
     name: "Squarre Basic Plan",
     amount: "49.00",
@@ -22,42 +28,55 @@ function generateSignature(
   data: Record<string, string>,
   passphrase: string
 ) {
-  const sorted = Object.keys(data)
-    .sort()
+  const filtered = Object.entries(data)
+    .filter(([_, v]) => v !== undefined && v !== null && v !== "")
+
+  const sorted = filtered
+    .sort(([a], [b]) => a.localeCompare(b))
     .map(
-      (key) =>
-        `${key}=${encodeURIComponent(data[key]).replace(/%20/g, "+")}`
+      ([key, value]) =>
+        `${key}=${encodeURIComponent(value.trim()).replace(/%20/g, "+")}`
     )
     .join("&")
 
   const stringToHash = passphrase
-    ? `${sorted}&passphrase=${encodeURIComponent(passphrase)}`
+    ? `${sorted}&passphrase=${encodeURIComponent(passphrase).replace(/%20/g, "+")}`
     : sorted
 
   return md5(stringToHash)
 }
 
 serve(async (req: Request) => {
-
-  // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders })
   }
 
   try {
-    const { plan, userId, email, firstName } = await req.json()
+    const body = await req.json()
 
-    if (!PLANS[plan as keyof typeof PLANS]) {
-      return new Response(JSON.stringify({ error: "Invalid plan" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      })
+    const plan: PlanKey = body.plan
+    const userId: string = body.userId
+    const email: string = body.email
+    const firstName: string = body.firstName
+
+    if (!PLANS[plan]) {
+      return new Response(
+        JSON.stringify({ error: "Invalid plan" }),
+        {
+          status: 400,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/json",
+          },
+        }
+      )
     }
 
-    const selectedPlan = PLANS[plan as keyof typeof PLANS]
+    const selectedPlan = PLANS[plan]
 
     const now = new Date()
 
+    // Next month billing date
     const billingDate = new Date(
       now.getFullYear(),
       now.getMonth() + 1,
@@ -67,32 +86,34 @@ serve(async (req: Request) => {
       .split("T")[0]
 
     const paymentData: Record<string, string> = {
-      merchant_id: Deno.env.get("PAYFAST_MERCHANT_ID")!,
-      merchant_key: Deno.env.get("PAYFAST_MERCHANT_KEY")!,
+      merchant_id: Deno.env.get("PAYFAST_MERCHANT_ID") ?? "",
+      merchant_key: Deno.env.get("PAYFAST_MERCHANT_KEY") ?? "",
 
-      return_url: "https://squarre.vercel.app/dashboard",
-      cancel_url: "https://squarre.vercel.app/subscriptions",
+      return_url: "https://squarredesk.vercel.app/dashboard",
+      cancel_url: "https://squarredesk.vercel.app/subscriptions",
 
       notify_url:
         "https://suwiamrsjmbvhceqxchp.supabase.co/functions/v1/payfast-itn",
 
       name_first: firstName,
       email_address: email,
+
       m_payment_id: userId,
 
       amount: selectedPlan.amount,
       item_name: selectedPlan.name,
 
+      // Subscription settings
       subscription_type: "1",
       billing_date: billingDate,
       recurring_amount: selectedPlan.amount,
-      frequency: "3",
-      cycles: "0",
+      frequency: "3", // monthly
+      cycles: "0", // unlimited
     }
 
-    const signature = await generateSignature(
+    const signature = generateSignature(
       paymentData,
-      Deno.env.get("PAYFAST_PASSPHRASE") || ""
+      Deno.env.get("PAYFAST_PASSPHRASE") ?? ""
     )
 
     const paymentUrl =
@@ -102,17 +123,28 @@ serve(async (req: Request) => {
         signature,
       }).toString()
 
-    return new Response(JSON.stringify({ paymentUrl }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    })
-
+    return new Response(
+      JSON.stringify({ paymentUrl }),
+      {
+        status: 200,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json",
+        },
+      }
+    )
   } catch (err) {
-    console.error(err)
+    console.error("Subscription error:", err)
 
-    return new Response(JSON.stringify({ error: "Server error" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    })
+    return new Response(
+      JSON.stringify({ error: "Server error" }),
+      {
+        status: 500,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json",
+        },
+      }
+    )
   }
 })
