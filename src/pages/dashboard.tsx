@@ -8,6 +8,7 @@ import { Badge } from "@/components/base/badges/badges";
 import { BadgeWithDot } from "@/components/base/badges/badges";
 
 import peopleBackground from "/images/header.png";
+import squeakImage from "/images/squeakImage.png";
 
 type Site = {
   id: string;
@@ -64,7 +65,6 @@ export default function Dashboard() {
   return (
     <div className="h-full overflow-y-auto p-6 space-y-6 custom-scrollbar">
       {/* HERO */}
-
       <Card className="relative border border-stone-200 bg-white overflow-hidden">
         <div
           className="relative h-64 bg-cover bg-top bg-no-repeat"
@@ -97,52 +97,59 @@ export default function Dashboard() {
       </h2>
 
       {/* SITES GRID */}
-      <div className="grid gap-4 md:grid-cols-3">
-        {sites.map((site) => {
-          const date = site.updated_at
-            ? new Date(site.updated_at).toLocaleDateString("en-GB", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-              })
-            : "—";
+      {sites.length === 0 ? (
+        <div className="flex flex-col items-center justify-center gap-4 py-16">
+          <img src={squeakImage} className="w-32" alt="Squeak the parrot" />
+          <p className="text-lg font-medium">Squeak sees no websites yet</p>
+        </div>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-3">
+          {sites.map((site) => {
+            const date = site.updated_at
+              ? new Date(site.updated_at).toLocaleDateString("en-GB", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                })
+              : "—";
 
-          return (
-            <Card
-              key={site.id}
-              className="flex h-44 flex-col justify-between p-4 transition-shadow hover:shadow-md"
-            >
-              {/* Top */}
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="text-sm font-semibold">{site.site_name}</div>
-                  <div className="mt-1 text-xs text-muted-foreground">
-                    Last edited {date}
+            return (
+              <Card
+                key={site.id}
+                className="flex h-44 flex-col justify-between p-4 transition-shadow hover:shadow-md"
+              >
+                {/* Top */}
+                <div className="flex items-start justify-between">
+                  <div>
+                    <div className="text-sm font-semibold">{site.site_name}</div>
+                    <div className="mt-1 text-xs text-muted-foreground">
+                      Last edited {date}
+                    </div>
                   </div>
+
+                  <BadgeWithDot
+                    type="pill-color"
+                    color={site.is_published ? "success" : "warning"}
+                    size="md"
+                  >
+                    {site.is_published ? "Published" : "Draft"}
+                  </BadgeWithDot>
                 </div>
 
-                <BadgeWithDot
-                  type="pill-color"
-                  color={site.is_published ? "success" : "warning"}
-                  size="md"
+                {/* Bottom */}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="self-start"
+                  onClick={() => navigate(`/editor?site=${site.id}`)}
                 >
-                  {site.is_published ? "Published" : "Draft"}
-                </BadgeWithDot>
-              </div>
-
-              {/* Bottom */}
-              <Button
-                size="sm"
-                variant="outline"
-                className="self-start"
-                onClick={() => navigate(`/editor?site=${site.id}`)}
-              >
-                Edit
-              </Button>
-            </Card>
-          );
-        })}
-      </div>
+                  Edit
+                </Button>
+              </Card>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
