@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title data-edit="meta_title">VoltCycle — Electric Bicycle Care</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;500;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --charcoal:       #141416;
+      --charcoal-mid:   #1e1e22;
+      --charcoal-light: #28282e;
+      --charcoal-card:  #202024;
+      --border:         rgba(255,255,255,0.08);
+      --white:          #ffffff;
+      --white-80:       rgba(255,255,255,0.80);
+      --white-50:       rgba(255,255,255,0.50);
+      --white-20:       rgba(255,255,255,0.20);
+      --accent:         #e8ff47;
+      --accent-dark:    #c8df20;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--charcoal);
+      color: var(--white);
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* ===== NAVBAR ===== */
+    nav {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      width: calc(100% - 80px);
+      max-width: 1100px;
+      padding: 16px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--charcoal);
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      transition: background 0.4s ease, backdrop-filter 0.4s ease,
+                  box-shadow 0.4s ease, top 0.4s ease, width 0.4s ease;
+    }
+    nav.scrolled {
+      background: rgba(20, 20, 22, 0.60);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.55);
+      border-color: rgba(255,255,255,0.12);
+      top: 16px;
+      width: calc(100% - 120px);
+    }
+    nav .logo {
+      font-family: 'Poppins', sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--white);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      position: relative;
+      z-index: 1001;
+      white-space: nowrap;
+    }
+    nav .logo span { color: var(--accent); }
+    nav .nav-links { display: flex; gap: 28px; align-items: center; }
+    nav .nav-links a {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--white-80);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+      white-space: nowrap;
+    }
+    nav .nav-links a:hover { color: var(--accent); }
+
+    /* Burger */
+    .burger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 32px; height: 32px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      position: relative;
+      z-index: 1001;
+      flex-shrink: 0;
+    }
+    .burger span {
+      display: block;
+      width: 100%; height: 2px;
+      background: var(--white);
+      border-radius: 2px;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      transform-origin: center;
+    }
+    .burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .burger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    @media (max-width: 500px) {
+      nav {
+        top: 12px;
+        width: calc(100% - 32px);
+        padding: 14px 20px;
+        border-radius: 100px;
+      }
+      nav.scrolled {
+        top: 10px;
+        width: calc(100% - 40px);
+      }
+      .burger { display: flex; }
+      .nav-links {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        height: 100vh;
+        background: var(--charcoal);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 36px;
+        transform: translateY(-100%);
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+        border-radius: 0;
+      }
+      .nav-links.open { transform: translateY(0); pointer-events: all; }
+      .nav-links a { font-size: 18px; }
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      z-index: 0;
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to top,
+        rgba(14,14,16,0.90) 0%,
+        rgba(14,14,16,0.40) 50%,
+        rgba(14,14,16,0.15) 100%
+      );
+      z-index: 1;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      padding: 0 52px 72px;
+      max-width: 780px;
+    }
+    .hero-content h1 {
+      font-size: clamp(38px, 6vw, 72px);
+      font-weight: 500;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      margin-bottom: 18px;
+    }
+    .hero-content h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+    .hero-content p {
+      font-size: clamp(14px, 1.6vw, 17px);
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--white-80);
+      margin-bottom: 36px;
+      max-width: 480px;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--accent);
+      color: var(--charcoal);
+      font-family: 'Poppins', sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 15px 32px;
+      border-radius: 4px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-primary:hover { background: var(--accent-dark); transform: translateY(-2px); }
+    .btn-primary svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+
+    @media (max-width: 500px) {
+      .hero-content { padding: 0 20px 56px; }
+    }
+
+    /* ===== ABOUT ===== */
+    .about {
+      position: relative;
+      min-height: 70vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px;
+    }
+    .about-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      z-index: 0;
+    }
+    .about-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      z-index: 1;
+    }
+    .about-content {
+      position: relative;
+      z-index: 2;
+      max-width: 720px;
+    }
+    .about-content h2 {
+      font-size: clamp(30px, 5vw, 52px);
+      font-weight: 500;
+      margin-bottom: 24px;
+      letter-spacing: -0.01em;
+    }
+    .about-content h2 span { color: var(--accent); }
+    .about-content p {
+      font-size: clamp(14px, 1.6vw, 17px);
+      font-weight: 300;
+      line-height: 1.8;
+      color: var(--white-80);
+    }
+
+    /* ===== BANNER ===== */
+    .banner {
+      width: 100%;
+      display: block;
+      line-height: 0;
+    }
+    .banner img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+    }
+
+    /* ===== SERVICES ===== */
+    .services {
+      position: relative;
+      padding: 110px 52px;
+    }
+    .services-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      z-index: 0;
+    }
+    .services-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 10, 12, 0.82);
+      z-index: 1;
+    }
+    .services-inner {
+      position: relative;
+      z-index: 2;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .services-inner h2 {
+      font-size: clamp(30px, 4vw, 48px);
+      font-weight: 500;
+      margin-bottom: 56px;
+      letter-spacing: -0.01em;
+    }
+    .services-inner h2 span { color: var(--accent); }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+    }
+    .service-col {
+      padding: 32px;
+      border: 1px solid var(--border);
+      border-right: none;
+    }
+    .service-col:last-child { border-right: 1px solid var(--border); }
+    .service-col-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 28px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .service-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .service-item:last-child { border-bottom: none; }
+    .service-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-top: 8px;
+      flex-shrink: 0;
+    }
+    .service-item p {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.6;
+      color: var(--white-80);
+    }
+    @media (max-width: 768px) {
+      .services { padding: 80px 20px; }
+      .services-grid { grid-template-columns: 1fr; }
+      .service-col { border-right: 1px solid var(--border); border-bottom: none; }
+      .service-col:last-child { border-bottom: 1px solid var(--border); }
+    }
+
+    /* ===== OPEN HOURS ===== */
+    .hours {
+      position: relative;
+    }
+    .hours-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      z-index: 0;
+    }
+    .hours-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.88);
+      z-index: 1;
+    }
+    .hours-inner {
+      position: relative;
+      z-index: 2;
+      max-width: 680px;
+      margin: auto;
+      padding: 100px 24px;
+      text-align: center;
+    }
+    .hours-inner h2 {
+      font-size: clamp(30px, 4vw, 48px);
+      font-weight: 500;
+      color: var(--charcoal);
+      margin-bottom: 48px;
+      letter-spacing: -0.01em;
+    }
+    .hours-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .hours-table tr {
+      border-bottom: 1px solid rgba(0,0,0,0.10);
+    }
+    .hours-table tr:first-child { border-top: 1px solid rgba(0,0,0,0.10); }
+    .hours-table td {
+      padding: 16px 8px;
+      font-size: 15px;
+      color: var(--charcoal);
+    }
+    .hours-table td:first-child {
+      font-weight: 600;
+      text-align: left;
+      width: 44%;
+    }
+    .hours-table td:nth-child(2),
+    .hours-table td:nth-child(3) {
+      text-align: center;
+      color: #444;
+      font-weight: 400;
+    }
+    .hours-table td:nth-child(2)::before { content: 'Opens  '; font-weight: 600; color: var(--charcoal); font-size: 11px; display: block; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; }
+    .hours-table td:nth-child(3)::before { content: 'Closes  '; font-weight: 600; color: var(--charcoal); font-size: 11px; display: block; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; }
+    @media (max-width: 500px) {
+      .hours-table td { font-size: 13px; padding: 14px 4px; }
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: #000;
+      color: var(--white-50);
+      text-align: center;
+      padding: 48px 24px 36px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    footer .footer-logo {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--white);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    footer .footer-logo span { color: var(--accent); }
+    footer .footer-copy {
+      font-size: 13px;
+      margin-bottom: 14px;
+      color: var(--white-50);
+    }
+    footer .footer-squarre {
+      font-size: 13px;
+      color: rgba(255,255,255,0.35);
+    }
+    footer .footer-squarre a {
+      color: var(--white-80);
+      text-decoration: underline;
+      font-weight: 500;
+    }
+    footer .footer-squarre a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav id="navbar">
+    <a href="#hero" class="logo" data-edit="site_name">Volt<span>Cycle</span></a>
+    <button class="burger" id="burger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="#about"    data-edit="nav_about">About</a>
+      <a href="#services" data-edit="nav_services">Services</a>
+      <a href="#hours"    data-edit="nav_hours">Open Hours</a>
+      <a href="#policy"   data-edit="nav_policy">Policy</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero" class="hero">
+    <div
+      class="hero-bg"
+      data-edit="hero_background"
+      data-edit-role="background"
+      style="background-image:url('https://lh3.googleusercontent.com/sitesv/APaQ0STLu2z89TrclK1cgp5zUTJHRwUicmDJ8gsejgCvSoPTUBZe2ot3D6df_84MrIw8VZfivJVtpk9ZMrxSTHoO8mfeJWC93dkjQwJy9qGWPnRvPYFTel5-t1uTTAUGwqGLHNezbk3PD9g-ZZ24NMAqPGfo3PCyZefo-Zufw-i19E7zEyd3JgizUr_mWpSSkPtsw_EmCDhPaQFRtku1WNsqODXOBs7N88v1zdK2YpY=w1280');"
+    ></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1 data-edit="hero_title">Your <em>Electric Ride</em>,<br>Always Ready.</h1>
+      <p data-edit="hero_description">Expert servicing, diagnostics, and care for all e-bike brands. Ride with confidence knowing your bike is in the best hands.</p>
+      <a href="#services" class="btn-primary" id="heroBtn" data-edit="hero_cta_text">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        <span>Book a Service</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="about">
+    <div
+      class="about-bg"
+      data-edit="about_background"
+      data-edit-role="background"
+      style="background-image:url('https://lh3.googleusercontent.com/sitesv/APaQ0SSObJnRunc-HcF2Ayo-NpwqDOQM8FiUddAYMuYFSpyIYge4eDCUmBww33e8THdgQ9uZgc9JzSXhvBkFHQLGZnYWTTP7ILGiLhJeMBW5X5IcM2B2hfRsTAc02KTuzirONMKEY8T2iI2RtOL4o1pgs6PJRgj9BrSLCisxyI0FdiDBwofAH0ThlPjFkd2AwHh2YMpSersoiyQAtBnfToT8zBoLsJR8CohnKson=w1280');"
+    ></div>
+    <div class="about-overlay"></div>
+    <div class="about-content">
+      <h2 data-edit="about_title">We <span>Live</span> for Electric Bikes</h2>
+      <p data-edit="about_description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+    </div>
+  </section>
+
+  <!-- BANNER -->
+  <div class="banner">
+    <img
+      data-edit="banner_image"
+      src="https://lh3.googleusercontent.com/sitesv/APaQ0STN9DWMOUVaZn2KM1E2uXyQ_budnG6mGyHfe8HAWdFi-gjFXqpbBqDxBgB-m0n22lFBFFkDYzFoLtu_FisK2PxBddTp9f1KaVQojO7oZkf0dl0DMznnuLHDopI66d8LspuQP2YmEDcRXMpbK3GkggYg-CJ4hEv3kZTmadcFmnmOQH8jh9TTjz0ucjKQp29AVpEdDKvWGfHyt9mn2zUpaVY6K5gGBVPj-3RiNm0=w1280"
+      alt="Workshop banner"
+    />
+  </div>
+
+  <!-- SERVICES -->
+  <section id="services" class="services">
+    <div
+      class="services-bg"
+      data-edit="services_background"
+      data-edit-role="background"
+      style="background-image:url('https://lh3.googleusercontent.com/sitesv/APaQ0SToGt7G4EzSqcVB2r2KXjVs_Wi7Y0_d9QJqiY5vq4baKudy-VuNVyjjGp9gPoX86ot9OBHXzawyKEJ4zcO96fsHlAkneUVop_DO2Ai6Jth0xgD8OZRI5wrYLqd1XdzFRmWUojS-AlLzcY8YCqcxOBbFeKiOuvX0Y-HzOFUSam_iTJH_bA_c-H0feVa2QuSO-za-_udQB0gZbMOgyWCuQT4XRXFuz4Dk56SD7WE=w1280');"
+    ></div>
+    <div class="services-overlay"></div>
+    <div class="services-inner">
+      <h2 data-edit="services_title">What We <span>Do</span></h2>
+      <div class="services-grid">
+
+        <!-- Column 1 -->
+        <div class="service-col" data-repeat="services_col_1">
+          <div class="service-col-title" data-edit="col_1_title">Maintenance</div>
+          <div class="service-item">
+            <div class="service-dot"></div>
+            <p data-edit="item_1">Full e-bike tune-up and safety inspection</p>
+          </div>
+          <div class="service-item">
+            <div class="service-dot"></div>
+            <p data-edit="item_2">Brake adjustment and cable replacement</p>
+          </div>
+          <div class="service-item">
+            <div class="service-dot"></div>
+            <p data-edit="item_3">Gear indexing and drivetrain cleaning</p>
+          </div>
+          <div class="service-item">
+            <div class="service-dot"></div>
+            <p data-edit="item_4">Tyre and inner tube replacement</p>
+          </div>
+          <div class="service-item">
+            <div class="service-dot"></div>
+            <p data-edit="item_5">Chain lubrication and wear check</p>
+          </div>
+        </div>
+
+        <!-- Column 2 -->
+        <div class="service-col" data-repeat="services_col_2">
+          <div class="service-col-title" data-edit="col_2_title">Electrical</div>
+          <div class="service-item">
+            <div class="service-dot"></div>
+            <p data-edit="item_1">Battery health check and cell diagnostics</p>
+          </div>
+          <div class="service-item">
+            <div class="service-dot"></div>
+            <p data-edit="item_2">Motor inspection and bearing replacement</p>
+          </div>
+          <div class="service-item">
+            <div class="service-dot"></div>
+            <p data-edit="item_3">Controller and wiring harness diagnostics</p>
+          </div>
+          <div class="service-item">
+            <div class="service-dot"></div>
+            <p data-edit="item_4">Display and sensor calibration</p>
+          </div>
+          <div class="service-item">
+            <div class="service-dot"></div>
+            <p data-edit="item_5">Firmware update and performance tuning</p>
+          </div>
+        </div>
+
+        <!-- Column 3 -->
+        <div class="service-col" data-repeat="services_col_3">
+          <div class="service-col-title" data-edit="col_3_title">Repairs</div>
+          <div class="service-item">
+            <div class="service-dot"></div>
+            <p data-edit="item_1">Frame and fork structural repair</p>
+          </div>
+          <div class="service-item">
+            <div class="service-dot"></div>
+            <p data-edit="item_2">Suspension fork service and oil change</p>
+          </div>
+          <div class="service-item">
+            <div class="service-dot"></div>
+            <p data-edit="item_3">Wheel truing and spoke replacement</p>
+          </div>
+          <div class="service-item">
+            <div class="service-dot"></div>
+            <p data-edit="item_4">Hydraulic brake bleed and caliper service</p>
+          </div>
+          <div class="service-item">
+            <div class="service-dot"></div>
+            <p data-edit="item_5">Crash damage assessment and restoration</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- OPEN HOURS -->
+  <section id="hours" class="hours">
+    <div
+      class="hours-bg"
+      data-edit="hours_background"
+      data-edit-role="background"
+      style="background-image:url('https://lh3.googleusercontent.com/sitesv/APaQ0STLu2z89TrclK1cgp5zUTJHRwUicmDJ8gsejgCvSoPTUBZe2ot3D6df_84MrIw8VZfivJVtpk9ZMrxSTHoO8mfeJWC93dkjQwJy9qGWPnRvPYFTel5-t1uTTAUGwqGLHNezbk3PD9g-ZZ24NMAqPGfo3PCyZefo-Zufw-i19E7zEyd3JgizUr_mWpSSkPtsw_EmCDhPaQFRtku1WNsqODXOBs7N88v1zdK2YpY=w1280');"
+    ></div>
+    <div class="hours-overlay"></div>
+    <div class="hours-inner">
+      <h2 data-edit="hours_title">Opening Hours</h2>
+      <table class="hours-table">
+        <tr>
+          <td data-edit="day_1">Monday</td>
+          <td data-edit="day_1_open">08:00</td>
+          <td data-edit="day_1_close">17:00</td>
+        </tr>
+        <tr>
+          <td data-edit="day_2">Tuesday</td>
+          <td data-edit="day_2_open">08:00</td>
+          <td data-edit="day_2_close">17:00</td>
+        </tr>
+        <tr>
+          <td data-edit="day_3">Wednesday</td>
+          <td data-edit="day_3_open">08:00</td>
+          <td data-edit="day_3_close">17:00</td>
+        </tr>
+        <tr>
+          <td data-edit="day_4">Thursday</td>
+          <td data-edit="day_4_open">08:00</td>
+          <td data-edit="day_4_close">17:00</td>
+        </tr>
+        <tr>
+          <td data-edit="day_5">Friday</td>
+          <td data-edit="day_5_open">08:00</td>
+          <td data-edit="day_5_close">17:00</td>
+        </tr>
+        <tr>
+          <td data-edit="day_6">Saturday</td>
+          <td data-edit="day_6_open">09:00</td>
+          <td data-edit="day_6_close">14:00</td>
+        </tr>
+        <tr>
+          <td data-edit="day_7">Sunday</td>
+          <td data-edit="day_7_open">Closed</td>
+          <td data-edit="day_7_close">Closed</td>
+        </tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- POLICY -->
+  <section id="policy" style="background:var(--charcoal-mid); padding:90px 48px;">
+    <h2 style="font-size:clamp(30px,4vw,48px);font-weight:500;text-align:center;margin-bottom:56px;letter-spacing:-0.01em;" data-edit="policy_title">Our <span style="color:var(--accent);">Policy</span></h2>
+    <div style="max-width:760px;margin:auto;" data-repeat="policies">
+      <div style="border-top:1px solid var(--border);padding:26px 0;display:flex;gap:20px;align-items:flex-start;">
+        <span class="policy-num" style="font-size:11px;font-weight:500;color:var(--accent);letter-spacing:0.1em;padding-top:3px;min-width:28px;text-transform:uppercase;">01</span>
+        <p style="font-size:15px;line-height:1.75;color:var(--white-80);font-weight:300;" data-edit="policy_text">All service bookings require a confirmed appointment. Walk-ins are welcome but subject to availability and may incur longer wait times.</p>
+      </div>
+      <div style="border-top:1px solid var(--border);padding:26px 0;display:flex;gap:20px;align-items:flex-start;">
+        <span class="policy-num" style="font-size:11px;font-weight:500;color:var(--accent);letter-spacing:0.1em;padding-top:3px;min-width:28px;text-transform:uppercase;">02</span>
+        <p style="font-size:15px;line-height:1.75;color:var(--white-80);font-weight:300;" data-edit="policy_text">A diagnostic fee applies to all electrical assessments. This fee is waived if you proceed with the recommended repair.</p>
+      </div>
+      <div style="border-top:1px solid var(--border);padding:26px 0;display:flex;gap:20px;align-items:flex-start;">
+        <span class="policy-num" style="font-size:11px;font-weight:500;color:var(--accent);letter-spacing:0.1em;padding-top:3px;min-width:28px;text-transform:uppercase;">03</span>
+        <p style="font-size:15px;line-height:1.75;color:var(--white-80);font-weight:300;" data-edit="policy_text">Uncollected bikes left beyond 14 days after service completion may incur a storage fee. Please collect your bike promptly.</p>
+      </div>
+      <div style="border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:26px 0;display:flex;gap:20px;align-items:flex-start;">
+        <span class="policy-num" style="font-size:11px;font-weight:500;color:var(--accent);letter-spacing:0.1em;padding-top:3px;min-width:28px;text-transform:uppercase;">04</span>
+        <p style="font-size:15px;line-height:1.75;color:var(--white-80);font-weight:300;" data-edit="policy_text">We warranty all labour for 30 days and parts for 90 days from the date of service. Warranty is void if the bike is tampered with by a third party.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo" data-edit="site_name">Volt<span>Cycle</span></div>
+    <p class="footer-copy">© <span data-edit="copyright_year">2026</span> <span data-edit="site_name">VoltCycle</span>. All rights reserved.</p>
+    <p class="footer-squarre">Want your own site? <a href="https://squarre.vercel.app" target="_blank">This site was made using Squarre</a></p>
+  </footer>
+
+  <script>
+    // Navbar scroll → glassmorphism
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 80);
+    });
+
+    // Burger menu
+    const burger = document.getElementById('burger');
+    const navLinks = document.getElementById('navLinks');
+    burger.addEventListener('click', () => {
+      burger.classList.toggle('open');
+      navLinks.classList.toggle('open');
+    });
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        burger.classList.remove('open');
+        navLinks.classList.remove('open');
+      });
+    });
+
+    // Policy auto-numbering
+    document.querySelectorAll('.policy-num').forEach((el, i) => {
+      el.textContent = String(i + 1).padStart(2, '0');
+    });
+  </script>
+</body>
+</html>

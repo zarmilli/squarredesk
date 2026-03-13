@@ -1,0 +1,123 @@
+{
+  "meta_title": { "type": "text", "label": "Page title" },
+
+  "site_name": { "type": "text", "label": "Site / brand name" },
+
+  "nav_about":    { "type": "text", "label": "Navbar — About" },
+  "nav_services": { "type": "text", "label": "Navbar — Services" },
+  "nav_hours":    { "type": "text", "label": "Navbar — Open Hours" },
+  "nav_policy":   { "type": "text", "label": "Navbar — Policy" },
+
+  "hero_background": {
+    "type": "image",
+    "label": "Hero background image",
+    "default": "https://images.pexels.com/photos/1149601/pexels-photo-1149601.jpeg"
+  },
+  "hero_title":    { "type": "text",     "label": "Hero title" },
+  "hero_description": { "type": "longtext", "label": "Hero description" },
+  "hero_cta_text": { "type": "text",     "label": "Hero button text" },
+
+  "about_background": {
+    "type": "image",
+    "label": "About background image",
+    "default": "https://images.pexels.com/photos/3807517/pexels-photo-3807517.jpeg"
+  },
+  "about_title":       { "type": "text",     "label": "About title" },
+  "about_description": { "type": "longtext", "label": "About body text" },
+
+  "banner_image": {
+    "type": "image",
+    "label": "Banner image (full-width)"
+  },
+
+  "services_background": {
+    "type": "image",
+    "label": "Services background image"
+  },
+  "services_title": { "type": "text", "label": "Services section title" },
+
+  "services_col_1": {
+    "type": "repeat",
+    "label": "Services — Column 1",
+    "max": 5,
+    "fields": {
+      "col_1_title": { "type": "text", "label": "Column 1 heading" },
+      "item_1": { "type": "text", "label": "Service item 1" },
+      "item_2": { "type": "text", "label": "Service item 2" },
+      "item_3": { "type": "text", "label": "Service item 3" },
+      "item_4": { "type": "text", "label": "Service item 4" },
+      "item_5": { "type": "text", "label": "Service item 5" }
+    }
+  },
+  "services_col_2": {
+    "type": "repeat",
+    "label": "Services — Column 2",
+    "max": 5,
+    "fields": {
+      "col_2_title": { "type": "text", "label": "Column 2 heading" },
+      "item_1": { "type": "text", "label": "Service item 1" },
+      "item_2": { "type": "text", "label": "Service item 2" },
+      "item_3": { "type": "text", "label": "Service item 3" },
+      "item_4": { "type": "text", "label": "Service item 4" },
+      "item_5": { "type": "text", "label": "Service item 5" }
+    }
+  },
+  "services_col_3": {
+    "type": "repeat",
+    "label": "Services — Column 3",
+    "max": 5,
+    "fields": {
+      "col_3_title": { "type": "text", "label": "Column 3 heading" },
+      "item_1": { "type": "text", "label": "Service item 1" },
+      "item_2": { "type": "text", "label": "Service item 2" },
+      "item_3": { "type": "text", "label": "Service item 3" },
+      "item_4": { "type": "text", "label": "Service item 4" },
+      "item_5": { "type": "text", "label": "Service item 5" }
+    }
+  },
+
+  "hours_background": {
+    "type": "image",
+    "label": "Open Hours background image"
+  },
+  "hours_title": { "type": "text", "label": "Open Hours section title" },
+
+  "day_1":       { "type": "text", "label": "Day 1 name" },
+  "day_1_open":  { "type": "text", "label": "Day 1 opening time" },
+  "day_1_close": { "type": "text", "label": "Day 1 closing time" },
+
+  "day_2":       { "type": "text", "label": "Day 2 name" },
+  "day_2_open":  { "type": "text", "label": "Day 2 opening time" },
+  "day_2_close": { "type": "text", "label": "Day 2 closing time" },
+
+  "day_3":       { "type": "text", "label": "Day 3 name" },
+  "day_3_open":  { "type": "text", "label": "Day 3 opening time" },
+  "day_3_close": { "type": "text", "label": "Day 3 closing time" },
+
+  "day_4":       { "type": "text", "label": "Day 4 name" },
+  "day_4_open":  { "type": "text", "label": "Day 4 opening time" },
+  "day_4_close": { "type": "text", "label": "Day 4 closing time" },
+
+  "day_5":       { "type": "text", "label": "Day 5 name" },
+  "day_5_open":  { "type": "text", "label": "Day 5 opening time" },
+  "day_5_close": { "type": "text", "label": "Day 5 closing time" },
+
+  "day_6":       { "type": "text", "label": "Day 6 name" },
+  "day_6_open":  { "type": "text", "label": "Day 6 opening time" },
+  "day_6_close": { "type": "text", "label": "Day 6 closing time" },
+
+  "day_7":       { "type": "text", "label": "Day 7 name" },
+  "day_7_open":  { "type": "text", "label": "Day 7 opening time" },
+  "day_7_close": { "type": "text", "label": "Day 7 closing time" },
+
+  "policy_title": { "type": "text", "label": "Policy section title" },
+  "policies": {
+    "type": "repeat",
+    "label": "Policies",
+    "fields": {
+      "policy_text": { "type": "longtext", "label": "Policy text" }
+    }
+  },
+
+  "copyright_year": { "type": "text", "label": "Copyright year" }
+}

@@ -70,25 +70,23 @@ function applyContent(
 CREATE NETLIFY SITE
 ------------------------------*/
 
-async function createNetlifySite(siteName: string) {
+async function createNetlifySite() {
 
   const response = await fetch(
-    "https://api.netlify.com/api/v1/sites/${siteId}",
+    "https://api.netlify.com/api/v1/sites",
     {
-      method: "PATCH",
+      method: "POST",
       headers: {
         Authorization: `Bearer ${NETLIFY_TOKEN}`,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-      name: siteName + "-" + crypto.randomUUID().slice(0,6)
-    })
+      body: JSON.stringify({})
     }
   )
 
   const data = await response.json()
 
-  if (!data.id) {
+  if (!response.ok || !data.id) {
     console.error("Netlify create error:", data)
     throw new Error("Failed to create Netlify site")
   }
@@ -100,36 +98,64 @@ async function createNetlifySite(siteName: string) {
 }
 
 /* -----------------------------
-DEPLOY TO NETLIFY
+DEPLOY HTML TO NETLIFY
 ------------------------------*/
 
 async function deployToNetlify(siteId: string, html: string) {
 
-  const form = new FormData()
+  const encoder = new TextEncoder()
+  const bytes = encoder.encode(html)
 
-  const file = new Blob([html], { type: "text/html" })
+  const shaBuffer = await crypto.subtle.digest("SHA-1", bytes)
+  const shaArray = Array.from(new Uint8Array(shaBuffer))
+  const sha = shaArray.map(b => b.toString(16).padStart(2, "0")).join("")
 
-  form.append("file", file, "index.html")
+  /* create deploy manifest */
 
-  const response = await fetch(
+  const deployRes = await fetch(
     `https://api.netlify.com/api/v1/sites/${siteId}/deploys`,
     {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${NETLIFY_TOKEN}`
+        Authorization: `Bearer ${NETLIFY_TOKEN}`,
+        "Content-Type": "application/json"
       },
-      body: form
+      body: JSON.stringify({
+        files: {
+          "index.html": sha
+        }
+      })
     }
   )
 
-  const data = await response.json()
+  const deploy = await deployRes.json()
 
-  if (!data.deploy_ssl_url && !data.ssl_url) {
-    console.error("Netlify deploy error:", data)
-    throw new Error("Netlify deploy failed")
+  if (!deploy.id) {
+    console.error("Deploy manifest error:", deploy)
+    throw new Error("Failed to create Netlify deploy")
   }
 
-  return data.deploy_ssl_url || data.ssl_url
+  /* upload file */
+
+  const uploadRes = await fetch(
+    `https://api.netlify.com/api/v1/deploys/${deploy.id}/files/index.html`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${NETLIFY_TOKEN}`,
+        "Content-Type": "application/octet-stream"
+      },
+      body: bytes
+    }
+  )
+
+  if (!uploadRes.ok) {
+    const err = await uploadRes.text()
+    console.error("Upload error:", err)
+    throw new Error("Failed to upload HTML")
+  }
+
+  return deploy.ssl_url
 }
 
 /* -----------------------------
@@ -147,57 +173,33 @@ serve(async (req) => {
     const { siteId } = await req.json()
 
     if (!siteId) {
-      return new Response(
-        JSON.stringify({ error: "Missing siteId" }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" }
-        }
-      )
+      throw new Error("Missing siteId")
     }
 
-    const { data: site, error: siteError } = await supabase
+    const { data: site } = await supabase
       .from("user_sites")
       .select("id, site_name, template_id, content, netlify_site_id")
       .eq("id", siteId)
       .single()
 
-    if (siteError || !site) {
-      return new Response(
-        JSON.stringify({ error: "Site not found" }),
-        {
-          status: 404,
-          headers: { ...corsHeaders, "Content-Type": "application/json" }
-        }
-      )
+    if (!site) {
+      throw new Error("Site not found")
     }
 
     const typedSite = site as UserSite
 
     if (!typedSite.template_id) {
-      return new Response(
-        JSON.stringify({ error: "Template missing" }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" }
-        }
-      )
+      throw new Error("Template missing")
     }
 
-    const { data: template, error: templateError } = await supabase
+    const { data: template } = await supabase
       .from("templates")
       .select("template_slug")
       .eq("id", typedSite.template_id)
       .single()
 
-    if (templateError || !template) {
-      return new Response(
-        JSON.stringify({ error: "Template not found" }),
-        {
-          status: 404,
-          headers: { ...corsHeaders, "Content-Type": "application/json" }
-        }
-      )
+    if (!template) {
+      throw new Error("Template not found")
     }
 
     const typedTemplate = template as Template
@@ -220,29 +222,21 @@ serve(async (req) => {
 
     let netlifySiteId = typedSite.netlify_site_id
 
-    /* CREATE SITE FIRST TIME */
+    /* create Netlify site once */
 
     if (!netlifySiteId) {
 
-      const cleanName = typedSite.site_name
-        .toLowerCase()
-        .replace(/[^a-z0-9-]/g, "-")
-        .replace(/-+/g, "-")
-        .slice(0, 30)
-
-      const netlifySite = await createNetlifySite(cleanName)
+      const netlifySite = await createNetlifySite()
 
       netlifySiteId = netlifySite.siteId
 
       await supabase
         .from("user_sites")
-        .update({
-          netlify_site_id: netlifySiteId
-        })
+        .update({ netlify_site_id: netlifySiteId })
         .eq("id", typedSite.id)
     }
 
-    /* DEPLOY */
+    /* deploy HTML */
 
     const deployUrl = await deployToNetlify(
       netlifySiteId,
@@ -251,9 +245,7 @@ serve(async (req) => {
 
     await supabase
       .from("user_sites")
-      .update({
-        is_published: true
-      })
+      .update({ is_published: true })
       .eq("id", typedSite.id)
 
     return new Response(
@@ -271,11 +263,11 @@ serve(async (req) => {
 
   } catch (err) {
 
-    console.error(err)
+    console.error("Publish error:", err)
 
     return new Response(
       JSON.stringify({
-        error: "Publish failed"
+        error: err instanceof Error ? err.message : "Publish failed"
       }),
       {
         status: 500,

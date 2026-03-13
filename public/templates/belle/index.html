@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title data-edit="meta_title">Belle Pâtisserie — Baked with Love</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Luxurious+Script&family=Inter:wght@400;500&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pink: #efa2af;
+      --pink-mid: #f2cdd8;
+      --pink-deep: #e8a0b4;
+      --rose: #c4607a;
+      --rose-dark: #a3495f;
+      --peach: #fff8ea;
+      --peach-mid: #f7dece;
+      --text-dark: #2b1a1f;
+      --text-mid: #7a5360;
+      --white: #ffffff;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--peach);
+      color: var(--text-dark);
+      font-family: 'Inter', sans-serif;
+    }
+
+    h1, h2, h3, h4, .logo {
+      font-family: 'Luxurious Script', cursive;
+    }
+
+    /* ===== NAVBAR ===== */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 22px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: transparent;
+      transition: background 0.35s ease, box-shadow 0.35s ease, padding 0.35s ease;
+    }
+    nav.scrolled {
+      background: var(--pink);
+      box-shadow: 0 2px 20px rgba(180, 80, 100, 0.08);
+      padding: 14px 48px;
+    }
+    nav .logo {
+      font-family: 'Luxurious Script', cursive;
+      font-size: 30px;
+      font-weight: 400;
+      color: var(--white);
+      letter-spacing: 0.02em;
+      transition: color 0.35s;
+      text-decoration: none;
+      position: relative;
+      z-index: 1001;
+    }
+    nav.scrolled .logo { color: var(--white); }
+    nav .nav-links { display: flex; gap: 36px; }
+    nav .nav-links a {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.88);
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      transition: color 0.2s;
+    }
+    nav.scrolled .nav-links a { color: var(--white); }
+    nav .nav-links a:hover { color: var(--text-dark); }
+    nav.scrolled .nav-links a:hover { color: var(--rose); }
+
+    /* Burger button */
+    .burger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 36px;
+      height: 36px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      position: relative;
+      z-index: 1001;
+    }
+    .burger span {
+      display: block;
+      width: 100%;
+      height: 2px;
+      background: var(--white);
+      border-radius: 2px;
+      transition: transform 0.3s ease, opacity 0.3s ease, background 0.35s;
+      transform-origin: center;
+    }
+    nav.scrolled .burger span { background: var(--rose); }
+    .burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .burger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile drawer */
+    @media (max-width: 700px) {
+      nav { padding: 16px 20px; }
+      nav.scrolled { padding: 12px 20px; }
+      .burger { display: flex; }
+      .nav-links {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        height: 100vh;
+        background: var(--rose);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 32px;
+        transform: translateY(-100%);
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+      }
+      .nav-links.open {
+        transform: translateY(0);
+        pointer-events: all;
+      }
+      .nav-links a {
+        font-size: 26px;
+        font-family: 'Luxurious Script', cursive !important;
+        font-weight: 400;
+        color: rgba(255,255,255,0.9) !important;
+        letter-spacing: 0.04em;
+      }
+      .nav-links a:hover { color: var(--white) !important; }
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      z-index: 0;
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(40, 10, 20, 0.20);
+      z-index: 1;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 680px;
+      padding: 40px 24px;
+      color: var(--white);
+    }
+    .hero-content h1 {
+      font-size: clamp(52px, 8vw, 88px);
+      font-weight: 400;
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+    .hero-content p {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(15px, 2vw, 18px);
+      line-height: 1.65;
+      color: rgba(255,255,255,0.82);
+      margin-bottom: 36px;
+    }
+    .btn-whatsapp {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--rose-dark);
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      padding: 14px 30px;
+      border-radius: 50px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-whatsapp:hover { background: #1ebe5a; transform: translateY(-2px); }
+    .btn-whatsapp svg { width: 20px; height: 20px; fill: #fff; flex-shrink: 0; }
+
+    /* ===== ABOUT ===== */
+    .about {
+        background: var(--peach);
+        padding: 100px 24px;
+        text-align: center;
+        border-radius: 25px 25px 0 0;
+        margin-top: -40px;
+        position: relative;
+        z-index: 10;
+    }
+    .about h2 {
+      font-size: clamp(40px, 6vw, 64px);
+      font-weight: 400;
+      margin-bottom: 24px;
+      color: var(--rose);
+    }
+    .about p {
+      font-size: 17px;
+      line-height: 1.75;
+      color: var(--text-mid);
+      max-width: 660px;
+      margin: 0 auto 32px;
+    }
+    .about-logo {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 12px;
+      display: block;
+      margin: 0 auto;
+    }
+
+    /* ===== FEATURED ===== */
+    .featured {
+      background: var(--pink);
+      padding: 90px 48px;
+      border-radius: 25px 25px 0 0;
+        margin-top: -40px;
+        position: relative;
+        z-index: 11;
+    }
+    .featured-inner {
+      max-width: 1100px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      gap: 60px;
+    }
+    .featured-text { flex: 1; color: var(--white); }
+    .featured-text h2 {
+      font-size: clamp(40px, 5vw, 64px);
+      font-weight: 400;
+      margin-bottom: 20px;
+      line-height: 1.2;
+    }
+    .featured-text p {
+      font-size: 16px;
+      line-height: 1.75;
+      color: rgba(255,255,255,0.8);
+      margin-bottom: 18px;
+    }
+    .featured-price {
+      font-family: 'Poppins', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 28px;
+      letter-spacing: 0.01em;
+    }
+    .featured-image {
+      flex: 1;
+    }
+    .featured-image img {
+      width: 100%;
+      aspect-ratio: 3/2;
+      object-fit: cover;
+      border-radius: 14px;
+      display: block;
+    }
+    @media (max-width: 768px) {
+      .featured { padding: 64px 20px; }
+      .featured-inner { flex-direction: column; gap: 36px; }
+      .featured-image { width: 100%; }
+    }
+
+    /* ===== PRODUCTS ===== */
+    .products {
+      background: var(--peach);
+      padding: 90px 48px;
+    }
+    .products h2 {
+      font-size: clamp(40px, 6vw, 64px);
+      font-weight: 400;
+      text-align: center;
+      margin-bottom: 56px;
+      color: var(--rose);
+    }
+    .products-grid {
+      max-width: 1200px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 28px 20px;
+    }
+    .product-card { background: transparent; }
+    .product-card img {
+      width: 100%;
+      aspect-ratio: 3/2;
+      object-fit: cover;
+      border-radius: 10px;
+      display: block;
+      margin-bottom: 14px;
+    }
+    .product-card .product-name {
+      font-family: 'Poppins', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+    }
+    .product-card .product-price {
+      font-size: 14px;
+      color: var(--rose);
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    .product-card .product-cta {
+      font-size: 13px;
+      color: #25D366;
+      font-weight: 500;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    @media (max-width: 768px) {
+      .products { padding: 64px 20px; }
+      .products-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* ===== TESTIMONIALS ===== */
+    .testimonials {
+      background: var(--pink);
+      padding: 90px 24px;
+      text-align: center;
+      border-radius: 25px 25px 0 0;
+        margin-top: -40px;
+        position: relative;
+        z-index: 10;
+    }
+    .testimonials h2 {
+      font-size: clamp(40px, 6vw, 64px);
+      font-weight: 400;
+      margin-bottom: 56px;
+      color: var(--rose);
+    }
+    .carousel-wrapper {
+      max-width: 680px;
+      margin: auto;
+      position: relative;
+      min-height: 160px;
+    }
+    .carousel-slide {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+    .carousel-slide.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .testimonial-quote {
+      font-size: clamp(16px, 2.2vw, 20px);
+      line-height: 1.7;
+      color: var(--text-mid);
+      font-style: italic;
+      margin-bottom: 24px;
+    }
+    .testimonial-name {
+      font-family: 'Luxurious Script', cursive;
+      font-size: 22px;
+      color: var(--rose);
+    }
+    .carousel-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+      margin-top: 40px;
+    }
+    .carousel-btn {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: 2px solid var(--rose);
+      background: transparent;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, color 0.2s;
+      color: var(--rose);
+    }
+    .carousel-btn:hover { background: var(--rose); color: var(--white); }
+    .carousel-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .carousel-dots { display: flex; gap: 8px; }
+    .carousel-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--pink-mid);
+      border: 1.5px solid var(--pink-deep);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .carousel-dot.active { background: var(--rose); border-color: var(--rose); }
+
+    /* ===== POLICY ===== */
+    .policy {
+      background: var(--peach);
+      padding: 90px 48px;
+      border-radius: 25px 25px 0 0;
+        margin-top: -40px;
+        position: relative;
+        z-index: 11;
+    }
+    .policy h2 {
+      font-family: 'Luxurious Script', cursive;
+      font-size: clamp(40px, 6vw, 64px);
+      font-weight: 400;
+      text-align: center;
+      margin-bottom: 56px;
+      color: var(--rose);
+    }
+    .policy-list {
+      max-width: 760px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .policy-item {
+      border-top: 1px solid var(--pink-deep);
+      padding: 26px 0;
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .policy-item:last-child { border-bottom: 1px solid var(--pink-deep); }
+    .policy-num {
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--pink-deep);
+      letter-spacing: 0.08em;
+      padding-top: 2px;
+      min-width: 28px;
+    }
+    .policy-item p {
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--text-mid);
+    }
+    @media (max-width: 600px) {
+      .policy { padding: 64px 20px; }
+    }
+
+    /* ===== CONTACT ===== */
+    .contact {
+      background: var(--pink-mid);
+      padding: 100px 24px;
+      text-align: center;
+    }
+    .contact h2 {
+      font-size: clamp(40px, 6vw, 68px);
+      font-weight: 400;
+      color: var(--rose);
+      margin-bottom: 20px;
+    }
+    .contact p {
+      font-size: 17px;
+      line-height: 1.75;
+      color: var(--text-mid);
+      max-width: 560px;
+      margin: 0 auto 48px;
+    }
+    .contact-icons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+    }
+    .contact-icon-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text-mid);
+      transition: transform 0.2s, color 0.2s;
+    }
+    .contact-icon-link:hover { transform: translateY(-4px); color: var(--rose); }
+    .contact-icon-link .icon-circle {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: box-shadow 0.2s;
+    }
+    .contact-icon-link:hover .icon-circle {
+      box-shadow: 0 6px 20px rgba(196, 96, 122, 0.25);
+    }
+    .icon-circle.whatsapp { background: #25D366; }
+    .icon-circle.facebook { background: #1877F2; }
+    .contact-icon-link svg { width: 30px; height: 30px; fill: #fff; }
+    .contact-icon-link span {
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: var(--rose);
+      color: rgba(255,255,255,0.75);
+      text-align: center;
+      padding: 48px 24px 36px;
+    }
+    footer .footer-logo {
+      font-family: 'Luxurious Script', cursive;
+      font-size: 36px;
+      font-weight: 400;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+    footer .footer-copy {
+      font-size: 13px;
+      margin-bottom: 16px;
+      color: rgba(255,255,255,0.6);
+    }
+    footer .footer-squarre {
+      font-size: 13px;
+      color: rgba(255,255,255,0.55);
+    }
+    footer .footer-squarre a {
+      color: rgba(255,255,255,0.85);
+      text-decoration: underline;
+      font-weight: 500;
+    }
+    footer .footer-squarre a:hover { color: var(--white); }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav id="navbar">
+    <a href="#hero" class="logo" data-edit="site_name">Belle Pâtisserie</a>
+    <button class="burger" id="burger" aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="#about" data-edit="nav_about">About</a>
+      <a href="#featured" data-edit="nav_featured">Featured</a>
+      <a href="#policy" data-edit="nav_policy">Policy</a>
+      <a href="#products" data-edit="nav_products">Products</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero" class="hero">
+    <div
+      class="hero-bg"
+      data-edit="hero_background"
+      data-edit-role="background"
+      style="background-image:url('https://images.pexels.com/photos/10311447/pexels-photo-10311447.jpeg');"
+    ></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1 data-edit="hero_title">Premium Pasteries</h1>
+      <p data-edit="hero_description">Custom cakes and confections crafted for every occasion — from intimate celebrations to grand events. Every bite tells a story.</p>
+      <a
+        href="https://wa.me/1234567890"
+        class="btn-whatsapp"
+        data-edit="hero_whatsapp_link"
+        data-edit-role="href"
+      >
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.05 2C6.495 2 1.974 6.521 1.974 12.076c0 1.936.537 3.748 1.47 5.297L2 22l4.765-1.423c1.487.874 3.215 1.375 5.056 1.375h.004C17.38 21.952 22 17.43 22 11.876 22 6.32 17.605 2 12.05 2z"/></svg>
+        <span data-edit="hero_cta">WhatsApp Us</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="about">
+    <h2 data-edit="about_title">About Us</h2>
+    <p data-edit="about_description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+    <img
+      class="about-logo"
+      data-edit="about_logo"
+      src="https://pattycakes.vercel.app/public/images/patty%20logo.png"
+      alt="Our logo"
+    />
+  </section>
+
+  <!-- FEATURED -->
+  <section id="featured" class="featured">
+    <div class="featured-inner">
+      <div class="featured-text">
+        <h2 data-edit="featured_title">Signature Creation</h2>
+        <p data-edit="featured_description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.</p>
+        <div class="featured-price" data-edit="featured_price">From R399</div>
+        <a
+          href="https://wa.me/1234567890"
+          class="btn-whatsapp"
+          data-edit="featured_whatsapp_link"
+          data-edit-role="href"
+        >
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="fill: #fff;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.05 2C6.495 2 1.974 6.521 1.974 12.076c0 1.936.537 3.748 1.47 5.297L2 22l4.765-1.423c1.487.874 3.215 1.375 5.056 1.375h.004C17.38 21.952 22 17.43 22 11.876 22 6.32 17.605 2 12.05 2z"/></svg>
+          <span data-edit="featured_cta">WhatsApp Us</span>
+        </a>
+      </div>
+      <div class="featured-image">
+        <img
+          data-edit="featured_image"
+          src="https://images.pexels.com/photos/13922385/pexels-photo-13922385.jpeg"
+          alt="Featured cake"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCTS -->
+  <section id="products" class="products">
+    <h2 data-edit="products_title">Our Creations</h2>
+    <div class="products-grid" data-repeat="products">
+      <div class="product-card">
+        <img data-edit="image" src="https://images.pexels.com/photos/1070850/pexels-photo-1070850.jpeg" alt="Product" />
+        <div class="product-name" data-edit="name">Rose Velvet Cake</div>
+        <div class="product-price" data-edit="price">From R400</div>
+        <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">WhatsApp Us</a>
+      </div>
+      <div class="product-card">
+        <img data-edit="image" src="https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg" alt="Product" />
+        <div class="product-name" data-edit="name">Lemon Drizzle Tart</div>
+        <div class="product-price" data-edit="price">From R450</div>
+        <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">WhatsApp Us</a>
+      </div>
+      <div class="product-card">
+        <img data-edit="image" src="https://images.pexels.com/photos/1721934/pexels-photo-1721934.jpeg" alt="Product" />
+        <div class="product-name" data-edit="name">Strawberry Chiffon</div>
+        <div class="product-price" data-edit="price">From R495</div>
+        <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">WhatsApp Us</a>
+      </div>
+      <div class="product-card">
+        <img data-edit="image" src="https://images.pexels.com/photos/1729808/pexels-photo-1729808.jpeg" alt="Product" />
+        <div class="product-name" data-edit="name">Wedding Tier Cake</div>
+        <div class="product-price" data-edit="price">From R780</div>
+        <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">WhatsApp Us</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="testimonials" class="testimonials">
+    <h2 data-edit="testimonials_title">Sweet Words</h2>
+    <div class="carousel-wrapper">
+      <div data-repeat="testimonials">
+        <div class="carousel-slide active">
+          <p class="testimonial-quote" data-edit="testimonial">"The most beautiful and delicious cake I've ever tasted. Our wedding guests couldn't stop talking about it — absolutely magical."</p>
+          <div class="testimonial-name" data-edit="name">Emily & Tom</div>
+        </div>
+        <div class="carousel-slide">
+          <p class="testimonial-quote" data-edit="testimonial">"Ordered a birthday cake for my daughter and it exceeded every expectation. The detail, the flavour, everything was just perfect."</p>
+          <div class="testimonial-name" data-edit="name">Priya N.</div>
+        </div>
+        <div class="carousel-slide">
+          <p class="testimonial-quote" data-edit="testimonial">"I have ordered from many bakeries, but nothing compares. Every slice feels like a little celebration."</p>
+          <div class="testimonial-name" data-edit="name">Claudette M.</div>
+        </div>
+      </div>
+    </div>
+    <div class="carousel-controls">
+      <button class="carousel-btn" id="prevBtn" aria-label="Previous">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      <div class="carousel-dots" id="carouselDots"></div>
+      <button class="carousel-btn" id="nextBtn" aria-label="Next">
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- POLICY -->
+  <section id="policy" class="policy">
+    <h2 data-edit="policy_title">Our Policies</h2>
+    <div class="policy-list" data-repeat="policies">
+      <div class="policy-item">
+        <span class="policy-num">01</span>
+        <p data-edit="policy_text">All custom orders require at least 5 days' notice. For wedding and tiered cakes, please order at least 3 weeks in advance.</p>
+      </div>
+      <div class="policy-item">
+        <span class="policy-num">02</span>
+        <p data-edit="policy_text">A 50% non-refundable deposit is required to confirm your order. The remaining balance is due upon collection or delivery.</p>
+      </div>
+      <div class="policy-item">
+        <span class="policy-num">03</span>
+        <p data-edit="policy_text">Our products may contain or be prepared in an environment with nuts, dairy, eggs, and gluten. Please inform us of any allergies.</p>
+      </div>
+      <div class="policy-item">
+        <span class="policy-num">04</span>
+        <p data-edit="policy_text">Delivery is available within a 20km radius. Please contact us for a delivery quote before placing your order.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="contact">
+    <h2 data-edit="contact_title">Something Tasty in Mind?</h2>
+    <p data-edit="contact_description">We'd love to bring your vision to life. Whether it's a birthday, wedding, or just a sweet craving — reach out and let's make something beautiful together.</p>
+    <div class="contact-icons">
+      <a
+        href="https://wa.me/1234567890"
+        class="contact-icon-link"
+        data-edit="contact_whatsapp_link"
+        data-edit-role="href"
+        target="_blank"
+        aria-label="WhatsApp"
+      >
+        <div class="icon-circle whatsapp">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.05 2C6.495 2 1.974 6.521 1.974 12.076c0 1.936.537 3.748 1.47 5.297L2 22l4.765-1.423c1.487.874 3.215 1.375 5.056 1.375h.004C17.38 21.952 22 17.43 22 11.876 22 6.32 17.605 2 12.05 2z"/></svg>
+        </div>
+        <span>WhatsApp</span>
+      </a>
+      <a
+        href="https://facebook.com"
+        class="contact-icon-link"
+        data-edit="contact_facebook_link"
+        data-edit-role="href"
+        target="_blank"
+        aria-label="Facebook"
+      >
+        <div class="icon-circle facebook">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.791-4.697 4.533-4.697 1.313 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.268h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
+        </div>
+        <span>Facebook</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo" data-edit="site_name">Belle Pâtisserie</div>
+    <p class="footer-copy">© <span data-edit="copyright_year">2026</span> <span data-edit="site_name">Belle Pâtisserie</span>. All rights reserved.</p>
+    <p class="footer-squarre">Want your own site? <a href="https://squarre.vercel.app" target="_blank">This site was made using Squarre</a></p>
+  </footer>
+
+  <script>
+    // Navbar scroll
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // Burger menu
+    const burger = document.getElementById('burger');
+    const navLinks = document.getElementById('navLinks');
+    burger.addEventListener('click', () => {
+      burger.classList.toggle('open');
+      navLinks.classList.toggle('open');
+    });
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        burger.classList.remove('open');
+        navLinks.classList.remove('open');
+      });
+    });
+
+    // Carousel
+    const slides = document.querySelectorAll('.carousel-slide');
+    const dotsContainer = document.getElementById('carouselDots');
+    let current = 0;
+
+    slides.forEach((_, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+      dot.addEventListener('click', () => goTo(i));
+      dotsContainer.appendChild(dot);
+    });
+
+    function goTo(index) {
+      slides[current].classList.remove('active');
+      dotsContainer.children[current].classList.remove('active');
+      current = (index + slides.length) % slides.length;
+      slides[current].classList.add('active');
+      dotsContainer.children[current].classList.add('active');
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', () => goTo(current - 1));
+    document.getElementById('nextBtn').addEventListener('click', () => goTo(current + 1));
+
+    // Policy numbering
+    document.querySelectorAll('.policy-item').forEach((item, i) => {
+      const num = item.querySelector('.policy-num');
+      if (num) num.textContent = String(i + 1).padStart(2, '0');
+    });
+  </script>
+</body>
+</html>
