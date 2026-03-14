@@ -136,14 +136,13 @@ export default function ConfirmEmail() {
         <div className="flex items-center gap-2 text-stone-600 text-sm mt-3 mb-8">
           <Mail className="w-4 h-4 shrink-0" />
           <span>
-            We've sent a confirmation link to your email — check your inbox
-            and click the link to activate your account before signing in.
+            Before you get started, let's get your profile setup so you can have the best experience possible.
           </span>
         </div>
 
-        <Link to="/#/auth/sign-in">
+        <Link to="/#/onboarding">
           <Button variant="outline" size="sm">
-            Back to Sign In
+            Complete Profile
           </Button>
         </Link>
       </div>

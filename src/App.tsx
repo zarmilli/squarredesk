@@ -11,6 +11,7 @@ import HeaderRight from "@/components/layout/header-right";
 import { ThemeConfigurator } from "@/components/theme-configurator";
 import { Menu } from "lucide-react";
 import { useState } from "react";
+import FullscreenPrompt from "@/components/FullscreenPrompt";
 
 import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
@@ -28,6 +29,7 @@ import Onboarding from "@/pages/onboarding";
 
 import { AuthProvider } from "@/context/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import ConfirmEmail from "./pages/auth/confirmation";
 
 function Layout({
   children,
@@ -110,6 +112,7 @@ function Router() {
       <Route path="/auth/sign-in" element={<SignIn />} />
       <Route path="/auth/sign-up" element={<SignUp />} />
       <Route path="/onboarding" element={<Onboarding />} />
+      <Route path="/auth/confirmation" element={<ConfirmEmail />} />
 
       <Route path="*" element={<ProtectedRoute><NotFound /></ProtectedRoute>} />
     </Routes>
@@ -119,6 +122,7 @@ function Router() {
 export default function App() {
   return (
     <HashRouter>
+      <FullscreenPrompt />
       <AuthProvider>
         <QueryClientProvider client={queryClient}>
           <TooltipProvider>
