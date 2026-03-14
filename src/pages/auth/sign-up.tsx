@@ -64,15 +64,15 @@ export default function SignUp() {
       return;
     }
 
-    const { error: profileError } = await supabase.from("profiles").insert({
-      user_id: data.user.id,
-      email: formData.email,
-      first_name: formData.firstName,
-      last_name: formData.lastName,
-      membership_tier: "free",
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    });
+    // Replace the supabase.from("profiles").insert(...) block with this:
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .update({
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        updated_at: new Date().toISOString(),
+      })
+    .eq("user_id", data.user.id);
 
     if (profileError) {
       toast({
