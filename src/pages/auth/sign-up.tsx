@@ -7,6 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
+import { ArrowLeft } from "lucide-react";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -83,12 +84,7 @@ export default function SignUp() {
       return;
     }
 
-    toast({
-      title: "Account created",
-      description: "Check your email.",
-    });
-
-    navigate("/auth/sign-in");
+    navigate("/auth/confirmation");
   };
 
   const handleOAuth = async (provider: "google" | "github") => {
@@ -117,7 +113,7 @@ export default function SignUp() {
     <div className="min-h-screen flex bg-white">
 
       {/* LEFT FORM */}
-      <div className="w-full lg:w-[38%] flex items-center justify-center px-12">
+      <div className="w-full lg:w-[38%] flex items-center justify-center px-12 relative">
 
         <div className="w-full max-w-sm space-y-6">
 
@@ -168,9 +164,7 @@ export default function SignUp() {
                   setFormData({ ...formData, agreeToTerms: v as boolean })
                 }
               />
-
               <span>I agree to the</span>
-
               <Link to="/terms">
                 <Button type="button" variant="secondary" size="sm">
                   Terms
@@ -189,7 +183,6 @@ export default function SignUp() {
             <Button variant="secondary" onClick={() => handleOAuth("google")}>
               Google
             </Button>
-
             <Button variant="secondary" onClick={() => handleOAuth("github")}>
               GitHub
             </Button>
