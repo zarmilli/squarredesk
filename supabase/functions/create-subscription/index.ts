@@ -108,7 +108,7 @@ serve(async (req: Request) => {
       billing_date: billingDate,
       recurring_amount: selectedPlan.amount,
       frequency: "3", // monthly
-      cycles: "0", // unlimited
+      cycles: "0",    // unlimited
     }
 
     const signature = generateSignature(
@@ -116,12 +116,18 @@ serve(async (req: Request) => {
       Deno.env.get("PAYFAST_PASSPHRASE") ?? ""
     )
 
+    // Build the URL using the same encoding as generateSignature
+    // to ensure PayFast's signature verification passes
+    const queryString = Object.entries(paymentData)
+      .filter(([_, v]) => v !== undefined && v !== null && v !== "")
+      .map(
+        ([key, value]) =>
+          `${key}=${encodeURIComponent(value.trim()).replace(/%20/g, "+")}`
+      )
+      .join("&")
+
     const paymentUrl =
-      "https://www.payfast.co.za/eng/process?" +
-      new URLSearchParams({
-        ...paymentData,
-        signature,
-      }).toString()
+      `https://www.payfast.co.za/eng/process?${queryString}&signature=${signature}`
 
     return new Response(
       JSON.stringify({ paymentUrl }),
