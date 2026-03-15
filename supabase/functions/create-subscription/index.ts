@@ -10,10 +10,7 @@ const corsHeaders = {
 
 type PlanKey = "basic" | "pro"
 
-const PLANS: Record<
-  PlanKey,
-  { name: string; amount: string }
-> = {
+const PLANS: Record<PlanKey, { name: string; amount: string }> = {
   basic: {
     name: "Squarre Basic Plan",
     amount: "49.00",
@@ -24,24 +21,39 @@ const PLANS: Record<
   },
 }
 
+// PayFast requires parameters in this exact documented order
+const PAYFAST_FIELD_ORDER = [
+  "merchant_id",
+  "merchant_key",
+  "return_url",
+  "cancel_url",
+  "notify_url",
+  "name_first",
+  "name_last",
+  "email_address",
+  "m_payment_id",
+  "amount",
+  "item_name",
+  "subscription_type",
+  "billing_date",
+  "recurring_amount",
+  "frequency",
+  "cycles",
+]
+
 function generateSignature(
   data: Record<string, string>,
   passphrase: string
 ) {
-  const filtered = Object.entries(data)
-    .filter(([_, v]) => v !== undefined && v !== null && v !== "")
-
-  const sorted = filtered
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(
-      ([key, value]) =>
-        `${key}=${encodeURIComponent(value.trim()).replace(/%20/g, "+")}`
-    )
+  // Build the string in PayFast's required field order, skipping empty values
+  const paramString = PAYFAST_FIELD_ORDER
+    .filter((key) => data[key] !== undefined && data[key] !== null && data[key] !== "")
+    .map((key) => `${key}=${encodeURIComponent(data[key].trim()).replace(/%20/g, "+")}`)
     .join("&")
 
   const stringToHash = passphrase
-    ? `${sorted}&passphrase=${encodeURIComponent(passphrase).replace(/%20/g, "+")}`
-    : sorted
+    ? `${paramString}&passphrase=${encodeURIComponent(passphrase.trim()).replace(/%20/g, "+")}`
+    : paramString
 
   return md5(stringToHash)
 }
@@ -64,10 +76,7 @@ serve(async (req: Request) => {
         JSON.stringify({ error: "Invalid plan" }),
         {
           status: 400,
-          headers: {
-            ...corsHeaders,
-            "Content-Type": "application/json",
-          },
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         }
       )
     }
@@ -77,38 +86,26 @@ serve(async (req: Request) => {
     const now = new Date()
 
     // Next month billing date
-    const billingDate = new Date(
-      now.getFullYear(),
-      now.getMonth() + 1,
-      1
-    )
+    const billingDate = new Date(now.getFullYear(), now.getMonth() + 1, 1)
       .toISOString()
       .split("T")[0]
 
     const paymentData: Record<string, string> = {
-      merchant_id: Deno.env.get("PAYFAST_MERCHANT_ID") ?? "",
-      merchant_key: Deno.env.get("PAYFAST_MERCHANT_KEY") ?? "",
-
-      return_url: "https://squarredesk.vercel.app/dashboard",
-      cancel_url: "https://squarredesk.vercel.app/subscriptions",
-
-      notify_url:
-        "https://suwiamrsjmbvhceqxchp.supabase.co/functions/v1/payfast-itn",
-
-      name_first: firstName,
-      email_address: email,
-
-      m_payment_id: userId,
-
-      amount: selectedPlan.amount,
-      item_name: selectedPlan.name,
-
-      // Subscription settings
+      merchant_id:      Deno.env.get("PAYFAST_MERCHANT_ID") ?? "",
+      merchant_key:     Deno.env.get("PAYFAST_MERCHANT_KEY") ?? "",
+      return_url:       "https://squarredesk.vercel.app/dashboard",
+      cancel_url:       "https://squarredesk.vercel.app/subscriptions",
+      notify_url:       "https://suwiamrsjmbvhceqxchp.supabase.co/functions/v1/payfast-itn",
+      name_first:       firstName,
+      email_address:    email,
+      m_payment_id:     userId,
+      amount:           selectedPlan.amount,
+      item_name:        selectedPlan.name,
       subscription_type: "1",
-      billing_date: billingDate,
+      billing_date:     billingDate,
       recurring_amount: selectedPlan.amount,
-      frequency: "3", // monthly
-      cycles: "0",    // unlimited
+      frequency:        "3",
+      cycles:           "0",
     }
 
     const signature = generateSignature(
@@ -116,27 +113,19 @@ serve(async (req: Request) => {
       Deno.env.get("PAYFAST_PASSPHRASE") ?? ""
     )
 
-    // Build the URL using the same encoding as generateSignature
-    // to ensure PayFast's signature verification passes
-    const queryString = Object.entries(paymentData)
-      .filter(([_, v]) => v !== undefined && v !== null && v !== "")
-      .map(
-        ([key, value]) =>
-          `${key}=${encodeURIComponent(value.trim()).replace(/%20/g, "+")}`
-      )
+    // Build the URL in the same field order and encoding as the signature
+    const queryString = PAYFAST_FIELD_ORDER
+      .filter((key) => paymentData[key] !== undefined && paymentData[key] !== null && paymentData[key] !== "")
+      .map((key) => `${key}=${encodeURIComponent(paymentData[key].trim()).replace(/%20/g, "+")}`)
       .join("&")
 
-    const paymentUrl =
-      `https://www.payfast.co.za/eng/process?${queryString}&signature=${signature}`
+    const paymentUrl = `https://www.payfast.co.za/eng/process?${queryString}&signature=${signature}`
 
     return new Response(
       JSON.stringify({ paymentUrl }),
       {
         status: 200,
-        headers: {
-          ...corsHeaders,
-          "Content-Type": "application/json",
-        },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     )
   } catch (err) {
@@ -146,10 +135,7 @@ serve(async (req: Request) => {
       JSON.stringify({ error: "Server error" }),
       {
         status: 500,
-        headers: {
-          ...corsHeaders,
-          "Content-Type": "application/json",
-        },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     )
   }
