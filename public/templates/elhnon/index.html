@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title data-edit="meta_title">Elhnon Odnufmon — Skincare</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --beige:        #f5ede0;
+      --beige-mid:    #ede0ce;
+      --beige-deep:   #d9c4a8;
+      --green:        #b8ccb0;
+      --green-mid:    #9db894;
+      --green-dark:   #6a8f61;
+      --green-pale:   #e8f0e5;
+      --bg:           #faf7f2;
+      --bg-mid:       #f0e9dc;
+      --text-dark:    #2a2218;
+      --text-mid:     #6b5f4f;
+      --white:        #ffffff;
+      --black:        #0f0e0b;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text-dark);
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* ===== NEWS BANNER ===== */
+    .news-banner {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1100;
+      background: var(--green-dark);
+      color: var(--white);
+      text-align: center;
+      padding: 9px 48px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .news-banner a {
+      color: var(--white);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      margin-left: 8px;
+    }
+
+    /* ===== NAVBAR ===== */
+    nav {
+      position: fixed;
+      top: 36px; left: 0; right: 0;
+      z-index: 1000;
+      padding: 20px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: transparent;
+      transition: background 0.35s ease, box-shadow 0.35s ease, padding 0.35s ease;
+    }
+    nav.scrolled {
+      background: var(--white);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+      border-bottom: 1px solid var(--green-dark);
+      padding: 14px 48px;
+    }
+    nav .logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      position: relative;
+      z-index: 1001;
+      transition: color 0.35s;
+    }
+    nav.scrolled .logo { color: var(--green-dark); }
+    nav .nav-links { display: flex; gap: 32px; }
+    nav .nav-links a {
+      font-size: 18px;
+      text-transform: uppercase;
+      font-weight: 500;
+      color: var(--text-mid);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: color 0.2s;
+    }
+    nav .nav-links a:hover { color: var(--green-dark); }
+    nav.scrolled .nav-links a { color: var(--text-mid); }
+    nav.scrolled .nav-links a:hover { color: var(--green-dark); }
+
+    /* Burger */
+    .burger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 36px; height: 36px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      position: relative;
+      z-index: 1001;
+    }
+    .burger span {
+      display: block;
+      width: 100%; height: 2px;
+      background: var(--text-dark);
+      border-radius: 2px;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      transform-origin: center;
+    }
+    .burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .burger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    @media (max-width: 700px) {
+      .news-banner { padding: 9px 16px; font-size: 11px; }
+      nav { padding: 16px 20px; top: 34px; }
+      nav.scrolled { padding: 12px 20px; top: 34px; }
+      .burger { display: flex; }
+      .nav-links {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        height: 100vh;
+        background: var(--beige);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 32px;
+        transform: translateY(-100%);
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+      }
+      .nav-links.open { transform: translateY(0); pointer-events: all; }
+      .nav-links a {
+        font-size: 22px !important;
+        font-weight: 600 !important;
+        color: var(--text-dark) !important;
+      }
+      .nav-links a:hover { color: var(--green-dark) !important; }
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+    .hero-text {
+      width: 50vw;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 120px 64px 80px 64px;
+      background: var(--beige);
+    }
+    .hero-text h1 {
+      font-size: clamp(28px, 3.5vw, 56px);
+      font-weight: 500;
+      text-transform: uppercase;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--text-dark);
+      margin-bottom: 22px;
+    }
+    .hero-text p {
+      font-size: clamp(14px, 1.2vw, 16px);
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--text-mid);
+      margin-bottom: 36px;
+      max-width: 420px;
+    }
+    .btn-primary {
+      display: inline-block;
+      background: var(--green-dark);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 14px 32px;
+      border-radius: 30px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+      width: fit-content;
+    }
+    .btn-primary:hover { background: var(--green-mid); transform: translateY(-2px); }
+    .hero-image {
+      width: 50vw;
+      flex-shrink: 0;
+    }
+    .hero-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    @media (max-width: 768px) {
+      .hero {
+        height: 100vh;
+        flex-direction: column-reverse;
+      }
+      .hero-image {
+        width: 100%;
+        height: 50vh;
+      }
+      .hero-text {
+        width: 100%;
+        height: 50vh;
+        padding: 36px 24px 28px;
+        justify-content: center;
+      }
+      .hero-text p { max-width: 100%; margin-bottom: 24px; }
+    }
+
+    /* ===== SHARED PRODUCTS WRAPPER ===== */
+    .products-section {
+      padding: 80px 24px;
+      background: var(--white);
+    }
+    .products-section h2 {
+      font-size: clamp(24px, 3.5vw, 38px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 40px;
+      color: var(--text-dark);
+    }
+    .products-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* 4-col grid */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    /* Featured card — full image with overlay details bottom-left */
+    .product-card-featured {
+      grid-column: 1 / -1;
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--beige-mid);
+    }
+    .product-card-featured img {
+      width: 100%;
+      aspect-ratio: 16/7;
+      object-fit: cover;
+      display: block;
+      opacity: 0.9;
+    }
+    .product-card-featured .card-body {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 28px 32px;
+      background: linear-gradient(to top, rgba(30,20,10,0.65) 0%, rgba(30,20,10,0) 100%);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: flex-start;
+    }
+    .product-card-featured .product-tag {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dark);
+      background: var(--beige);
+      padding: 4px 10px;
+      border-radius: 50px;
+    }
+    .product-card-featured .product-name {
+      font-size: clamp(18px, 2.5vw, 28px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--white);
+    }
+    .product-card-featured .product-price {
+      font-size: 18px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.85);
+    }
+    .product-card-featured .product-cta {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.75);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+      margin-top: 2px;
+    }
+
+    /* Standard card */
+    .product-card {
+      background: var(--white);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .product-card img {
+      width: 100%;
+      aspect-ratio: 1/1.2;
+      object-fit: cover;
+      display: block;
+    }
+    .product-card .card-body {
+      padding: 14px 0px 18px;
+    }
+    .product-card .product-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .product-card .product-price {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--green-dark);
+      margin-bottom: 8px;
+    }
+    .product-card .product-cta {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-mid);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .product-card-featured img { aspect-ratio: 16/9; }
+      .product-card-featured .card-body { padding: 20px 20px 24px; }
+    }
+
+    /* ===== PROMO SECTION ===== */
+    .promo {
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+    .promo.promo-alt {
+      /* image left, text right — default order */
+    }
+    /* Promo text half */
+    .promo-text {
+      width: 50vw;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 80px 64px;
+      background: var(--green-pale);
+    }
+    .promo.promo-alt .promo-text {
+      background: var(--beige-mid);
+    }
+    .promo-text h2 {
+      font-size: clamp(24px, 2.8vw, 44px);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 18px;
+      color: var(--text-dark);
+    }
+    .promo-text p {
+      font-size: clamp(14px, 1.2vw, 16px);
+      font-weight: 300;
+      line-height: 1.8;
+      color: var(--text-mid);
+      margin-bottom: 32px;
+      max-width: 420px;
+    }
+    .promo-text p:last-child { margin-bottom: 0; }
+    .btn-promo {
+      display: inline-block;
+      background: var(--green-dark);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 14px 32px;
+      border-radius: 50px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+      width: fit-content;
+    }
+    .btn-promo:hover { background: var(--green-mid); transform: translateY(-2px); }
+    /* Promo image half */
+    .promo-image {
+      width: 50vw;
+      flex-shrink: 0;
+    }
+    .promo-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      border-radius: 0;
+    }
+    /* Mobile: each half = 50vh, stacked */
+    @media (max-width: 768px) {
+      .promo {
+        height: 100vh;
+        flex-direction: column;
+      }
+      /* Promo 1: content first (top), image second (bottom) */
+      .promo:not(.promo-alt):not(.promo-nocta-after-catalog) .promo-text { order: 1; }
+      .promo:not(.promo-alt):not(.promo-nocta-after-catalog) .promo-image { order: 2; }
+      .promo-text {
+        width: 100%;
+        height: 50vh;
+        padding: 36px 24px 28px;
+      }
+      .promo-image {
+        width: 100%;
+        height: 50vh;
+      }
+      .promo-text p { max-width: 100%; }
+    }
+
+    /* ===== CATALOG SECTION ===== */
+    .catalog-section {
+      background: var(--white);
+      padding: 80px 24px;
+    }
+    .catalog-section h2 {
+      font-size: clamp(24px, 3.5vw, 38px);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+      margin-bottom: 40px;
+      color: var(--text-dark);
+    }
+    .catalog-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    /* 1st, 6th, 11th... span full row with full-image overlay */
+    .catalog-grid .product-card:nth-child(5n+1) {
+      grid-column: 1 / -1;
+      position: relative;
+      background: var(--beige-mid);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .catalog-grid .product-card:nth-child(5n+1) img {
+      width: 100%;
+      aspect-ratio: 16/7;
+      object-fit: cover;
+      display: block;
+      opacity: 0.9;
+    }
+    .catalog-grid .product-card:nth-child(5n+1) .card-body {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 28px 32px;
+      background: linear-gradient(to top, rgba(30,20,10,0.65) 0%, rgba(30,20,10,0) 100%);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: flex-start;
+    }
+    .catalog-grid .product-card:nth-child(5n+1) .product-name {
+      font-size: clamp(18px, 2.5vw, 28px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--white);
+      white-space: normal;
+    }
+    .catalog-grid .product-card:nth-child(5n+1) .product-price {
+      font-size: 18px;
+      color: rgba(255,255,255,0.85);
+    }
+    .catalog-grid .product-card:nth-child(5n+1) .product-cta {
+      color: rgba(255,255,255,0.75);
+      margin-top: 2px;
+    }
+    @media (max-width: 768px) {
+      .catalog-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .catalog-grid .product-card:nth-child(5n+1) { grid-column: 1 / -1; }
+      .catalog-grid .product-card:nth-child(5n+1) img { aspect-ratio: 3/1; }
+      .catalog-grid .product-card:nth-child(5n+1) .card-body { padding: 16px 20px; }
+    }
+
+    /* ===== TESTIMONIALS ===== */
+    .testimonials {
+      background: var(--white);
+      padding: 90px 24px;
+      text-align: center;
+    }
+    .testimonials h2 {
+      font-size: clamp(24px, 3.5vw, 38px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 56px;
+      color: var(--text-dark);
+    }
+    .carousel-wrapper {
+      max-width: 680px;
+      margin: auto;
+      min-height: 160px;
+    }
+    .carousel-slide { display: none; animation: fadeIn 0.4s ease; }
+    .carousel-slide.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .testimonial-quote {
+      font-size: clamp(16px, 2vw, 19px);
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--text-mid);
+      font-style: italic;
+      margin-bottom: 24px;
+    }
+    .testimonial-name {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--green-dark);
+    }
+    .carousel-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+      margin-top: 40px;
+    }
+    .carousel-btn {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: 2px solid var(--green-dark);
+      background: transparent;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, color 0.2s;
+      color: var(--green-dark);
+    }
+    .carousel-btn:hover { background: var(--green-dark); color: var(--white); }
+    .carousel-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .carousel-dots { display: flex; gap: 8px; }
+    .carousel-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--beige-mid);
+      border: 1.5px solid var(--beige-deep);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .carousel-dot.active { background: var(--green-dark); border-color: var(--green-dark); }
+
+    /* ===== POLICY ===== */
+    .policy {
+      background: var(--bg);
+      padding: 90px 48px;
+    }
+    .policy h2 {
+      font-size: clamp(24px, 3.5vw, 38px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      text-align: center;
+      margin-bottom: 56px;
+      color: var(--text-dark);
+    }
+    .policy-list {
+      max-width: 760px;
+      margin: auto;
+    }
+    .policy-item {
+      border-top: 1px solid var(--beige-deep);
+      padding: 26px 0;
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .policy-item:last-child { border-bottom: 1px solid var(--beige-deep); }
+    .policy-num {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--green-dark);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding-top: 3px;
+      min-width: 28px;
+    }
+    .policy-item p {
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.7;
+      color: var(--text-mid);
+    }
+    @media (max-width: 600px) { .policy { padding: 64px 20px; } }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: var(--black);
+      color: rgba(255,255,255,0.45);
+      text-align: center;
+      padding: 48px 24px 36px;
+    }
+    footer .footer-logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.02em;
+      margin-bottom: 8px;
+    }
+    footer .footer-copy {
+      font-size: 13px;
+      margin-bottom: 14px;
+      color: rgba(255,255,255,0.4);
+    }
+    footer .footer-squarre {
+      font-size: 13px;
+      color: rgba(255,255,255,0.3);
+    }
+    footer .footer-squarre a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: underline;
+      font-weight: 500;
+    }
+    footer .footer-squarre a:hover { color: var(--white); }
+  </style>
+</head>
+<body>
+
+  <!-- NEWS BANNER -->
+  <div class="news-banner">
+    <span data-edit="banner_text">Free shipping on all orders over R175 — limited time offer.</span>
+    <a href="#picks" data-edit="banner_link" data-edit-role="href">Shop now</a>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav id="navbar">
+    <a href="#hero" class="logo" data-edit="site_name">Elhnon Odnufmon</a>
+    <button class="burger" id="burger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="#picks"    data-edit="nav_picks">Top Picks</a>
+      <a href="#promo"    data-edit="nav_promo">Our Story</a>
+      <a href="#catalog"  data-edit="nav_catalog">Shop All</a>
+      <a href="#policy"   data-edit="nav_policy">Policy</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero" class="hero">
+    <div class="hero-text">
+      <h1 data-edit="hero_title">Skin That Feels Like You</h1>
+      <p data-edit="hero_description">Clean, plant-based formulas crafted for real skin. No harsh chemicals, no compromises — just radiant, healthy skin every day.</p>
+      <a href="#picks" class="btn-primary" data-edit="hero_cta_link" data-edit-role="href">
+        <span data-edit="hero_cta">Shop Now</span>
+      </a>
+    </div>
+    <div class="hero-image">
+      <img data-edit="hero_image" src="https://images.pexels.com/photos/3685530/pexels-photo-3685530.jpeg" alt="Hero" />
+    </div>
+  </section>
+
+  <!-- TOP PICKS (capped at 5: 1 featured + 4 standard) -->
+  <section id="picks" class="products-section">
+    <div class="products-inner">
+      <div class="products-grid" data-repeat="picks">
+
+        <!-- Featured card -->
+        <div class="product-card-featured">
+          <img data-edit="image" src="https://images.pexels.com/photos/12721805/pexels-photo-12721805.jpeg" alt="Featured product" />
+          <div class="card-body">
+            <div class="product-tag" data-edit="tag">Bestseller</div>
+            <div class="product-name" data-edit="name">Glow Serum Intensive</div>
+            <div class="product-price" data-edit="price">R168</div>
+            <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/224287965-300-400/6eab8571-092c-48e6-b823-0f83631f24b5.jpg?v=639071786543100000" alt="Product" />
+          <div class="card-body">
+            <div class="product-name" data-edit="name">Hydra Cream SPF 30</div>
+            <div class="product-price" data-edit="price">R145</div>
+            <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/222997925-300-400/0bf8638f-766a-42d2-8730-4387bad7e037.jpg?v=639016445888330000" alt="Product" />
+          <div class="card-body">
+            <div class="product-name" data-edit="name">Cleansing Balm Rose</div>
+            <div class="product-price" data-edit="price">R138</div>
+            <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/224288261-300-400/1c7682b1-3d98-4097-a0d8-1b582b273cdd.jpg?v=639071788151100000" alt="Product" />
+          <div class="card-body">
+            <div class="product-name" data-edit="name">Vitamin C Eye Gel</div>
+            <div class="product-price" data-edit="price">R152</div>
+            <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/223115394-300-400/f596d1e6-ebde-4e06-a09e-417f8c24c2ad.jpg?v=639026814273530000" alt="Product" />
+          <div class="card-body">
+            <div class="product-name" data-edit="name">Retinol Night Repair</div>
+            <div class="product-price" data-edit="price">R174</div>
+            <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- PROMO 1 — text left, image right; mobile: content first, image second -->
+  <section id="promo" class="promo">
+    <div class="promo-text">
+      <h2 data-edit="promo_title">Born From Nature, Backed by Science</h2>
+      <p data-edit="promo_description">Every formula starts with responsibly sourced botanicals and is clinically tested for efficacy and safety. We believe beautiful skin should never come at the cost of the planet.</p>
+      <a class="btn-promo" data-edit="promo_link" data-edit-role="href" href="#catalog">
+        <span data-edit="promo_cta">Explore the Range</span>
+      </a>
+    </div>
+    <div class="promo-image">
+      <img data-edit="promo_image" src="https://images.pexels.com/photos/6970053/pexels-photo-6970053.jpeg" alt="Promo" />
+    </div>
+  </section>
+
+  <!-- CATALOG (infinite, 1st then every 5th spans) -->
+  <section id="catalog" class="catalog-section">
+    <div class="catalog-inner">
+      <h2 data-edit="catalog_title">Shop All Products</h2>
+      <div class="catalog-grid" data-repeat="catalog">
+
+        <div class="product-card">
+          <img data-edit="image" src="https://assets.bash.com/cms/1200x/filters:quality(100):format(webp)/Promo_Spotlight_Web_1_4ee4eac809.jpg" alt="Product" />
+          <div class="card-body">
+            <div class="product-name" data-edit="name">Elhnon Bamboo Taable</div>
+            <div class="product-price" data-edit="price">R16,800</div>
+            <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/213802634-300-400/5c2c0a09-eaba-45d1-8f49-d658e431898b.jpg?v=638901770538200000" alt="Product" />
+          <div class="card-body">
+            <div class="product-name" data-edit="name">Hydra Cream SPF 30</div>
+            <div class="product-price" data-edit="price">R145</div>
+            <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/213890753-300-400/c7a02f21-cd00-4d97-ad7c-62ae3e6dbf71.jpg?v=638901797868100000" alt="Product" />
+          <div class="card-body">
+            <div class="product-name" data-edit="name">Cleansing Balm Rose</div>
+            <div class="product-price" data-edit="price">R138</div>
+            <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/213825016-300-400/532a5e69-6f29-48cb-b318-cd1ddd7798fb.jpg?v=638901778206770000" alt="Product" />
+          <div class="card-body">
+            <div class="product-name" data-edit="name">Vitamin C Eye Gel</div>
+            <div class="product-price" data-edit="price">R152</div>
+            <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/213870305-300-400/7246c238-1593-4e21-8401-cf7adc5423f5.jpg?v=638901791539800000" alt="Product" />
+          <div class="card-body">
+            <div class="product-name" data-edit="name">Retinol Night Repair</div>
+            <div class="product-price" data-edit="price">R174</div>
+            <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <img data-edit="image" src="https://assets.bash.com/cms/800x/filters:quality(100):format(webp)/Bash_17_Feb26_BEAUTY_Desktop_800_X408_3116926c7e.jpg" alt="Product" />
+          <div class="card-body">
+            <div class="product-name" data-edit="name">Pore Refining Toner</div>
+            <div class="product-price" data-edit="price">R134</div>
+            <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/223852747-300-400/7527db4e-2c7e-4fb7-8f28-b42e18641614.png?v=639051870987670000" alt="Product" />
+          <div class="card-body">
+            <div class="product-name" data-edit="name">Hyaluronic Booster</div>
+            <div class="product-price" data-edit="price">R158</div>
+            <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/223853015-300-400/79f08c16-d83a-46bc-b7f7-de89c42b362e.png?v=639051873087900000" alt="Product" />
+          <div class="card-body">
+            <div class="product-name" data-edit="name">AHA Exfoliant Peel</div>
+            <div class="product-price" data-edit="price">R149</div>
+            <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/223852770-300-400/a900858c-7b3d-48ef-a81f-6d5953ff1290.png?v=639051871277870000" alt="Product" />
+          <div class="card-body">
+            <div class="product-name" data-edit="name">Soothing Aloe Gel</div>
+            <div class="product-price" data-edit="price">R128</div>
+            <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/223851801-300-400/6243b4ad-997d-445f-99a0-a734d5490787.png?v=639051859817830000" alt="Product" />
+          <div class="card-body">
+            <div class="product-name" data-edit="name">Barrier Repair Mask</div>
+            <div class="product-price" data-edit="price">R142</div>
+            <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- PROMO 2 — no CTA, text left, image right -->
+  <section class="promo promo-alt">
+    <div class="promo-text">
+      <h2 data-edit="promo2_title">Your Skin Deserves the Best</h2>
+      <p data-edit="promo2_description">We formulate every product with the highest quality ingredients, ethically sourced and dermatologist approved. Because your skin is worth it.</p>
+    </div>
+    <div class="promo-image">
+      <img data-edit="promo2_image" src="https://images.pexels.com/photos/11464377/pexels-photo-11464377.jpeg" alt="Promo 2" />
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="testimonials" class="testimonials">
+    <h2 data-edit="testimonials_title">What Our Community Says</h2>
+    <div class="carousel-wrapper">
+      <div data-repeat="testimonials">
+        <div class="carousel-slide active">
+          <p class="testimonial-quote" data-edit="testimonial">"My skin has never looked this good. After just two weeks on the Glow Serum my friends started asking what I was using — absolutely life-changing."</p>
+          <div class="testimonial-name" data-edit="name">Amara L.</div>
+        </div>
+        <div class="carousel-slide">
+          <p class="testimonial-quote" data-edit="testimonial">"Finally a skincare brand that actually delivers on its promises. Clean ingredients, beautiful packaging, and results I can see and feel."</p>
+          <div class="testimonial-name" data-edit="name">Priya N.</div>
+        </div>
+        <div class="carousel-slide">
+          <p class="testimonial-quote" data-edit="testimonial">"I have sensitive skin and I've struggled to find products that don't cause a reaction. Everything from this brand has been gentle and so effective."</p>
+          <div class="testimonial-name" data-edit="name">Sophie R.</div>
+        </div>
+      </div>
+    </div>
+    <div class="carousel-controls">
+      <button class="carousel-btn" id="prevBtn" aria-label="Previous">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      <div class="carousel-dots" id="carouselDots"></div>
+      <button class="carousel-btn" id="nextBtn" aria-label="Next">
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- POLICY -->
+  <section id="policy" class="policy">
+    <h2 data-edit="policy_title">Our Policy</h2>
+    <div class="policy-list" data-repeat="policies">
+      <div class="policy-item">
+        <span class="policy-num">01</span>
+        <p data-edit="policy_text">All products are dermatologist tested and free from parabens, sulfates, and artificial fragrances. We are committed to clean beauty.</p>
+      </div>
+      <div class="policy-item">
+        <span class="policy-num">02</span>
+        <p data-edit="policy_text">Orders are processed within 1–2 business days. Standard shipping takes 3–5 business days and you will receive a tracking number via email.</p>
+      </div>
+      <div class="policy-item">
+        <span class="policy-num">03</span>
+        <p data-edit="policy_text">We accept returns on unopened products within 30 days. If a product causes a reaction, contact us and we will arrange an exchange or refund.</p>
+      </div>
+      <div class="policy-item">
+        <span class="policy-num">04</span>
+        <p data-edit="policy_text">We never test on animals. All formulations are certified cruelty-free and our packaging is made from recycled or recyclable materials.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROMO 3 — after policy, no CTA, image left, text right -->
+  <section class="promo promo-alt">
+    <div class="promo-image">
+      <img data-edit="promo3_image" src="https://images.pexels.com/photos/3685523/pexels-photo-3685523.jpeg" alt="Promo 3" />
+    </div>
+    <div class="promo-text">
+      <h2 data-edit="promo3_title">Rooted in Ritual, Made for Every Day</h2>
+      <p data-edit="promo3_description">Skincare is not just a routine — it is a moment for yourself. Our products are designed to be a gentle, grounding part of your daily self-care practice.</p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo" data-edit="site_name">Elhnon Odnufmon</div>
+    <p class="footer-copy">© <span data-edit="copyright_year">2026</span> <span data-edit="site_name">Elhnon Odnufmon</span>. All rights reserved.</p>
+    <p class="footer-squarre">Want your own site? <a href="https://squarre.vercel.app" target="_blank">This site was made using Squarre</a></p>
+  </footer>
+
+  <script>
+    // Navbar scroll
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // Burger menu
+    const burger = document.getElementById('burger');
+    const navLinks = document.getElementById('navLinks');
+    burger.addEventListener('click', () => {
+      burger.classList.toggle('open');
+      navLinks.classList.toggle('open');
+    });
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        burger.classList.remove('open');
+        navLinks.classList.remove('open');
+      });
+    });
+
+    // Carousel
+    const slides = document.querySelectorAll('.carousel-slide');
+    const dotsContainer = document.getElementById('carouselDots');
+    let current = 0;
+
+    slides.forEach((_, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+      dot.addEventListener('click', () => goTo(i));
+      dotsContainer.appendChild(dot);
+    });
+
+    function goTo(index) {
+      slides[current].classList.remove('active');
+      dotsContainer.children[current].classList.remove('active');
+      current = (index + slides.length) % slides.length;
+      slides[current].classList.add('active');
+      dotsContainer.children[current].classList.add('active');
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', () => goTo(current - 1));
+    document.getElementById('nextBtn').addEventListener('click', () => goTo(current + 1));
+
+    // Policy numbering
+    document.querySelectorAll('.policy-item').forEach((item, i) => {
+      const num = item.querySelector('.policy-num');
+      if (num) num.textContent = String(i + 1).padStart(2, '0');
+    });
+  </script>
+</body>
+</html>

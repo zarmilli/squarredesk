@@ -11,12 +11,13 @@ import { Badge } from "@/components/ui/badge"
 import { Edit } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
-import { BadgeWithFlag, BadgeWithDot } from "@/components/base/badges/badges";
+import { BadgeWithFlag, BadgeWithDot } from "@/components/base/badges/badges"
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover"
+import squeakImage from "/images/speaking.png"
 
 type Profile = {
   user_id: string
@@ -39,7 +40,7 @@ export default function Profile() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [others, setOthers] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const { toast } = useToast();
+  const { toast } = useToast()
 
   const [editType, setEditType] = useState<"business" | "personal" | null>(null)
   const [formData, setFormData] = useState<Partial<Profile>>({})
@@ -98,55 +99,57 @@ export default function Profile() {
   }
 
   if (loading) {
-  return (
-    <div className="h-full overflow-y-auto p-6 custom-scrollbar">
-      <div className="max-w-7xl mx-auto space-y-6">
+    return (
+      <div className="h-full overflow-y-auto p-6 custom-scrollbar">
+        <div className="max-w-7xl mx-auto space-y-6">
 
-        {/* HEADER SKELETON */}
-        <div className="bg-stone-900 rounded-xl p-8">
-          <div className="flex items-center justify-between">
-
-            <div className="flex items-center">
-              <Skeleton className="w-16 h-16 rounded-full bg-stone-700" />
-              <div className="ml-4 space-y-2">
-                <Skeleton className="h-6 w-40 bg-stone-700" />
-                <Skeleton className="h-4 w-28 bg-stone-700" />
+          {/* HEADER SKELETON */}
+          <div className="bg-stone-900 rounded-xl p-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <Skeleton className="w-16 h-16 rounded-full bg-stone-700" />
+                <div className="ml-4 space-y-2">
+                  <Skeleton className="h-6 w-40 bg-stone-700" />
+                  <Skeleton className="h-4 w-28 bg-stone-700" />
+                </div>
+              </div>
+              <div className="flex space-x-3">
+                <Skeleton className="h-10 w-28 bg-stone-700" />
+                <Skeleton className="h-10 w-28 bg-stone-700" />
+                <Skeleton className="h-10 w-28 bg-stone-700" />
               </div>
             </div>
-
-            <div className="flex space-x-3">
-              <Skeleton className="h-10 w-28 bg-stone-700" />
-              <Skeleton className="h-10 w-28 bg-stone-700" />
-              <Skeleton className="h-10 w-28 bg-stone-700" />
-            </div>
           </div>
-        </div>
 
-        {/* 3 CARD SKELETONS */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {[1, 2, 3].map((i) => (
-            <Card key={i}>
-              <CardHeader>
-                <Skeleton className="h-5 w-40" />
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {[1, 2, 3, 4].map((j) => (
-                  <Skeleton key={j} className="h-4 w-full" />
-                ))}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+          {/* 3 CARD SKELETONS */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <Card key={i}>
+                <CardHeader>
+                  <Skeleton className="h-5 w-40" />
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {[1, 2, 3, 4].map((j) => (
+                    <Skeleton key={j} className="h-4 w-full" />
+                  ))}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
 
+        </div>
       </div>
-    </div>
-  )
-}
+    )
+  }
 
   if (!profile) return <div className="p-6">Profile not found</div>
 
   const initials =
     `${profile.first_name?.[0] ?? ""}${profile.last_name?.[0] ?? ""}`
+
+  // Users on basic or pro can access the networking card
+  const canNetwork =
+    profile.membership_tier === "basic" || profile.membership_tier === "pro"
 
   // -----------------------------
   // SAVE HANDLER
@@ -191,11 +194,9 @@ export default function Profile() {
               <Button variant="default" onClick={() => navigate("/subscription")}>
                 Subscription
               </Button>
-
               <Button variant="default" onClick={() => navigate("/messages")}>
                 Message
               </Button>
-
               <Button variant="default" onClick={() => navigate("/marketplace")}>
                 Marketplace
               </Button>
@@ -222,43 +223,37 @@ export default function Profile() {
                 <p className="text-sm font-medium">Company Name</p>
                 <p className="text-sm text-muted-foreground">{profile.company_name}</p>
               </div>
-
               <div>
                 <p className="text-sm font-medium">Business Field</p>
                 <p className="text-sm text-muted-foreground">{profile.business_field}</p>
               </div>
-
               <div>
                 <p className="text-sm font-medium">Location</p>
                 <p className="text-sm text-muted-foreground">{profile.business_location}</p>
               </div>
-
               <div>
                 <p className="text-sm font-medium">Company Size</p>
                 <p className="text-sm text-muted-foreground">{profile.company_size}</p>
               </div>
-
               <div>
                 <p className="text-sm font-medium">Company Bio</p>
                 <p className="text-sm text-muted-foreground">{profile.company_bio}</p>
               </div>
-
               <div>
-              <p className="text-sm font-medium">Services Offered</p>
-
-              <div className="flex flex-wrap gap-2 mt-2">
-                {profile.services_offered?.map((service) => (
-                  <BadgeWithDot
-                    key={service}
-                    type="pill-color"
-                    color="success"
-                    size="md"
-                  >
-                    {service}
-                  </BadgeWithDot>
-                ))}
+                <p className="text-sm font-medium">Services Offered</p>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {profile.services_offered?.map((service) => (
+                    <BadgeWithDot
+                      key={service}
+                      type="pill-color"
+                      color="success"
+                      size="md"
+                    >
+                      {service}
+                    </BadgeWithDot>
+                  ))}
+                </div>
               </div>
-            </div>
             </CardContent>
           </Card>
 
@@ -278,17 +273,14 @@ export default function Profile() {
                 <p className="text-sm font-medium">First Name</p>
                 <p className="text-sm text-muted-foreground">{profile.first_name}</p>
               </div>
-
               <div>
                 <p className="text-sm font-medium">Last Name</p>
                 <p className="text-sm text-muted-foreground">{profile.last_name}</p>
               </div>
-
               <div>
                 <p className="text-sm font-medium">Email</p>
                 <p className="text-sm text-muted-foreground">{profile.email}</p>
               </div>
-
               <div>
                 <p className="text-sm font-medium">Personal Bio</p>
                 <p className="text-sm text-muted-foreground">{profile.personal_bio}</p>
@@ -297,90 +289,125 @@ export default function Profile() {
           </Card>
 
           {/* OTHERS IN FIELD */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Others In Your Field</CardTitle>
-            </CardHeader>
+          <div className="relative">
 
-            <CardContent className="space-y-4">
-              {others.map((user) => {
-                const otherInitials =
-                  `${user.first_name?.[0] ?? ""}${user.last_name?.[0] ?? ""}`
+            {/* Card content — blurred when on free plan */}
+            <div className={!canNetwork ? "pointer-events-none select-none" : ""}>
+              <Card className={!canNetwork ? "blur-sm" : ""}>
+                <CardHeader>
+                  <CardTitle>Others In Your Field</CardTitle>
+                </CardHeader>
 
-                return (
-                  <div
-                    key={user.user_id}
-                    className="flex justify-between items-center"
-                  >
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <div
-                          className="flex items-start cursor-pointer"
-                          onMouseEnter={() => fetchHoverProfile(user.user_id)}
-                        >
-                          <Avatar>
-                            <AvatarFallback>{otherInitials}</AvatarFallback>
-                          </Avatar>
+                <CardContent className="space-y-4">
+                  {others.map((user) => {
+                    const otherInitials =
+                      `${user.first_name?.[0] ?? ""}${user.last_name?.[0] ?? ""}`
 
-                          <div className="ml-3">
-                            <p className="text-sm font-medium">
-                              {user.first_name} {user.last_name}
-                            </p>
+                    return (
+                      <div
+                        key={user.user_id}
+                        className="flex justify-between items-center"
+                      >
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <div
+                              className="flex items-start cursor-pointer"
+                              onMouseEnter={() => fetchHoverProfile(user.user_id)}
+                            >
+                              <Avatar>
+                                <AvatarFallback>{otherInitials}</AvatarFallback>
+                              </Avatar>
 
-                            {user.personal_bio && (
-                              <p className="text-xs text-muted-foreground mt-1">
-                                {user.personal_bio.length > 17
-                                  ? user.personal_bio.slice(0, 17) + "..."
-                                  : user.personal_bio}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      </PopoverTrigger>
-
-                      <PopoverContent className="w-64">
-                        {hoverLoading ? (
-                          <div className="space-y-3 animate-pulse">
-                            <div className="w-12 h-12 rounded-full bg-muted mx-auto" />
-                            <div className="h-4 bg-muted rounded w-32 mx-auto" />
-                            <div className="h-3 bg-muted rounded w-24 mx-auto" />
-                            <div className="h-3 bg-muted rounded w-full" />
-                            <div className="h-3 bg-muted rounded w-5/6" />
-                          </div>
-                        ) : hoverProfile ? (
-                          <div className="space-y-3 text-center">
-                            <Avatar className="mx-auto">
-                              <AvatarFallback>
-                                {hoverProfile.first_name?.[0] ?? ""}
-                                {hoverProfile.last_name?.[0] ?? ""}
-                              </AvatarFallback>
-                            </Avatar>
-
-                            <div>
-                              <p className="font-medium text-sm">
-                                {hoverProfile.first_name} {hoverProfile.last_name}
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                {hoverProfile.company_name}
-                              </p>
+                              <div className="ml-3">
+                                <p className="text-sm font-medium">
+                                  {user.first_name} {user.last_name}
+                                </p>
+                                {user.personal_bio && (
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    {user.personal_bio.length > 17
+                                      ? user.personal_bio.slice(0, 17) + "..."
+                                      : user.personal_bio}
+                                  </p>
+                                )}
+                              </div>
                             </div>
+                          </PopoverTrigger>
 
-                            <p className="text-xs text-muted-foreground">
-                              {hoverProfile.personal_bio}
-                            </p>
-                          </div>
-                        ) : null}
-                      </PopoverContent>
-                    </Popover>
+                          <PopoverContent className="w-64">
+                            {hoverLoading ? (
+                              <div className="space-y-3 animate-pulse">
+                                <div className="w-12 h-12 rounded-full bg-muted mx-auto" />
+                                <div className="h-4 bg-muted rounded w-32 mx-auto" />
+                                <div className="h-3 bg-muted rounded w-24 mx-auto" />
+                                <div className="h-3 bg-muted rounded w-full" />
+                                <div className="h-3 bg-muted rounded w-5/6" />
+                              </div>
+                            ) : hoverProfile ? (
+                              <div className="space-y-3 text-center">
+                                <Avatar className="mx-auto">
+                                  <AvatarFallback>
+                                    {hoverProfile.first_name?.[0] ?? ""}
+                                    {hoverProfile.last_name?.[0] ?? ""}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div>
+                                  <p className="font-medium text-sm">
+                                    {hoverProfile.first_name} {hoverProfile.last_name}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {hoverProfile.company_name}
+                                  </p>
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                  {hoverProfile.personal_bio}
+                                </p>
+                              </div>
+                            ) : null}
+                          </PopoverContent>
+                        </Popover>
 
-                    <Button variant="ghost" size="sm">
-                      Chat
-                    </Button>
+                        <Button variant="ghost" size="sm">
+                          Chat
+                        </Button>
+                      </div>
+                    )
+                  })}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Upgrade overlay — only shown on free plan */}
+            {!canNetwork && (
+              <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-white/60 backdrop-blur-sm">
+                <div className="flex flex-col items-center text-center gap-3 px-6 max-w-xs">
+                  <img src={squeakImage} className="w-20" alt="Squeak the parrot" />
+                  <h3 className="text-base font-semibold text-stone-900">
+                    Connect with others
+                  </h3>
+                  <p className="text-sm text-stone-500 leading-relaxed">
+                    Squeak says messaging other businesses is available on the
+                    Basic and Pro plans. Upgrade to start networking.
+                  </p>
+                  <div className="flex gap-2">
+                    <Badge className="bg-stone-700 text-white hover:bg-stone-700">
+                      Basic
+                    </Badge>
+                    <Badge className="bg-stone-900 text-white hover:bg-stone-900">
+                      Pro
+                    </Badge>
                   </div>
-                )
-              })}
-            </CardContent>
-          </Card>
+                  <Button
+                    size="sm"
+                    className="w-full mt-1"
+                    onClick={() => navigate("/subscriptions")}
+                  >
+                    Upgrade Plan
+                  </Button>
+                </div>
+              </div>
+            )}
+
+          </div>
         </div>
 
         {/* EDIT DIALOG */}

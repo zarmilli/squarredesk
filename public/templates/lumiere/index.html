@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title data-edit="meta_title">Lumière Studio — Makeup Services</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --beige:        #f5ede0;
+      --beige-mid:    #ede0ce;
+      --beige-deep:   #d9c4a8;
+      --green:        #ffb4a2;
+      --green-mid:    #e5989b;
+      --green-dark:   #b5838d;
+      --green-pale:   #e8f0e5;
+      --bg:           #faf7f2;
+      --bg-mid:       #f0e9dc;
+      --text-dark:    #2a2218;
+      --text-mid:     #6b5f4f;
+      --white:        #ffffff;
+      --black:        #0f0e0b;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text-dark);
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* ===== NEWS BANNER ===== */
+    .news-banner {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1100;
+      background: var(--green-dark);
+      color: var(--white);
+      text-align: center;
+      padding: 9px 48px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .news-banner a {
+      color: var(--white);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      margin-left: 8px;
+    }
+
+    /* ===== NAVBAR ===== */
+    nav {
+      position: fixed;
+      top: 36px; left: 0; right: 0;
+      z-index: 1000;
+      padding: 20px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: transparent;
+      transition: background 0.35s ease, box-shadow 0.35s ease, padding 0.35s ease;
+    }
+    nav.scrolled {
+      background: var(--white);
+      border-bottom: 1px solid var(--green-dark);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+      padding: 14px 48px;
+    }
+    nav .logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-dark);
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      position: relative;
+      z-index: 1001;
+      transition: color 0.35s;
+    }
+    nav .nav-links { display: flex; gap: 32px; }
+    nav .nav-links a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-mid);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: color 0.2s;
+    }
+    nav .nav-links a:hover { color: var(--green-dark); }
+    nav.scrolled .nav-links a:hover { color: var(--green-dark); }
+
+    /* Burger */
+    .burger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 36px; height: 36px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      position: relative;
+      z-index: 1001;
+    }
+    .burger span {
+      display: block;
+      width: 100%; height: 2px;
+      background: var(--text-dark);
+      border-radius: 2px;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      transform-origin: center;
+    }
+    .burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .burger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    @media (max-width: 700px) {
+      .news-banner { padding: 9px 16px; font-size: 11px; }
+      nav { padding: 16px 20px; top: 34px; }
+      nav.scrolled { padding: 12px 20px; top: 34px; }
+      .burger { display: flex; }
+      .nav-links {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        height: 100vh;
+        background: var(--beige);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 32px;
+        transform: translateY(-100%);
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+      }
+      .nav-links.open { transform: translateY(0); pointer-events: all; }
+      .nav-links a {
+        font-size: 22px !important;
+        font-weight: 600 !important;
+        color: var(--text-dark) !important;
+      }
+      .nav-links a:hover { color: var(--green-dark) !important; }
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+    .hero-text {
+      width: 50vw;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 120px 64px 80px 64px;
+      background: var(--beige);
+    }
+    .hero-text h1 {
+      font-size: clamp(28px, 3.5vw, 56px);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--text-dark);
+      margin-bottom: 22px;
+    }
+    .hero-text p {
+      font-size: clamp(14px, 1.2vw, 16px);
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--text-mid);
+      margin-bottom: 36px;
+      max-width: 420px;
+    }
+    .btn-primary {
+      display: inline-block;
+      background: var(--green-dark);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 14px 32px;
+      border-radius: 50px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+      width: fit-content;
+    }
+    .btn-primary:hover { background: var(--green-mid); transform: translateY(-2px); }
+    .hero-image {
+      width: 50vw;
+      flex-shrink: 0;
+    }
+    .hero-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    @media (max-width: 768px) {
+      .hero { height: 100vh; flex-direction: column-reverse; }
+      .hero-image { width: 100%; height: 50vh; }
+      .hero-text {
+        width: 100%;
+        height: 50vh;
+        padding: 36px 24px 28px;
+        justify-content: center;
+      }
+      .hero-text p { max-width: 100%; margin-bottom: 24px; }
+    }
+
+    /* ===== ABOUT ===== */
+    .about {
+      background: var(--bg);
+      padding: 100px 24px;
+      text-align: center;
+    }
+    .about h2 {
+      font-size: clamp(28px, 4vw, 48px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 24px;
+      color: var(--text-dark);
+    }
+    .about p {
+      font-size: clamp(15px, 1.4vw, 17px);
+      font-weight: 300;
+      line-height: 1.8;
+      color: var(--text-mid);
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    /* ===== SERVICES ===== */
+    .services-section {
+      background: var(--bg-mid);
+      padding: 80px 24px;
+    }
+    .services-section h2 {
+      font-size: clamp(24px, 3.5vw, 38px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 48px;
+      color: var(--text-dark);
+      text-align: center;
+    }
+    .services-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+    .service-card {
+      background: var(--bg-mid);
+      border-radius: 14px;
+      overflow: hidden;
+      text-align: center;
+    }
+    .service-card img {
+      width: 100%;
+      aspect-ratio: 1/1;
+      object-fit: cover;
+      display: block;
+    }
+    .service-card .service-body {
+      padding: 18px 16px 22px;
+    }
+    .service-card .service-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 6px;
+    }
+    .service-card .service-price {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--green-dark);
+    }
+    @media (max-width: 768px) {
+      .services-grid { grid-template-columns: 1fr; gap: 16px; }
+    }
+
+    /* ===== PROMO SECTION ===== */
+    .promo {
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+    .promo.promo-alt .promo-text {
+      background: var(--beige-mid);
+    }
+    .promo-text {
+      width: 50vw;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 80px 64px;
+      background: var(--green-pale);
+    }
+    .promo-text h2 {
+      font-size: clamp(24px, 2.8vw, 44px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 18px;
+      color: var(--text-dark);
+    }
+    .promo-text p {
+      font-size: clamp(14px, 1.2vw, 16px);
+      font-weight: 300;
+      line-height: 1.8;
+      color: var(--text-mid);
+      margin-bottom: 32px;
+      max-width: 420px;
+    }
+    .promo-text p:last-child { margin-bottom: 0; }
+    .btn-promo {
+      display: inline-block;
+      background: var(--green-dark);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 14px 32px;
+      border-radius: 50px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+      width: fit-content;
+    }
+    .btn-promo:hover { background: var(--green-mid); transform: translateY(-2px); }
+    .promo-image {
+      width: 50vw;
+      flex-shrink: 0;
+    }
+    .promo-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    @media (max-width: 768px) {
+      .promo { height: 100vh; flex-direction: column; }
+      .promo-text {
+        width: 100%; height: 50vh;
+        padding: 36px 24px 28px;
+      }
+      .promo-image { width: 100%; height: 50vh; }
+      .promo-text p { max-width: 100%; }
+    }
+
+    /* ===== MY WORK GALLERY ===== */
+    .gallery-section {
+      background: var(--bg);
+      padding: 80px 24px;
+    }
+    .gallery-section h2 {
+      font-size: clamp(24px, 3.5vw, 38px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 48px;
+      text-align: center;
+      color: var(--text-dark);
+    }
+    .gallery-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .gallery-item {
+      overflow: hidden;
+      border-radius: 12px;
+    }
+    .gallery-item img {
+      width: 100%;
+      aspect-ratio: 1 / 1.2;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+    .gallery-item:hover img { transform: scale(1.04); }
+    @media (max-width: 768px) {
+      .gallery-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    }
+
+    /* ===== TESTIMONIALS ===== */
+    .testimonials {
+      background: var(--white);
+      padding: 90px 24px;
+      text-align: center;
+    }
+    .testimonials h2 {
+      font-size: clamp(24px, 3.5vw, 38px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 56px;
+      color: var(--text-dark);
+    }
+    .carousel-wrapper {
+      max-width: 680px;
+      margin: auto;
+      min-height: 160px;
+    }
+    .carousel-slide { display: none; animation: fadeIn 0.4s ease; }
+    .carousel-slide.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .testimonial-quote {
+      font-size: clamp(16px, 2vw, 19px);
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--text-mid);
+      font-style: italic;
+      margin-bottom: 24px;
+    }
+    .testimonial-name {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--green-dark);
+    }
+    .carousel-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+      margin-top: 40px;
+    }
+    .carousel-btn {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: 2px solid var(--green-dark);
+      background: transparent;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, color 0.2s;
+      color: var(--green-dark);
+    }
+    .carousel-btn:hover { background: var(--green-dark); color: var(--white); }
+    .carousel-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .carousel-dots { display: flex; gap: 8px; }
+    .carousel-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--beige-mid);
+      border: 1.5px solid var(--beige-deep);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .carousel-dot.active { background: var(--green-dark); border-color: var(--green-dark); }
+
+    /* ===== OPEN HOURS ===== */
+    .hours {
+      background: var(--beige);
+      padding: 90px 24px;
+      text-align: center;
+    }
+    .hours h2 {
+      font-size: clamp(24px, 3.5vw, 38px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 48px;
+      color: var(--text-dark);
+    }
+    .hours-table {
+      max-width: 560px;
+      margin: 0 auto;
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .hours-table tr { border-bottom: 1px solid var(--beige-deep); }
+    .hours-table tr:first-child { border-top: 1px solid var(--beige-deep); }
+    .hours-table td {
+      padding: 16px 8px;
+      font-size: 15px;
+      color: var(--text-dark);
+    }
+    .hours-table td:first-child {
+      font-weight: 600;
+      text-align: left;
+      width: 44%;
+    }
+    .hours-table td:nth-child(2),
+    .hours-table td:nth-child(3) {
+      text-align: center;
+      color: var(--text-mid);
+      font-weight: 400;
+    }
+    .hours-table td:nth-child(2)::before {
+      content: 'Opens';
+      font-weight: 600;
+      color: var(--text-dark);
+      font-size: 10px;
+      display: block;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 2px;
+    }
+    .hours-table td:nth-child(3)::before {
+      content: 'Closes';
+      font-weight: 600;
+      color: var(--text-dark);
+      font-size: 10px;
+      display: block;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 2px;
+    }
+    @media (max-width: 500px) {
+      .hours-table td { font-size: 13px; padding: 14px 4px; }
+    }
+
+    /* ===== POLICY ===== */
+    .policy {
+      background: var(--bg-mid);
+      padding: 90px 48px;
+    }
+    .policy h2 {
+      font-size: clamp(24px, 3.5vw, 38px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      text-align: center;
+      margin-bottom: 56px;
+      color: var(--text-dark);
+    }
+    .policy-list {
+      max-width: 760px;
+      margin: auto;
+    }
+    .policy-item {
+      border-top: 1px solid var(--beige-deep);
+      padding: 26px 0;
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .policy-item:last-child { border-bottom: 1px solid var(--beige-deep); }
+    .policy-num {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--green-dark);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding-top: 3px;
+      min-width: 28px;
+    }
+    .policy-item p {
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.7;
+      color: var(--text-mid);
+    }
+    @media (max-width: 600px) { .policy { padding: 64px 20px; } }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: var(--black);
+      color: rgba(255,255,255,0.45);
+      text-align: center;
+      padding: 48px 24px 36px;
+    }
+    footer .footer-logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.02em;
+      margin-bottom: 8px;
+    }
+    footer .footer-copy {
+      font-size: 13px;
+      margin-bottom: 14px;
+      color: rgba(255,255,255,0.4);
+    }
+    footer .footer-squarre {
+      font-size: 13px;
+      color: rgba(255,255,255,0.3);
+    }
+    footer .footer-squarre a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: underline;
+      font-weight: 500;
+    }
+    footer .footer-squarre a:hover { color: var(--white); }
+  </style>
+</head>
+<body>
+
+  <!-- NEWS BANNER -->
+  <div class="news-banner">
+    <span data-edit="banner_text">Now booking for June & July — limited slots available.</span>
+    <a href="#services" data-edit="banner_link" data-edit-role="href">Book now →</a>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav id="navbar">
+    <a href="#hero" class="logo" data-edit="site_name">Lumière Studio</a>
+    <button class="burger" id="burger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="#about"    data-edit="nav_about">About</a>
+      <a href="#services" data-edit="nav_services">Services</a>
+      <a href="#gallery"  data-edit="nav_gallery">My Work</a>
+      <a href="#hours"    data-edit="nav_hours">Hours</a>
+      <a href="#policy"   data-edit="nav_policy">Policy</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero" class="hero">
+    <div class="hero-text">
+      <h1 data-edit="hero_title">Where Beauty Meets Artistry</h1>
+      <p data-edit="hero_description">Professional makeup services tailored to you — from bridal and editorial to everyday glam. Let's create something beautiful together.</p>
+      <a href="#services" class="btn-primary" data-edit="hero_cta_link" data-edit-role="href">
+        <span data-edit="hero_cta">View Services</span>
+      </a>
+    </div>
+    <div class="hero-image">
+      <img data-edit="hero_image" src="https://images.pexels.com/photos/3912572/pexels-photo-3912572.jpeg" alt="Hero" />
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="about">
+    <h2 data-edit="about_title">About Me</h2>
+    <p data-edit="about_description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services" class="services-section">
+    <div class="services-inner">
+      <h2 data-edit="services_title">My Services</h2>
+      <div class="services-grid" data-repeat="services">
+
+        <div class="service-card">
+          <img data-edit="image" src="https://images.pexels.com/photos/4006693/pexels-photo-4006693.jpeg" alt="Service" />
+          <div class="service-body">
+            <div class="service-name" data-edit="name">Bridal Makeup</div>
+            <div class="service-price" data-edit="price">From $250</div>
+          </div>
+        </div>
+
+        <div class="service-card">
+          <img data-edit="image" src="https://images.pexels.com/photos/2681751/pexels-photo-2681751.jpeg" alt="Service" />
+          <div class="service-body">
+            <div class="service-name" data-edit="name">Editorial Look</div>
+            <div class="service-price" data-edit="price">$180</div>
+          </div>
+        </div>
+
+        <div class="service-card">
+          <img data-edit="image" src="https://images.pexels.com/photos/3997993/pexels-photo-3997993.jpeg" alt="Service" />
+          <div class="service-body">
+            <div class="service-name" data-edit="name">Glam Night Out</div>
+            <div class="service-price" data-edit="price">$120</div>
+          </div>
+        </div>
+
+        <div class="service-card">
+          <img data-edit="image" src="https://images.pexels.com/photos/6954005/pexels-photo-6954005.jpeg" alt="Service" />
+          <div class="service-body">
+            <div class="service-name" data-edit="name">Natural Everyday</div>
+            <div class="service-price" data-edit="price">$85</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- PROMO 1 — text left, image right -->
+  <section id="promo" class="promo">
+    <div class="promo-text">
+      <h2 data-edit="promo_title">Every Face Tells a Story</h2>
+      <p data-edit="promo_description">My approach is deeply personal. I take the time to understand your features, your style, and the occasion — crafting a look that feels authentically, beautifully you.</p>
+      <a class="btn-promo" data-edit="promo_link" data-edit-role="href" href="#services">
+        <span data-edit="promo_cta">Book a Session</span>
+      </a>
+    </div>
+    <div class="promo-image">
+      <img data-edit="promo_image" src="https://images.pexels.com/photos/3928305/pexels-photo-3928305.jpeg" alt="Promo" />
+    </div>
+  </section>
+
+  <!-- MY WORK GALLERY -->
+  <section id="gallery" class="gallery-section">
+    <div class="gallery-inner">
+      <h2 data-edit="gallery_title">My Work</h2>
+      <div class="gallery-grid" data-repeat="gallery">
+
+        <div class="gallery-item">
+          <img data-edit="image" src="https://images.pexels.com/photos/12348498/pexels-photo-12348498.jpeg" alt="Work" />
+        </div>
+        <div class="gallery-item">
+          <img data-edit="image" src="https://images.pexels.com/photos/2681751/pexels-photo-2681751.jpeg" alt="Work" />
+        </div>
+        <div class="gallery-item">
+          <img data-edit="image" src="https://images.pexels.com/photos/5142357/pexels-photo-5142357.jpeg" alt="Work" />
+        </div>
+        <div class="gallery-item">
+          <img data-edit="image" src="https://images.pexels.com/photos/804828/pexels-photo-804828.jpeg" alt="Work" />
+        </div>
+        <div class="gallery-item">
+          <img data-edit="image" src="https://images.pexels.com/photos/457701/pexels-photo-457701.jpeg" alt="Work" />
+        </div>
+        <div class="gallery-item">
+          <img data-edit="image" src="https://images.pexels.com/photos/29118474/pexels-photo-29118474.jpeg" alt="Work" />
+        </div>
+        <div class="gallery-item">
+          <img data-edit="image" src="https://images.pexels.com/photos/31243099/pexels-photo-31243099.jpeg" alt="Work" />
+        </div>
+        <div class="gallery-item">
+          <img data-edit="image" src="https://images.pexels.com/photos/14358835/pexels-photo-14358835.jpeg" alt="Work" />
+        </div>
+        <div class="gallery-item">
+          <img data-edit="image" src="https://images.pexels.com/photos/19936760/pexels-photo-19936760.jpeg" alt="Work" />
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- PROMO 2 — no CTA, image left, text right -->
+  <section class="promo promo-alt">
+    <div class="promo-image">
+      <img data-edit="promo2_image" src="https://images.pexels.com/photos/3997993/pexels-photo-3997993.jpeg" alt="Promo 2" />
+    </div>
+    <div class="promo-text">
+      <h2 data-edit="promo2_title">Premium Products, Always</h2>
+      <p data-edit="promo2_description">I work exclusively with professional-grade, skin-safe products from trusted luxury brands. Your comfort, skin health, and long-lasting results are always the priority.</p>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="testimonials" class="testimonials">
+    <h2 data-edit="testimonials_title">What My Clients Say</h2>
+    <div class="carousel-wrapper">
+      <div data-repeat="testimonials">
+        <div class="carousel-slide active">
+          <p class="testimonial-quote" data-edit="testimonial">"I've never felt more beautiful on a special day. The attention to detail was incredible and my makeup lasted all night — I received so many compliments."</p>
+          <div class="testimonial-name" data-edit="name">Isabelle T.</div>
+        </div>
+        <div class="carousel-slide">
+          <p class="testimonial-quote" data-edit="testimonial">"She listened to exactly what I wanted and delivered something even better. Professional, talented, and such a warm personality — I'll be back for every event."</p>
+          <div class="testimonial-name" data-edit="name">Naledi M.</div>
+        </div>
+        <div class="carousel-slide">
+          <p class="testimonial-quote" data-edit="testimonial">"From the consultation to the final look, the whole experience was seamless and luxurious. My wedding makeup was absolutely perfect."</p>
+          <div class="testimonial-name" data-edit="name">Chloé R.</div>
+        </div>
+      </div>
+    </div>
+    <div class="carousel-controls">
+      <button class="carousel-btn" id="prevBtn" aria-label="Previous">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      <div class="carousel-dots" id="carouselDots"></div>
+      <button class="carousel-btn" id="nextBtn" aria-label="Next">
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- OPEN HOURS -->
+  <section id="hours" class="hours">
+    <h2 data-edit="hours_title">Opening Hours</h2>
+    <table class="hours-table">
+      <tr>
+        <td data-edit="day_1">Monday</td>
+        <td data-edit="day_1_open">09:00</td>
+        <td data-edit="day_1_close">17:00</td>
+      </tr>
+      <tr>
+        <td data-edit="day_2">Tuesday</td>
+        <td data-edit="day_2_open">09:00</td>
+        <td data-edit="day_2_close">17:00</td>
+      </tr>
+      <tr>
+        <td data-edit="day_3">Wednesday</td>
+        <td data-edit="day_3_open">09:00</td>
+        <td data-edit="day_3_close">17:00</td>
+      </tr>
+      <tr>
+        <td data-edit="day_4">Thursday</td>
+        <td data-edit="day_4_open">09:00</td>
+        <td data-edit="day_4_close">17:00</td>
+      </tr>
+      <tr>
+        <td data-edit="day_5">Friday</td>
+        <td data-edit="day_5_open">09:00</td>
+        <td data-edit="day_5_close">17:00</td>
+      </tr>
+      <tr>
+        <td data-edit="day_6">Saturday</td>
+        <td data-edit="day_6_open">10:00</td>
+        <td data-edit="day_6_close">15:00</td>
+      </tr>
+      <tr>
+        <td data-edit="day_7">Sunday</td>
+        <td data-edit="day_7_open">Closed</td>
+        <td data-edit="day_7_close">Closed</td>
+      </tr>
+    </table>
+  </section>
+
+  <!-- POLICY -->
+  <section id="policy" class="policy">
+    <h2 data-edit="policy_title">Our Policy</h2>
+    <div class="policy-list" data-repeat="policies">
+      <div class="policy-item">
+        <span class="policy-num">01</span>
+        <p data-edit="policy_text">A 50% non-refundable deposit is required to secure your booking. The remaining balance is due on the day of your appointment.</p>
+      </div>
+      <div class="policy-item">
+        <span class="policy-num">02</span>
+        <p data-edit="policy_text">Cancellations made less than 48 hours before your appointment will forfeit the deposit. Rescheduling is available with 48+ hours notice.</p>
+      </div>
+      <div class="policy-item">
+        <span class="policy-num">03</span>
+        <p data-edit="policy_text">Please arrive with a clean, moisturised face and no makeup. Arriving more than 15 minutes late may result in a shortened appointment.</p>
+      </div>
+      <div class="policy-item">
+        <span class="policy-num">04</span>
+        <p data-edit="policy_text">Please disclose any skin conditions, allergies, or sensitivities prior to your appointment. Your skin health and safety are always the priority.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROMO 3 — after policy, no CTA, text left, image right -->
+  <section class="promo">
+    <div class="promo-text">
+      <h2 data-edit="promo3_title">Ready to Glow?</h2>
+      <p data-edit="promo3_description">Whether it's your wedding day, a shoot, or simply a Tuesday when you want to feel extraordinary — I'd love to work with you. Reach out to book your session.</p>
+    </div>
+    <div class="promo-image">
+      <img data-edit="promo3_image" src="https://images.pexels.com/photos/3373739/pexels-photo-3373739.jpeg" alt="Promo 3" />
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo" data-edit="site_name">Lumière Studio</div>
+    <p class="footer-copy">© <span data-edit="copyright_year">2026</span> <span data-edit="site_name">Lumière Studio</span>. All rights reserved.</p>
+    <p class="footer-squarre">Want your own site? <a href="https://squarre.vercel.app" target="_blank">This site was made using Squarre</a></p>
+  </footer>
+
+  <script>
+    // Navbar scroll
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // Burger menu
+    const burger = document.getElementById('burger');
+    const navLinks = document.getElementById('navLinks');
+    burger.addEventListener('click', () => {
+      burger.classList.toggle('open');
+      navLinks.classList.toggle('open');
+    });
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        burger.classList.remove('open');
+        navLinks.classList.remove('open');
+      });
+    });
+
+    // Carousel
+    const slides = document.querySelectorAll('.carousel-slide');
+    const dotsContainer = document.getElementById('carouselDots');
+    let current = 0;
+
+    slides.forEach((_, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+      dot.addEventListener('click', () => goTo(i));
+      dotsContainer.appendChild(dot);
+    });
+
+    function goTo(index) {
+      slides[current].classList.remove('active');
+      dotsContainer.children[current].classList.remove('active');
+      current = (index + slides.length) % slides.length;
+      slides[current].classList.add('active');
+      dotsContainer.children[current].classList.add('active');
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', () => goTo(current - 1));
+    document.getElementById('nextBtn').addEventListener('click', () => goTo(current + 1));
+
+    // Policy numbering
+    document.querySelectorAll('.policy-item').forEach((item, i) => {
+      const num = item.querySelector('.policy-num');
+      if (num) num.textContent = String(i + 1).padStart(2, '0');
+    });
+  </script>
+</body>
+</html>

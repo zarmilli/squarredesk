@@ -30,8 +30,6 @@ type ContentMap = Record<string, any>;
 export default function Editor() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // Snapshot of each repeat group's default item structure, captured from the
-  // live HTML the first time the iframe loads. Used to clone new blank items.
   const repeatTemplates = useRef<Record<string, HTMLElement>>({});
 
   const navigate = useNavigate();
@@ -99,11 +97,6 @@ export default function Editor() {
     };
   }, [templateSlug]);
 
-  /**
-   * Walk every [data-repeat] container and deep-clone its FIRST child element
-   * as the blank template for that group. We do this once on iframe load so we
-   * always have a pristine copy regardless of how many items are later added.
-   */
   function captureRepeatTemplates() {
     const doc = iframeRef.current?.contentDocument;
     if (!doc) return;
@@ -124,7 +117,6 @@ export default function Editor() {
     if (!doc) return;
 
     Object.entries(values).forEach(([key, value]) => {
-      // ── Repeat group ──
       if (Array.isArray(value)) {
         applyRepeatGroup(doc, key, value);
         return;
@@ -132,7 +124,6 @@ export default function Editor() {
 
       if (value == null) return;
 
-      // ── Scalar field ──
       const el = doc.querySelector<HTMLElement>(`[data-edit="${key}"]`);
       if (!el) return;
 
@@ -140,11 +131,6 @@ export default function Editor() {
     });
   }
 
-  /**
-   * Re-render a repeat group inside the iframe.
-   * Each item in `values` is a plain object whose keys match data-edit
-   * attributes on children of the cloned template element.
-   */
   function applyRepeatGroup(doc: Document, key: string, values: Record<string, any>[]) {
     const container = doc.querySelector<HTMLElement>(`[data-repeat="${key}"]`);
     if (!container) return;
@@ -152,7 +138,6 @@ export default function Editor() {
     const tmpl = repeatTemplates.current[key];
     if (!tmpl) return;
 
-    // Clear and rebuild
     container.innerHTML = "";
 
     values.forEach((item) => {
@@ -168,7 +153,6 @@ export default function Editor() {
     });
   }
 
-  /** Apply a single scalar value to an element, respecting data-edit-role. */
   function applyScalarField(el: HTMLElement, value: string) {
     const role = el.dataset.editRole;
 
@@ -206,7 +190,6 @@ export default function Editor() {
 
   // ─── Repeat group helpers ──────────────────────────────────────────────────
 
-  /** Build a blank item object with empty strings for every field in the group. */
   function blankItem(fields: Record<string, EditableField>): Record<string, string> {
     return Object.fromEntries(Object.keys(fields).map((k) => [k, ""]));
   }
@@ -298,6 +281,17 @@ export default function Editor() {
         body: { siteId },
       });
       if (error) throw error;
+
+      // Save live URL back to the site row
+      await supabase
+        .from("user_sites")
+        .update({
+          live_url: data.url,
+          is_published: true,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", siteId);
+
       setDeployUrl(data.url);
       setDeployStatus("success");
     } catch (err) {
@@ -396,7 +390,6 @@ export default function Editor() {
       <div className="space-y-3">
         {items.map((item, index) => (
           <Card key={index} className="p-3 border bg-gray-50 space-y-3">
-            {/* Item header */}
             <div className="flex items-center justify-between">
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
                 {field.label} {items.length > 1 ? `#${index + 1}` : ""}
@@ -410,7 +403,6 @@ export default function Editor() {
               </button>
             </div>
 
-            {/* Sub-fields */}
             {Object.entries(subFields).map(([subKey, subField]) => (
               <div key={subKey}>
                 <p className="text-xs font-medium text-gray-600 mb-1">{subField.label}</p>
@@ -426,7 +418,6 @@ export default function Editor() {
           </Card>
         ))}
 
-        {/* Add button */}
         {!atMax && (
           <Button
             size="sm"
@@ -488,13 +479,11 @@ export default function Editor() {
               <Card key={key} className="p-3">
                 {field.type === "repeat" ? (
                   <>
-                    {/* Repeat group label */}
                     <p className="text-sm font-semibold mb-3">{field.label}</p>
                     {renderRepeatGroup(key, field)}
                   </>
                 ) : (
                   <>
-                    {/* Scalar field label */}
                     <p className="text-sm font-medium mb-2">{field.label}</p>
                     {renderScalarInput(
                       key,

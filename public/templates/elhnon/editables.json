@@ -1,0 +1,80 @@
+{
+  "meta_title": { "type": "text", "label": "Page title" },
+
+  "site_name": { "type": "text", "label": "Site / brand name" },
+
+  "banner_text": { "type": "text", "label": "News banner text" },
+  "banner_link": { "type": "url",  "label": "News banner link" },
+
+  "nav_picks":   { "type": "text", "label": "Navbar — Top Picks" },
+  "nav_promo":   { "type": "text", "label": "Navbar — Our Story" },
+  "nav_catalog": { "type": "text", "label": "Navbar — Shop All" },
+  "nav_policy":  { "type": "text", "label": "Navbar — Policy" },
+
+  "hero_title":       { "type": "text",     "label": "Hero title" },
+  "hero_description": { "type": "longtext", "label": "Hero description" },
+  "hero_cta":         { "type": "text",     "label": "Hero button text" },
+  "hero_cta_link":    { "type": "url",      "label": "Hero button link" },
+  "hero_image":       { "type": "image",    "label": "Hero image (portrait)" },
+
+  "picks_title": { "type": "text", "label": "Top Picks section title" },
+  "picks": {
+    "type": "repeat",
+    "label": "Top Pick",
+    "max": 5,
+    "fields": {
+      "image":         { "type": "image",    "label": "Product image" },
+      "tag":           { "type": "text",     "label": "Badge label (e.g. Bestseller)" },
+      "name":          { "type": "text",     "label": "Product name" },
+      "price":         { "type": "text",     "label": "Price" },
+      "whatsapp_link": { "type": "url",      "label": "WhatsApp order link" }
+    }
+  },
+
+  "promo_title":       { "type": "text",     "label": "Promo 1 title" },
+  "promo_description": { "type": "longtext", "label": "Promo 1 description" },
+  "promo_cta":         { "type": "text",     "label": "Promo 1 button text" },
+  "promo_link":        { "type": "url",      "label": "Promo 1 button link" },
+  "promo_image":       { "type": "image",    "label": "Promo 1 image (square)" },
+
+  "catalog_title": { "type": "text", "label": "Catalog section title" },
+  "catalog": {
+    "type": "repeat",
+    "label": "Catalog Product",
+    "fields": {
+      "image":         { "type": "image", "label": "Product image" },
+      "name":          { "type": "text",  "label": "Product name" },
+      "price":         { "type": "text",  "label": "Price" },
+      "whatsapp_link": { "type": "url",   "label": "WhatsApp order link" }
+    }
+  },
+
+  "promo2_title":       { "type": "text",     "label": "Promo 2 title" },
+  "promo2_description": { "type": "longtext", "label": "Promo 2 description" },
+  "promo2_image":       { "type": "image",    "label": "Promo 2 image (square)" },
+
+  "testimonials_title": { "type": "text", "label": "Testimonials section title" },
+  "testimonials": {
+    "type": "repeat",
+    "label": "Testimonial",
+    "fields": {
+      "testimonial": { "type": "longtext", "label": "Testimonial text" },
+      "name":        { "type": "text",     "label": "Customer name" }
+    }
+  },
+
+  "policy_title": { "type": "text", "label": "Policy section title" },
+  "policies": {
+    "type": "repeat",
+    "label": "Policy",
+    "fields": {
+      "policy_text": { "type": "longtext", "label": "Policy text" }
+    }
+  },
+
+  "promo3_title":       { "type": "text",     "label": "Promo 3 title" },
+  "promo3_description": { "type": "longtext", "label": "Promo 3 description" },
+  "promo3_image":       { "type": "image",    "label": "Promo 3 image (square)" },
+
+  "copyright_year": { "type": "text", "label": "Copyright year" }
+}
