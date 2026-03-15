@@ -18,7 +18,7 @@ function generateSignature(data: Record<string, string>, passphrase: string) {
     .join("&")
 
   const stringToHash = passphrase
-    ? `${sorted}&passphrase=${encodeURIComponent(passphrase)}`
+    ? `${sorted}&passphrase=${encodeURIComponent(passphrase).replace(/%20/g, "+")}`
     : sorted
 
   return md5(stringToHash)
@@ -37,7 +37,6 @@ async function verifyPayfast(body: string) {
   )
 
   const text = await res.text()
-
   return text === "VALID"
 }
 
@@ -59,7 +58,7 @@ serve(async (req: Request) => {
     )
 
     if (receivedSignature !== calculatedSignature) {
-      console.error("Invalid signature")
+      console.error("Invalid signature — received:", receivedSignature, "calculated:", calculatedSignature)
       return new Response("Invalid signature", { status: 400 })
     }
 
@@ -93,13 +92,11 @@ serve(async (req: Request) => {
     }
 
     let plan = "basic"
-
     if (itemName?.toLowerCase().includes("pro")) {
       plan = "pro"
     }
 
     if (paymentStatus === "COMPLETE") {
-
       const now = new Date()
 
       const { data: profile } = await supabase
@@ -113,7 +110,6 @@ serve(async (req: Request) => {
 
       if (profile?.subscription_ends_at) {
         const currentEnd = new Date(profile.subscription_ends_at)
-
         if (currentEnd > now) {
           startDate = currentEnd
         }
