@@ -144,16 +144,22 @@ export default function Subscriptions() {
     setDowngradeModal(false);
   }
 
+  // ─── KEY FIX: submit a hidden form directly to PayFast instead of
+  // using window.location.href, which causes the browser to re-encode
+  // the URL and break the signature.
   async function redirectToPayfast(plan: string) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
+
+    // Use first_name from profiles table, not auth metadata
+    const firstName = profile?.first_name || "User";
 
     const { data, error } = await supabase.functions.invoke("create-subscription", {
       body: {
         plan,
         userId: user.id,
         email: user.email,
-        firstName: user.user_metadata?.first_name || "User",
+        firstName,
       },
     });
 
@@ -163,7 +169,23 @@ export default function Subscriptions() {
     }
 
     if (data?.paymentUrl) {
-      window.location.href = data.paymentUrl;
+      // Parse the URL and POST its params as a form directly to PayFast
+      // This prevents browser re-encoding from corrupting the signature
+      const url = new URL(data.paymentUrl);
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = "https://www.payfast.co.za/eng/process";
+
+      url.searchParams.forEach((value, key) => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = value;
+        form.appendChild(input);
+      });
+
+      document.body.appendChild(form);
+      form.submit();
     }
   }
 
