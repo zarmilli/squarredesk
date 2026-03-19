@@ -21,7 +21,6 @@ const PLANS: Record<PlanKey, { name: string; amount: string }> = {
   },
 }
 
-// PayFast requires parameters in this exact documented order
 const PAYFAST_FIELD_ORDER = [
   "merchant_id",
   "merchant_key",
@@ -45,7 +44,6 @@ function generateSignature(
   data: Record<string, string>,
   passphrase: string
 ) {
-  // Build the string in PayFast's required field order, skipping empty values
   const paramString = PAYFAST_FIELD_ORDER
     .filter((key) => data[key] !== undefined && data[key] !== null && data[key] !== "")
     .map((key) => `${key}=${encodeURIComponent(data[key].trim()).replace(/%20/g, "+")}`)
@@ -54,6 +52,11 @@ function generateSignature(
   const stringToHash = passphrase
     ? `${paramString}&passphrase=${encodeURIComponent(passphrase.trim()).replace(/%20/g, "+")}`
     : paramString
+
+  console.log("=== PAYFAST DEBUG ===")
+  console.log("paramString:", paramString)
+  console.log("stringToHash:", stringToHash)
+  console.log("====================")
 
   return md5(stringToHash)
 }
@@ -85,41 +88,45 @@ serve(async (req: Request) => {
 
     const now = new Date()
 
-    // Next month billing date
     const billingDate = new Date(now.getFullYear(), now.getMonth() + 1, 1)
       .toISOString()
       .split("T")[0]
 
     const paymentData: Record<string, string> = {
-      merchant_id:      Deno.env.get("PAYFAST_MERCHANT_ID") ?? "",
-      merchant_key:     Deno.env.get("PAYFAST_MERCHANT_KEY") ?? "",
-      return_url:       "https://squarredesk.vercel.app/dashboard",
-      cancel_url:       "https://squarredesk.vercel.app/subscriptions",
-      notify_url:       "https://suwiamrsjmbvhceqxchp.supabase.co/functions/v1/payfast-itn",
-      name_first:       firstName,
-      email_address:    email,
-      m_payment_id:     userId,
-      amount:           selectedPlan.amount,
-      item_name:        selectedPlan.name,
+      merchant_id:       Deno.env.get("PAYFAST_MERCHANT_ID") ?? "",
+      merchant_key:      Deno.env.get("PAYFAST_MERCHANT_KEY") ?? "",
+      return_url:        "https://squarredesk.vercel.app/dashboard",
+      cancel_url:        "https://squarredesk.vercel.app/subscriptions",
+      notify_url:        "https://suwiamrsjmbvhceqxchp.supabase.co/functions/v1/payfast-itn",
+      name_first:        firstName,
+      email_address:     email,
+      m_payment_id:      userId,
+      amount:            selectedPlan.amount,
+      item_name:         selectedPlan.name,
       subscription_type: "1",
-      billing_date:     billingDate,
-      recurring_amount: selectedPlan.amount,
-      frequency:        "3",
-      cycles:           "0",
+      billing_date:      billingDate,
+      recurring_amount:  selectedPlan.amount,
+      frequency:         "3",
+      cycles:            "0",
     }
 
-    const signature = generateSignature(
-      paymentData,
-      Deno.env.get("PAYFAST_PASSPHRASE") ?? ""
-    )
+    // ─── TEMPORARY: hardcoded passphrase for debugging ───────────────
+    // Replace "your_actual_passphrase" with your real PayFast passphrase
+    // exactly as it appears in your PayFast dashboard → Settings → Passphrase
+    const passphrase = "M1llion2daM00n"
+    // ─────────────────────────────────────────────────────────────────
 
-    // Build the URL in the same field order and encoding as the signature
+    const signature = generateSignature(paymentData, passphrase)
+
     const queryString = PAYFAST_FIELD_ORDER
       .filter((key) => paymentData[key] !== undefined && paymentData[key] !== null && paymentData[key] !== "")
       .map((key) => `${key}=${encodeURIComponent(paymentData[key].trim()).replace(/%20/g, "+")}`)
       .join("&")
 
     const paymentUrl = `https://www.payfast.co.za/eng/process?${queryString}&signature=${signature}`
+
+    console.log("signature:", signature)
+    console.log("paymentUrl:", paymentUrl)
 
     return new Response(
       JSON.stringify({ paymentUrl }),
