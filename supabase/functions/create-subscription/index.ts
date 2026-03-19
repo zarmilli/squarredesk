@@ -95,8 +95,8 @@ serve(async (req: Request) => {
     const paymentData: Record<string, string> = {
       merchant_id:       Deno.env.get("PAYFAST_MERCHANT_ID") ?? "",
       merchant_key:      Deno.env.get("PAYFAST_MERCHANT_KEY") ?? "",
-      return_url:        "https://squarredesk.vercel.app/dashboard",
-      cancel_url:        "https://squarredesk.vercel.app/subscriptions",
+      return_url:        "https://squarredesk.vercel.app/payment/success",
+      cancel_url:         "https://squarredesk.vercel.app/payment/cancelled",
       notify_url:        "https://suwiamrsjmbvhceqxchp.supabase.co/functions/v1/payfast-itn",
       name_first:        firstName,
       email_address:     email,
