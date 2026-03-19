@@ -109,11 +109,7 @@ serve(async (req: Request) => {
       frequency:         "3",
       cycles:            "0",
     }
-
-    // ─── TEMPORARY: hardcoded passphrase for debugging ───────────────
-    // Replace "your_actual_passphrase" with your real PayFast passphrase
-    // exactly as it appears in your PayFast dashboard → Settings → Passphrase
-    const passphrase = "M1llion2daM00n"
+    const passphrase = Deno.env.get("PAYFAST_PASSPHRASE") ?? ""
     // ─────────────────────────────────────────────────────────────────
 
     const signature = generateSignature(paymentData, passphrase)

@@ -30,6 +30,8 @@ import Onboarding from "@/pages/onboarding";
 import { AuthProvider } from "@/context/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import ConfirmEmail from "./pages/auth/confirmation";
+import PaymentSuccess from "./pages/payment/success";
+import PaymentCancelled from "./pages/payment/cancelled";
 
 function Layout({
   children,
@@ -113,6 +115,8 @@ function Router() {
       <Route path="/auth/sign-up" element={<SignUp />} />
       <Route path="/onboarding" element={<Onboarding />} />
       <Route path="/auth/confirmation" element={<ConfirmEmail />} />
+      <Route path="/payment/success" element={<PaymentSuccess />} />
+      <Route path="/payment/cancelled" element={<PaymentCancelled />} />
 
       <Route path="*" element={<ProtectedRoute><NotFound /></ProtectedRoute>} />
     </Routes>
