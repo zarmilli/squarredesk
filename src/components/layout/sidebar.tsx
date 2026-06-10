@@ -7,7 +7,9 @@ import {
   Bell,
   CreditCard,
   BookOpen,
-  LogIn, 
+  ShoppingBag,
+  LogIn,
+  Globe, 
   UserPlus,
   LogOut,
   X,
@@ -27,14 +29,19 @@ const navItems = [
     icon: LayoutDashboard,
   },
   {
+    title: "Marketplace",
+    href: "/Marketplace",
+    icon: ShoppingBag,
+  },
+  {
     title: "Profile",
     href: "/profile",
     icon: User,
   },
   {
-    title: "Metrics",
+    title: "Sites",
     href: "/tables",
-    icon: Table,
+    icon: Globe,
   },
   {
     title: "Notifications",
