@@ -55,7 +55,7 @@ export default function HeaderRight() {
 
       {/* Upgrade badge group */}
       <div
-        onClick={() => navigate("/settings")}
+        onClick={() => navigate("/subscriptions")}
         className="cursor-pointer hover:opacity-90 transition"
       >
         <BadgeGroup
