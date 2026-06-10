@@ -26,6 +26,8 @@ import SignIn from "@/pages/auth/sign-in";
 import SignUp from "@/pages/auth/sign-up";
 import NotFound from "@/pages/not-found";
 import Onboarding from "@/pages/onboarding";
+import Marketplace from "@/pages/Marketplace";
+import MarketplaceProduct from "@/pages/MarketplaceProduct";
 
 import { AuthProvider } from "@/context/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -117,6 +119,8 @@ function Router() {
       <Route path="/auth/confirmation" element={<ConfirmEmail />} />
       <Route path="/payment/success" element={<PaymentSuccess />} />
       <Route path="/payment/cancelled" element={<PaymentCancelled />} />
+      <Route path="/marketplace" element={<Marketplace />} />
+      <Route path="/marketplace/:id" element={<MarketplaceProduct />} />
 
       <Route path="*" element={<ProtectedRoute><NotFound /></ProtectedRoute>} />
     </Routes>
