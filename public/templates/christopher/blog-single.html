@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Article</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+
+<style>
+*,*::before,*::after{
+box-sizing:border-box;
+margin:0;
+padding:0;
+}
+
+:root{
+--primary:#B1E09D;
+--secondary:#061C15;
+--accent:#82A89C;
+--bg:#B1E09D;
+--text:#111827;
+--text2:#4B5563;
+--white:#ffffff;
+}
+
+body{
+background:var(--bg);
+color:var(--text);
+font-family:'Playfair Display',serif;
+line-height:1.8;
+}
+
+.article-page{
+padding:80px 48px;
+}
+
+.article-container{
+max-width:850px;
+margin:0 auto;
+}
+
+.back-link{
+display:inline-flex;
+align-items:center;
+gap:10px;
+margin-bottom:40px;
+
+font-family:'JetBrains Mono',monospace;
+font-size:12px;
+font-weight:600;
+letter-spacing:.08em;
+text-transform:uppercase;
+
+color:var(--secondary);
+text-decoration:none;
+}
+
+.back-link:hover{
+color:var(--accent);
+}
+
+.article-date{
+font-family:'JetBrains Mono',monospace;
+font-size:12px;
+font-weight:600;
+letter-spacing:.1em;
+text-transform:uppercase;
+color:var(--accent);
+margin-bottom:18px;
+}
+
+.article-title{
+font-family:'Plus Jakarta Sans',sans-serif;
+font-size:clamp(38px,5vw,62px);
+font-weight:700;
+line-height:1.05;
+letter-spacing:-.02em;
+color:var(--secondary);
+margin-bottom:32px;
+}
+
+.article-image{
+overflow:hidden;
+border-radius:24px;
+margin-bottom:28px;
+}
+
+.article-image img{
+width:100%;
+display:block;
+aspect-ratio:16/8;
+object-fit:cover;
+}
+
+.article-description{
+font-size:18px;
+line-height:1.9;
+color:var(--text2);
+margin-bottom:36px;
+}
+
+.article-divider{
+border:none;
+border-top:1px solid rgba(6,28,21,.15);
+margin-bottom:40px;
+}
+
+.article-content{
+font-size:18px;
+line-height:2;
+color:var(--secondary);
+white-space:pre-wrap;
+}
+
+@media(max-width:768px){
+
+.article-page{
+padding:48px 20px;
+}
+
+.article-title{
+font-size:36px;
+}
+
+.article-description,
+.article-content{
+font-size:17px;
+}
+}
+</style>
+</head>
+
+<body>
+
+<section class="article-page">
+
+<div class="article-container">
+
+<a href="blog.html" class="back-link">
+← Back to Blog
+</a>
+
+<div id="articleDate" class="article-date"></div>
+
+<h1 id="articleTitle" class="article-title"></h1>
+
+<div class="article-image">
+<img id="articleImage" src="" alt="">
+</div>
+
+<p id="articleDescription" class="article-description"></p>
+
+<hr class="article-divider">
+
+<div id="articleContent" class="article-content"></div>
+
+</div>
+
+</section>
+
+<script>
+
+const params = new URLSearchParams(window.location.search);
+const articleId = Number(params.get('id') || 0);
+
+/*
+Load article data from your website builder's
+saved blog repeat group data.
+
+Example:
+
+window.websiteData.articles
+
+or
+
+localStorage
+
+or
+
+Supabase
+
+depending on how your editor already
+handles repeat groups.
+*/
+
+const articles = window.websiteData?.articles || [];
+
+const article = articles[articleId];
+
+if(article){
+
+document.title = article.title;
+
+document.getElementById('articleDate').textContent =
+article.date || '';
+
+document.getElementById('articleTitle').textContent =
+article.title || '';
+
+document.getElementById('articleImage').src =
+article.image || '';
+
+document.getElementById('articleDescription').textContent =
+article.description || '';
+
+document.getElementById('articleContent').textContent =
+article.content || '';
+
+}
+
+</script>
+
+</body>
+</html>

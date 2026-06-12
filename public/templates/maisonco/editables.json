@@ -1,0 +1,65 @@
+{
+  "meta_title": { "type": "text", "label": "Page title" },
+
+  "site_name": { "type": "text", "label": "Site / brand name" },
+
+  "nav_about":    { "type": "text", "label": "Navbar — About" },
+  "nav_featured": { "type": "text", "label": "Navbar — Featured" },
+  "nav_policy":   { "type": "text", "label": "Navbar — Policy" },
+  "nav_products": { "type": "text", "label": "Navbar — Products" },
+
+  "hero_background": {
+    "type": "image",
+    "label": "Hero background image",
+    "default": "https://images.pexels.com/photos/1571463/pexels-photo-1571463.jpeg"
+  },
+  "hero_title":         { "type": "text",     "label": "Hero title" },
+  "hero_description":   { "type": "longtext", "label": "Hero description" },
+  "hero_cta":           { "type": "text",     "label": "Hero button text" },
+  "hero_whatsapp_link": { "type": "url",      "label": "Hero WhatsApp link" },
+
+  "about_title":       { "type": "text",     "label": "About section title" },
+  "about_description": { "type": "longtext", "label": "About body text" },
+
+  "featured_title":       { "type": "text",     "label": "Featured section title" },
+  "featured_description": { "type": "longtext", "label": "Featured body text" },
+  "featured_img_1": { "type": "image", "label": "Featured image 1" },
+  "featured_img_2": { "type": "image", "label": "Featured image 2" },
+  "featured_img_3": { "type": "image", "label": "Featured image 3" },
+  "featured_img_4": { "type": "image", "label": "Featured image 4" },
+  "featured_img_5": { "type": "image", "label": "Featured image 5" },
+  "featured_img_6": { "type": "image", "label": "Featured image 6" },
+
+  "products_title": { "type": "text", "label": "Products section title" },
+  "products": {
+    "type": "repeat",
+    "label": "Products",
+    "fields": {
+      "image":         { "type": "image",     "label": "Product image" },
+      "name":          { "type": "text",      "label": "Product name" },
+      "price":         { "type": "text",      "label": "Product price" },
+      "whatsapp_link": { "type": "url",       "label": "Product WhatsApp link" }
+    }
+  },
+
+  "testimonials_title": { "type": "text", "label": "Testimonials section title" },
+  "testimonials": {
+    "type": "repeat",
+    "label": "Testimonials",
+    "fields": {
+      "testimonial": { "type": "longtext", "label": "Testimonial text" },
+      "name":        { "type": "text",     "label": "Customer name" }
+    }
+  },
+
+  "policy_title": { "type": "text", "label": "Policy section title" },
+  "policies": {
+    "type": "repeat",
+    "label": "Policies",
+    "fields": {
+      "policy_text": { "type": "longtext", "label": "Policy text" }
+    }
+  },
+
+  "copyright_year": { "type": "text", "label": "Copyright year" }
+}

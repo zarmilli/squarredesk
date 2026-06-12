@@ -1,0 +1,262 @@
+{
+  "seo_title": {
+    "type": "text",
+    "label": "SEO Title",
+    "section": "seo"
+  },
+  "seo_description": {
+    "type": "longtext",
+    "label": "SEO Description",
+    "section": "seo"
+  },
+  "seo_favicon": {
+    "type": "image",
+    "label": "Favicon",
+    "section": "seo"
+  },
+  "og_title": {
+    "type": "text",
+    "label": "OG Title",
+    "section": "seo"
+  },
+  "og_description": {
+    "type": "longtext",
+    "label": "OG Description",
+    "section": "seo"
+  },
+  "og_image": {
+    "type": "image",
+    "label": "OG Image",
+    "section": "seo"
+  },
+
+  "site_name": {
+    "type": "text",
+    "label": "Site Name",
+    "section": "editor"
+  },
+
+  "nav_about": {
+    "type": "text",
+    "label": "Nav About",
+    "section": "editor"
+  },
+  "nav_skills": {
+    "type": "text",
+    "label": "Nav Skills",
+    "section": "editor"
+  },
+  "nav_experience": {
+    "type": "text",
+    "label": "Nav Experience",
+    "section": "editor"
+  },
+  "nav_work": {
+    "type": "text",
+    "label": "Nav Work",
+    "section": "editor"
+  },
+  "nav_blog": {
+    "type": "text",
+    "label": "Nav Blog",
+    "section": "editor"
+  },
+  "nav_contact": {
+    "type": "text",
+    "label": "Nav Contact",
+    "section": "editor"
+  },
+
+  "hero_label": {
+    "type": "text",
+    "label": "Hero Label",
+    "section": "editor"
+  },
+  "hero_title": {
+    "type": "longtext",
+    "label": "Hero Title",
+    "section": "editor"
+  },
+  "hero_description": {
+    "type": "longtext",
+    "label": "Hero Description",
+    "section": "editor"
+  },
+  "hero_cta_primary": {
+    "type": "text",
+    "label": "Primary CTA",
+    "section": "editor"
+  },
+  "hero_cta_secondary": {
+    "type": "text",
+    "label": "Secondary CTA",
+    "section": "editor"
+  },
+  "hero_image": {
+    "type": "image",
+    "label": "Hero Image",
+    "section": "editor"
+  },
+
+  "about_label": {
+    "type": "text",
+    "label": "About Label",
+    "section": "editor"
+  },
+  "about_title": {
+    "type": "text",
+    "label": "About Title",
+    "section": "editor"
+  },
+  "about_description": {
+    "type": "longtext",
+    "label": "About Description",
+    "section": "editor"
+  },
+  "about_image": {
+    "type": "image",
+    "label": "About Image",
+    "section": "editor"
+  },
+
+  "skills_label": {
+    "type": "text",
+    "label": "Skills Label",
+    "section": "editor"
+  },
+  "skills_title": {
+    "type": "text",
+    "label": "Skills Title",
+    "section": "editor"
+  },
+  "skills_description": {
+    "type": "longtext",
+    "label": "Skills Description",
+    "section": "editor"
+  },
+
+  "skills": {
+    "type": "repeat",
+    "label": "Skill",
+    "section": "editor",
+    "fields": {
+      "icon": { "type": "text", "label": "Icon" },
+      "name": { "type": "text", "label": "Skill Name" },
+      "description": { "type": "longtext", "label": "Description" }
+    }
+  },
+
+  "exp_label": {
+    "type": "text",
+    "label": "Experience Label",
+    "section": "editor"
+  },
+  "exp_title": {
+    "type": "text",
+    "label": "Experience Title",
+    "section": "editor"
+  },
+
+  "experience": {
+    "type": "repeat",
+    "label": "Experience",
+    "section": "editor",
+    "fields": {
+      "date": { "type": "text", "label": "Date" },
+      "role": { "type": "text", "label": "Role" },
+      "company": { "type": "text", "label": "Company" },
+      "description": { "type": "longtext", "label": "Description" }
+    }
+  },
+
+  "blog_label": {
+    "type": "text",
+    "label": "Blog Label",
+    "section": "editor"
+  },
+  "blog_title": {
+    "type": "text",
+    "label": "Blog Promo Title",
+    "section": "editor"
+  },
+  "blog_description": {
+    "type": "longtext",
+    "label": "Blog Promo Description",
+    "section": "editor"
+  },
+  "blog_cta": {
+    "type": "text",
+    "label": "Blog CTA",
+    "section": "editor"
+  },
+  "blog_cta_link": {
+    "type": "url",
+    "label": "Blog CTA Link",
+    "section": "editor"
+  },
+
+  "gallery_label": {
+    "type": "text",
+    "label": "Gallery Label",
+    "section": "editor"
+  },
+  "gallery_title": {
+    "type": "text",
+    "label": "Gallery Title",
+    "section": "editor"
+  },
+  "gallery_description": {
+    "type": "longtext",
+    "label": "Gallery Description",
+    "section": "editor"
+  },
+
+  "gallery": {
+    "type": "repeat",
+    "label": "Gallery Image",
+    "section": "editor",
+    "fields": {
+      "image": {
+        "type": "image",
+        "label": "Image"
+      }
+    }
+  },
+
+  "contact_label": {
+    "type": "text",
+    "label": "Contact Label",
+    "section": "editor"
+  },
+  "contact_title": {
+    "type": "text",
+    "label": "Contact Title",
+    "section": "editor"
+  },
+  "contact_description": {
+    "type": "longtext",
+    "label": "Contact Description",
+    "section": "editor"
+  },
+  "contact_email": {
+    "type": "text",
+    "label": "Email",
+    "section": "editor"
+  },
+  "contact_phone": {
+    "type": "text",
+    "label": "Phone",
+    "section": "editor"
+  },
+  "contact_cta": {
+    "type": "text",
+    "label": "Contact Button",
+    "section": "editor"
+  },
+
+  "copyright_year": {
+    "type": "text",
+    "label": "Copyright Year",
+    "section": "editor"
+  }
+}

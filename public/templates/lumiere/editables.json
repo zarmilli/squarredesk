@@ -1,0 +1,108 @@
+{
+  "meta_title": { "type": "text", "label": "Page title" },
+
+  "site_name": { "type": "text", "label": "Site / brand name" },
+
+  "banner_text": { "type": "text", "label": "News banner text" },
+  "banner_link": { "type": "url",  "label": "News banner link" },
+
+  "nav_about":    { "type": "text", "label": "Navbar — About" },
+  "nav_services": { "type": "text", "label": "Navbar — Services" },
+  "nav_gallery":  { "type": "text", "label": "Navbar — My Work" },
+  "nav_hours":    { "type": "text", "label": "Navbar — Hours" },
+  "nav_policy":   { "type": "text", "label": "Navbar — Policy" },
+
+  "hero_title":       { "type": "text",     "label": "Hero title" },
+  "hero_description": { "type": "longtext", "label": "Hero description" },
+  "hero_cta":         { "type": "text",     "label": "Hero button text" },
+  "hero_cta_link":    { "type": "url",      "label": "Hero button link" },
+  "hero_image":       { "type": "image",    "label": "Hero image" },
+
+  "about_title":       { "type": "text",     "label": "About title" },
+  "about_description": { "type": "longtext", "label": "About description" },
+
+  "services_title": { "type": "text", "label": "Services section title" },
+  "services": {
+    "type": "repeat",
+    "label": "Service",
+    "fields": {
+      "image": { "type": "image", "label": "Service image" },
+      "name":  { "type": "text",  "label": "Service name" },
+      "price": { "type": "text",  "label": "Price" }
+    }
+  },
+
+  "promo_title":       { "type": "text",     "label": "Promo 1 title" },
+  "promo_description": { "type": "longtext", "label": "Promo 1 description" },
+  "promo_cta":         { "type": "text",     "label": "Promo 1 button text" },
+  "promo_link":        { "type": "url",      "label": "Promo 1 button link" },
+  "promo_image":       { "type": "image",    "label": "Promo 1 image" },
+
+  "gallery_title": { "type": "text", "label": "Gallery section title" },
+  "gallery": {
+    "type": "repeat",
+    "label": "Gallery Photo",
+    "fields": {
+      "image": { "type": "image", "label": "Photo" }
+    }
+  },
+
+  "promo2_title":       { "type": "text",     "label": "Promo 2 title" },
+  "promo2_description": { "type": "longtext", "label": "Promo 2 description" },
+  "promo2_image":       { "type": "image",    "label": "Promo 2 image" },
+
+  "testimonials_title": { "type": "text", "label": "Testimonials section title" },
+  "testimonials": {
+    "type": "repeat",
+    "label": "Testimonial",
+    "fields": {
+      "testimonial": { "type": "longtext", "label": "Testimonial text" },
+      "name":        { "type": "text",     "label": "Client name" }
+    }
+  },
+
+  "hours_title": { "type": "text", "label": "Hours section title" },
+
+  "day_1":       { "type": "text", "label": "Day 1 name" },
+  "day_1_open":  { "type": "text", "label": "Day 1 opening time" },
+  "day_1_close": { "type": "text", "label": "Day 1 closing time" },
+
+  "day_2":       { "type": "text", "label": "Day 2 name" },
+  "day_2_open":  { "type": "text", "label": "Day 2 opening time" },
+  "day_2_close": { "type": "text", "label": "Day 2 closing time" },
+
+  "day_3":       { "type": "text", "label": "Day 3 name" },
+  "day_3_open":  { "type": "text", "label": "Day 3 opening time" },
+  "day_3_close": { "type": "text", "label": "Day 3 closing time" },
+
+  "day_4":       { "type": "text", "label": "Day 4 name" },
+  "day_4_open":  { "type": "text", "label": "Day 4 opening time" },
+  "day_4_close": { "type": "text", "label": "Day 4 closing time" },
+
+  "day_5":       { "type": "text", "label": "Day 5 name" },
+  "day_5_open":  { "type": "text", "label": "Day 5 opening time" },
+  "day_5_close": { "type": "text", "label": "Day 5 closing time" },
+
+  "day_6":       { "type": "text", "label": "Day 6 name" },
+  "day_6_open":  { "type": "text", "label": "Day 6 opening time" },
+  "day_6_close": { "type": "text", "label": "Day 6 closing time" },
+
+  "day_7":       { "type": "text", "label": "Day 7 name" },
+  "day_7_open":  { "type": "text", "label": "Day 7 opening time" },
+  "day_7_close": { "type": "text", "label": "Day 7 closing time" },
+
+  "policy_title": { "type": "text", "label": "Policy section title" },
+  "policies": {
+    "type": "repeat",
+    "label": "Policy",
+    "fields": {
+      "policy_text": { "type": "longtext", "label": "Policy text" }
+    }
+  },
+
+  "promo3_title":       { "type": "text",     "label": "Promo 3 title" },
+  "promo3_description": { "type": "longtext", "label": "Promo 3 description" },
+  "promo3_image":       { "type": "image",    "label": "Promo 3 image" },
+
+  "copyright_year": { "type": "text", "label": "Copyright year" }
+}

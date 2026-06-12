@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title data-edit="seo_title">Chris. O Moleme — Marketing & Digital Strategy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" data-edit="seo_description" content="Strategic marketing, branding, and digital execution focused on growth, clarity, and conversion." />
+  <link rel="icon" id="favicon" href="" />
+  <meta property="og:title"       id="og-title"       content="Chris. O Moleme — Marketing & Digital Strategy" />
+  <meta property="og:description" id="og-description" content="Strategic marketing, branding, and digital execution focused on growth, clarity, and conversion." />
+  <meta property="og:image"       id="og-image"       content="" />
+  <meta property="og:type"        content="website" />
+
+  <!-- SEO editable anchors (hidden) -->
+  <span data-edit="seo_favicon"    style="display:none"></span>
+  <span data-edit="og_title"       style="display:none"></span>
+  <span data-edit="og_description" style="display:none"></span>
+  <span data-edit="og_image"       style="display:none"></span>
+
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary:  #B1E09D;
+      --secondary:#061C15;
+      --accent:   #82A89C;
+      --bg:       #B1E09D;
+      --surface:  #061C15;
+      --text:     #111827;
+      --text2:    #4B5563;
+      --border:   #D1DEDC;
+      --white:    #ffffff;
+      --card-r:   32px;
+      --ctrl-r:   48px;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: 'Playfair Display', serif; font-size: 16px; line-height: 1.6; }
+    h1,h2,h3,h4 { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      padding: 20px 48px; display: flex; justify-content: space-between; align-items: center;
+      background: transparent; transition: background 0.3s, backdrop-filter 0.3s;
+    }
+    nav.scrolled { background: rgba(6,28,21,0.88); backdrop-filter: blur(16px); }
+    .logo {
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 700;
+      color: var(--primary); letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a {
+      font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: rgba(177,224,157,0.65); text-decoration: none; transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--primary); }
+    .nav-cta { background: var(--primary); color: var(--secondary) !important; padding: 10px 22px; border-radius: var(--ctrl-r); }
+    .burger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; z-index: 201; }
+    .burger span { width: 24px; height: 2px; background: var(--primary); border-radius: 2px; display: block; transition: transform 0.3s, opacity 0.3s; transform-origin: center; }
+    .burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .burger.open span:nth-child(2) { opacity: 0; }
+    .burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    @media(max-width:768px) {
+      nav { padding: 16px 20px; }
+      .burger { display: flex; }
+      .nav-links {
+        position: fixed; inset: 0; background: var(--secondary);
+        flex-direction: column; align-items: center; justify-content: center; gap: 32px;
+        transform: translateY(-100%); transition: transform 0.4s cubic-bezier(.4,0,.2,1); pointer-events: none;
+      }
+      .nav-links.open { transform: translateY(0); pointer-events: all; }
+      .nav-links a { font-size: 20px !important; color: var(--primary) !important; }
+    }
+
+    /* BUTTONS */
+    .btn-primary {
+      display: inline-block; background: var(--primary); color: var(--secondary);
+      font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 16px 32px; border-radius: var(--ctrl-r);
+      text-decoration: none; border: none; cursor: pointer; transition: background 0.2s, transform 0.15s;
+    }
+    .btn-primary:hover { background: #c8f0b2; transform: translateY(-2px); }
+    .btn-ghost {
+      display: inline-block; background: transparent; color: var(--primary);
+      font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 15px 32px; border-radius: var(--ctrl-r);
+      text-decoration: none; border: 1px solid rgba(177,224,157,0.3); transition: border-color 0.2s, transform 0.15s;
+    }
+    .btn-ghost:hover { border-color: var(--primary); transform: translateY(-2px); }
+
+    /* SECTION SHARED */
+    .section { padding: 80px 48px; }
+    .section-inner { max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px;
+    }
+    .section-title { font-size: clamp(32px,4vw,52px); font-weight: 500; line-height: 1.1; letter-spacing: -0.01em; margin-bottom: 20px; }
+    .section-body { font-family: 'Playfair Display', serif; font-size: 16px; line-height: 1.7; color: var(--text2); max-width: 640px; }
+    @media(max-width:768px) { .section { padding: 60px 20px; } }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh; background: var(--secondary);
+      display: flex; align-items: center; padding: 120px 48px 80px; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 80% 50%, rgba(177,224,157,0.07) 0%, transparent 70%),
+                  radial-gradient(ellipse 50% 40% at 10% 80%, rgba(130,168,156,0.05) 0%, transparent 60%);
+    }
+    .hero-inner { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; width: 100%; display: flex; align-items: center; gap: 64px; }
+    .hero-text { flex: 1; }
+    .hero-label {
+      font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 28px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .hero-label::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
+    .hero-text h1 { font-size: clamp(40px,5.5vw,68px); font-weight: 500; line-height: 1.06; color: var(--white); margin-bottom: 28px; letter-spacing: -0.01em; }
+    .hero-text h1 em { font-style: normal; color: var(--primary); }
+    .hero-text p { font-family: 'Playfair Display', serif; font-size: 17px; line-height: 1.7; color: rgba(255,255,255,0.6); max-width: 500px; margin-bottom: 44px; }
+    .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+    .hero-portrait { width: 380px; height: 480px; flex-shrink: 0; border-radius: var(--card-r); overflow: hidden; border: 1px solid rgba(177,224,157,0.12); }
+    .hero-portrait img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    @media(max-width:900px) {
+      .hero { padding: 100px 20px 60px; }
+      .hero-inner { flex-direction: column; gap: 40px; }
+      .hero-portrait { width: 100%; height: 300px; }
+    }
+
+    /* ABOUT */
+    .about { background: var(--bg); }
+    .about-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; gap: 80px; }
+    .about-text { flex: 1; }
+    .about-text .section-title { color: var(--secondary); }
+    .about-text .section-body { color: rgba(6,28,21,0.7); }
+    .about-image { width: 380px; height: 440px; flex-shrink: 0; border-radius: var(--card-r); overflow: hidden; border: 2px solid rgba(6,28,21,0.1); }
+    .about-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    @media(max-width:900px) { .about-inner { flex-direction: column; gap: 40px; } .about-image { width: 100%; height: 280px; } }
+
+    /* SKILLS */
+    .skills { background: var(--secondary); }
+    .skills .section-title { color: var(--white); }
+    .skills .section-body { color: rgba(255,255,255,0.5); }
+    .skills-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-top: 48px; }
+    .skill-card {
+      background: rgba(177,224,157,0.05); border: 1px solid rgba(177,224,157,0.1); border-radius: var(--card-r); padding: 28px 24px;
+      transition: background 0.25s, transform 0.2s, border-color 0.2s;
+    }
+    .skill-card:hover { background: rgba(177,224,157,0.1); border-color: rgba(177,224,157,0.28); transform: translateY(-4px); }
+    .skill-icon { width: 44px; height: 44px; border-radius: 12px; background: rgba(177,224,157,0.1); display: flex; align-items: center; justify-content: center; margin-bottom: 20px; font-size: 20px; }
+    .skill-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; font-weight: 600; color: var(--white); margin-bottom: 8px; }
+    .skill-desc { font-family: 'Playfair Display', serif; font-size: 14px; line-height: 1.65; color: rgba(255,255,255,0.48); }
+    @media(max-width:900px) { .skills-grid { grid-template-columns: repeat(2,1fr); } }
+    @media(max-width:480px) { .skills-grid { grid-template-columns: 1fr; } }
+
+    /* EXPERIENCE */
+    .experience { background: var(--bg); }
+    .experience .section-title { color: var(--secondary); }
+    .exp-list { margin-top: 48px; }
+    .exp-item { border-top: 1px solid var(--border); padding: 32px 0; display: flex; gap: 48px; align-items: flex-start; }
+    .exp-item:last-child { border-bottom: 1px solid var(--border); }
+    .exp-date { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: var(--accent); min-width: 120px; padding-top: 4px; }
+    .exp-body { flex: 1; }
+    .exp-role { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 600; color: var(--secondary); margin-bottom: 4px; }
+    .exp-company { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; }
+    .exp-desc { font-family: 'Playfair Display', serif; font-size: 15px; line-height: 1.7; color: var(--text2); }
+    @media(max-width:600px) { .exp-item { flex-direction: column; gap: 8px; padding: 24px 0; } }
+
+    /* BLOG PROMO */
+    .blog-promo { background: var(--secondary); }
+    .blog-promo-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 48px; }
+    .blog-promo-text { flex: 1; }
+    .blog-promo-text .section-title { color: var(--white); }
+    .blog-promo-text p { font-family: 'Playfair Display', serif; color: rgba(255,255,255,0.5); font-size: 16px; line-height: 1.7; max-width: 520px; margin-bottom: 36px; }
+    @media(max-width:768px) { .blog-promo-inner { flex-direction: column; } }
+
+    /* GALLERY */
+    .gallery { background: var(--bg); }
+    .gallery .section-title { color: var(--secondary); }
+    .gallery-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 48px; }
+    .gallery-item { border-radius: 20px; overflow: hidden; border: 1px solid rgba(6,28,21,0.1); transition: transform 0.3s; }
+    .gallery-item:hover { transform: translateY(-4px); }
+    .gallery-item img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+    @media(max-width:768px) { .gallery-grid { grid-template-columns: repeat(2,1fr); } }
+    @media(max-width:480px) { .gallery-grid { grid-template-columns: 1fr; } }
+
+    /* CONTACT */
+    .contact { background: var(--secondary); }
+    .contact-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+    .contact-text .section-title { color: var(--white); }
+    .contact-text p { font-family: 'Playfair Display', serif; color: rgba(255,255,255,0.5); font-size: 16px; line-height: 1.7; margin-bottom: 32px; }
+    .contact-items { display: flex; flex-direction: column; gap: 16px; }
+    .contact-row { display: flex; align-items: center; gap: 12px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--primary); }
+    .contact-row svg { width: 16px; height: 16px; stroke: var(--accent); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .contact-row a { color: var(--primary); text-decoration: none; transition: color 0.2s; }
+    .contact-row a:hover { color: var(--white); }
+    .contact-form { display: flex; flex-direction: column; gap: 16px; }
+    .form-field input, .form-field textarea {
+      width: 100%; background: rgba(177,224,157,0.05); border: 1px solid rgba(177,224,157,0.14); border-radius: 16px;
+      padding: 16px 20px; color: var(--white); font-family: 'Playfair Display', serif; font-size: 15px;
+      outline: none; transition: border-color 0.2s;
+    }
+    .form-field input::placeholder, .form-field textarea::placeholder { color: rgba(255,255,255,0.28); }
+    .form-field input:focus, .form-field textarea:focus { border-color: rgba(177,224,157,0.36); }
+    .form-field textarea { resize: vertical; min-height: 120px; }
+    @media(max-width:768px) { .contact-inner { grid-template-columns: 1fr; gap: 48px; } }
+
+    /* FOOTER */
+    footer {
+      background: var(--secondary); border-top: 1px solid rgba(177,224,157,0.08);
+      padding: 48px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;
+    }
+    .footer-logo { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 700; color: var(--primary); letter-spacing: 0.06em; text-transform: uppercase; }
+    .footer-copy { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.3); letter-spacing: 0.06em; }
+    .footer-squarre { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.25); letter-spacing: 0.06em; }
+    .footer-squarre a { color: rgba(177,224,157,0.5); text-decoration: underline; }
+    .footer-squarre a:hover { color: var(--primary); }
+    @media(max-width:600px) { footer { padding: 32px 20px; flex-direction: column; align-items: flex-start; } }
+  </style>
+</head>
+<body>
+
+  <nav id="nav">
+    <a href="index.html" class="logo" data-edit="site_name">CHRIS M</a>
+    <button class="burger" id="burger"><span></span><span></span><span></span></button>
+    <div class="nav-links" id="navLinks">
+      <a href="#about"      data-edit="nav_about">About</a>
+      <a href="#skills"     data-edit="nav_skills">Skills</a>
+      <a href="#experience" data-edit="nav_experience">Experience</a>
+      <a href="#gallery"    data-edit="nav_work">Work</a>
+      <a href="blog.html"   data-edit="nav_blog">Blog</a>
+      <a href="#contact" class="nav-cta" data-edit="nav_contact">Contact</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero" class="hero">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <div class="hero-label" data-edit="hero_label">Marketing & Digital Strategy</div>
+        <h1 data-edit="hero_title">I create marketing strategies for your business that <em>get results.</em></h1>
+        <p data-edit="hero_description">The medium is the message, and form creates function. Every design tells a story — it's not just what you see, it's what you feel. I believe design is a language of intention, where color, pattern, and symbolism work together to create meaning.</p>
+        <div class="hero-actions">
+          <a href="#about" class="btn-primary"><span data-edit="hero_cta_primary">Learn More</span></a>
+          <a href="#contact" class="btn-ghost"><span data-edit="hero_cta_secondary">Get in Touch</span></a>
+        </div>
+      </div>
+      <div class="hero-portrait">
+        <img data-edit="hero_image" src="https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg" alt="Portrait" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="about section">
+    <div class="about-inner">
+      <div class="about-text">
+        <div class="section-label" data-edit="about_label">About Me</div>
+        <h2 class="section-title" data-edit="about_title">Whatever your business, I've got you.</h2>
+        <p class="section-body" data-edit="about_description">Whether I'm crafting a logo, building a digital campaign, or illustrating a concept, my goal is to make every element serve purpose — communicate clearly, connect emotionally, and leave a lasting impression.</p>
+      </div>
+      <div class="about-image">
+        <img data-edit="about_image" src="https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg" alt="About" />
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills" class="skills section">
+    <div class="section-inner">
+      <div class="section-label" data-edit="skills_label">What I Do</div>
+      <h2 class="section-title" data-edit="skills_title">Direct Infinite Variables with Calibrated Precision</h2>
+      <p class="section-body" data-edit="skills_description">A focused set of capabilities built for clarity, growth, and conversion.</p>
+      <div class="skills-grid" data-repeat="skills">
+        <div class="skill-card">
+          <div class="skill-icon" data-edit="icon">📦</div>
+          <div class="skill-name" data-edit="name">Product Development</div>
+          <div class="skill-desc" data-edit="description">I create product packaging designs that sell and position your brand with intention.</div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-icon" data-edit="icon">🎯</div>
+          <div class="skill-name" data-edit="name">Brand Identity</div>
+          <div class="skill-desc" data-edit="description">From branding to positioning, I build professional identities that resonate and endure.</div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-icon" data-edit="icon">📊</div>
+          <div class="skill-name" data-edit="name">Digital Strategy</div>
+          <div class="skill-desc" data-edit="description">Data-driven campaigns built around your goals, audience behavior, and measurable outcomes.</div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-icon" data-edit="icon">✏️</div>
+          <div class="skill-name" data-edit="name">Logo & Brandmark</div>
+          <div class="skill-desc" data-edit="description">Visual identities that communicate clearly and leave a lasting impression.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section id="experience" class="experience section">
+    <div class="section-inner">
+      <div class="section-label" data-edit="exp_label">Experience</div>
+      <h2 class="section-title" data-edit="exp_title">Symbiotic Pipelines Designed for Scale</h2>
+      <div class="exp-list" data-repeat="experience">
+        <div class="exp-item">
+          <div class="exp-date" data-edit="date">2023 — Present</div>
+          <div class="exp-body">
+            <div class="exp-role" data-edit="role">Marketing Strategist</div>
+            <div class="exp-company" data-edit="company">Freelance / Independent</div>
+            <div class="exp-desc" data-edit="description">Building tailored marketing strategies for startups and growing brands across Africa, focused on digital growth, brand clarity, and measurable conversion.</div>
+          </div>
+        </div>
+        <div class="exp-item">
+          <div class="exp-date" data-edit="date">2021 — 2023</div>
+          <div class="exp-body">
+            <div class="exp-role" data-edit="role">Brand & Digital Consultant</div>
+            <div class="exp-company" data-edit="company">Various Clients</div>
+            <div class="exp-desc" data-edit="description">Consulted on brand identity, product positioning, and digital presence for early-stage companies, delivering campaigns that aligned strategy with storytelling.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOG PROMO -->
+  <section class="blog-promo section">
+    <div class="blog-promo-inner">
+      <div class="blog-promo-text">
+        <div class="section-label" data-edit="blog_label">Thoughts & Insights</div>
+        <h2 class="section-title" data-edit="blog_title">Co-Evolutionary Capital Systems</h2>
+        <p data-edit="blog_description">Explorations in marketing, brand strategy, and the systems that drive meaningful growth. New articles published regularly.</p>
+        <a href="blog.html" class="btn-primary" data-edit="blog_cta_link" data-edit-role="href"><span data-edit="blog_cta">Read the Blog</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section id="gallery" class="gallery section">
+    <div class="section-inner">
+      <div class="section-label" data-edit="gallery_label">Body of Work</div>
+      <h2 class="section-title" data-edit="gallery_title">View Full Portfolio</h2>
+      <p class="section-body" data-edit="gallery_description">A curated selection of projects spanning branding, product design, and digital experiences built to convert.</p>
+      <div class="gallery-grid" data-repeat="gallery">
+        <div class="gallery-item"><img data-edit="image" src="https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg" alt="Work" /></div>
+        <div class="gallery-item"><img data-edit="image" src="https://images.pexels.com/photos/3183153/pexels-photo-3183153.jpeg" alt="Work" /></div>
+        <div class="gallery-item"><img data-edit="image" src="https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg" alt="Work" /></div>
+        <div class="gallery-item"><img data-edit="image" src="https://images.pexels.com/photos/1181406/pexels-photo-1181406.jpeg" alt="Work" /></div>
+        <div class="gallery-item"><img data-edit="image" src="https://images.pexels.com/photos/3182773/pexels-photo-3182773.jpeg" alt="Work" /></div>
+        <div class="gallery-item"><img data-edit="image" src="https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg" alt="Work" /></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="contact section">
+    <div class="contact-inner">
+      <div class="contact-text">
+        <div class="section-label" data-edit="contact_label">Get in Touch</div>
+        <h2 class="section-title" data-edit="contact_title">Let's Build Something That Lasts</h2>
+        <p data-edit="contact_description">Whether it's a brand identity, a digital strategy, or a conversation about growth — reach out and let's make something meaningful.</p>
+        <div class="contact-items">
+          <div class="contact-row">
+            <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
+            <a href="mailto:hello@example.com" data-edit="contact_email" data-edit-role="href">hello@example.com</a>
+          </div>
+          <div class="contact-row">
+            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>
+            <a href="tel:+27000000000" data-edit="contact_phone" data-edit-role="href">+27 000 000 000</a>
+          </div>
+        </div>
+      </div>
+      <form class="contact-form" onsubmit="return false;">
+        <div class="form-field"><input type="text" placeholder="Your name" /></div>
+        <div class="form-field"><input type="email" placeholder="Email address" /></div>
+        <div class="form-field"><textarea placeholder="Tell me about your project…"></textarea></div>
+        <button type="submit" class="btn-primary" style="width:fit-content;"><span data-edit="contact_cta">Send Message</span></button>
+      </form>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-logo" data-edit="site_name">CHRIS M</div>
+    <div class="footer-copy">© <span data-edit="copyright_year">2026</span> <span data-edit="site_name">Chris. O Moleme</span>. All rights reserved.</div>
+    <div class="footer-squarre">Want your own site? <a href="https://squarre.vercel.app" target="_blank">Made using Squarre</a></div>
+  </footer>
+
+  <script>
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 60));
+    const burger = document.getElementById('burger');
+    const navLinks = document.getElementById('navLinks');
+    burger.addEventListener('click', () => { burger.classList.toggle('open'); navLinks.classList.toggle('open'); });
+    navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { burger.classList.remove('open'); navLinks.classList.remove('open'); }));
+
+    // Apply SEO fields from data-edit hidden spans
+    const seoMap = { seo_favicon: 'favicon', og_title: 'og-title', og_description: 'og-description', og_image: 'og-image' };
+    document.querySelectorAll('[data-edit]').forEach(el => {
+      const key = el.dataset.edit;
+      if (seoMap[key]) {
+        const obs = new MutationObserver(() => {
+          const meta = document.getElementById(seoMap[key]);
+          if (!meta) return;
+          if (key === 'seo_favicon') meta.href = el.textContent.trim();
+          else meta.content = el.textContent.trim();
+        });
+        obs.observe(el, { childList: true, characterData: true, subtree: true });
+      }
+    });
+  </script>
+</body>
+</html>
