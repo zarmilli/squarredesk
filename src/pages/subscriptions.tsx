@@ -49,7 +49,7 @@ const subscriptionPlans = [
     features: [
       { name: "Unlimited Websites", included: true },
       { name: "Advanced Hosting", included: true },
-      { name: "Staff Accounts", included: true },
+      { name: "Priority Support", included: true },
       { name: "Analytics", included: true },
       { name: "Custom Domains", included: true },
     ],

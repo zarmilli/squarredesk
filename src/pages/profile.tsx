@@ -191,13 +191,13 @@ export default function Profile() {
             </div>
 
             <div className="flex space-x-3">
-              <Button variant="default" onClick={() => navigate("/subscriptions")}>
+              <Button variant="default" onClick={() => navigate("/subscription")}>
                 Subscription
               </Button>
               <Button variant="default" onClick={() => navigate("/messages")}>
                 Message
               </Button>
-              <Button variant="default" onClick={() => navigate("/Marketplace")}>
+              <Button variant="default" onClick={() => navigate("/marketplace")}>
                 Marketplace
               </Button>
             </div>
