@@ -70,8 +70,4 @@ export default function HeaderRight() {
         </div>
     </div>
   );
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> ae8e64414db6a39faff43dc0cd3e2e6de7d62984

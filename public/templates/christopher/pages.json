@@ -1,0 +1,4 @@
+[
+  { "label": "Home",     "file": "index.html",    "editables": "editables.json" },
+  { "label": "Blog",    "file": "blog.html",     "editables": "blog-editables.json" }
+]
