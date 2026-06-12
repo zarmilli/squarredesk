@@ -15,11 +15,34 @@ import Confetti from "react-confetti";
 
 type FieldType = "text" | "longtext" | "url" | "image" | "boolean" | "repeat";
 
+/**
+ * section:
+ *   "editor"    → (default) shown in the main editor panel
+ *   "seo"       → filtered out; handled by the SEO settings page
+ *   "inventory" → filtered out; handled by the inventory management page
+ */
+type FieldSection = "editor" | "seo" | "inventory";
+
 type EditableField = {
   label: string;
   type: FieldType;
   max?: number;
+  section?: FieldSection;
   fields?: Record<string, EditableField>;
+};
+
+/**
+ * A page entry inside pages.json (multi-page templates).
+ * Single-page templates have no pages.json — the editor falls back to index.html
+ * and editables.json at the template root.
+ */
+type PageMeta = {
+  /** Shown in the dropdown, e.g. "Home", "About", "Services" */
+  label: string;
+  /** Path relative to the template folder, e.g. "index.html" or "about.html" */
+  file: string;
+  /** Path to the editables for this page, e.g. "editables.json" or "about-editables.json" */
+  editables: string;
 };
 
 type Editables = Record<string, EditableField>;
@@ -30,6 +53,8 @@ type ContentMap = Record<string, any>;
 export default function Editor() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Stores a pristine clone of each repeat group's first child per page.
+  // Keyed as `${pageFile}::${repeatKey}` so switching pages never cross-contaminates.
   const repeatTemplates = useRef<Record<string, HTMLElement>>({});
 
   const navigate = useNavigate();
@@ -39,6 +64,11 @@ export default function Editor() {
 
   const [siteName, setSiteName] = useState("");
   const [templateSlug, setTemplateSlug] = useState("");
+
+  // Multi-page support
+  const [pages, setPages] = useState<PageMeta[]>([]);
+  const [activePage, setActivePage] = useState<PageMeta | null>(null);
+
   const [editables, setEditables] = useState<Editables>({});
   const [content, setContent] = useState<ContentMap>({});
   const [userId, setUserId] = useState("");
@@ -79,25 +109,70 @@ export default function Editor() {
       .single();
     if (!template) return;
 
-    setTemplateSlug(template.template_slug);
+    const slug = template.template_slug;
+    setTemplateSlug(slug);
 
-    const res = await fetch(`/templates/${template.template_slug}/editables.json`);
-    const fields: Editables = await res.json();
-    setEditables(fields);
+    // ── Try to load pages.json. If it 404s this is a single-page template. ──
+    let resolvedPages: PageMeta[] = [];
+
+    try {
+      const pagesRes = await fetch(`/templates/${slug}/pages.json`);
+      if (pagesRes.ok) {
+        resolvedPages = await pagesRes.json();
+      }
+    } catch {
+      // No pages.json — single-page template, handled below.
+    }
+
+    if (resolvedPages.length === 0) {
+      // Single-page template: synthesise a single page entry.
+      resolvedPages = [
+        { label: "Page", file: "index.html", editables: "editables.json" },
+      ];
+    }
+
+    setPages(resolvedPages);
+
+    // Always start on the first page.
+    await loadPage(resolvedPages[0], slug, site.content || {});
   }
 
-  // ─── Iframe load ───────────────────────────────────────────────────────────
+  // ─── Load a specific page ──────────────────────────────────────────────────
 
-  useEffect(() => {
-    if (!iframeRef.current || !templateSlug) return;
-    iframeRef.current.src = `/templates/${templateSlug}/index.html`;
-    iframeRef.current.onload = () => {
-      captureRepeatTemplates();
-      applyContent(content);
-    };
-  }, [templateSlug]);
+  /**
+   * Fetches the editables for the given page, updates the iframe src,
+   * and sets the activePage state. Content is shared across all pages in one
+   * object so switching pages never loses edits made on another page.
+   */
+  async function loadPage(page: PageMeta, slug: string, currentContent: ContentMap) {
+    setActivePage(page);
 
-  function captureRepeatTemplates() {
+    const res = await fetch(`/templates/${slug}/${page.editables}`);
+    const fields: Editables = await res.json();
+    setEditables(fields);
+
+    if (iframeRef.current) {
+      iframeRef.current.src = `/templates/${slug}/${page.file}`;
+      iframeRef.current.onload = () => {
+        captureRepeatTemplates(page.file);
+        applyContent(currentContent);
+      };
+    }
+  }
+
+  // ─── Handle page selection from dropdown ──────────────────────────────────
+
+  async function handlePageChange(pageFile: string) {
+    if (!templateSlug) return;
+    await persist();
+    const page = pages.find((p) => p.file === pageFile);
+    if (!page) return;
+    await loadPage(page, templateSlug, content);
+  }
+
+  // ─── Capture repeat templates ──────────────────────────────────────────────
+
+  function captureRepeatTemplates(pageFile: string) {
     const doc = iframeRef.current?.contentDocument;
     if (!doc) return;
 
@@ -105,7 +180,7 @@ export default function Editor() {
       const key = container.dataset.repeat!;
       const firstChild = container.firstElementChild as HTMLElement | null;
       if (firstChild) {
-        repeatTemplates.current[key] = firstChild.cloneNode(true) as HTMLElement;
+        repeatTemplates.current[`${pageFile}::${key}`] = firstChild.cloneNode(true) as HTMLElement;
       }
     });
   }
@@ -121,12 +196,9 @@ export default function Editor() {
         applyRepeatGroup(doc, key, value);
         return;
       }
-
       if (value == null) return;
-
       const el = doc.querySelector<HTMLElement>(`[data-edit="${key}"]`);
       if (!el) return;
-
       applyScalarField(el, value);
     });
   }
@@ -135,20 +207,18 @@ export default function Editor() {
     const container = doc.querySelector<HTMLElement>(`[data-repeat="${key}"]`);
     if (!container) return;
 
-    const tmpl = repeatTemplates.current[key];
+    const tmplKey = `${activePage?.file ?? "index.html"}::${key}`;
+    const tmpl = repeatTemplates.current[tmplKey];
     if (!tmpl) return;
 
     container.innerHTML = "";
-
     values.forEach((item) => {
       const clone = tmpl.cloneNode(true) as HTMLElement;
-
       Object.entries(item).forEach(([subKey, subValue]) => {
         const el = clone.querySelector<HTMLElement>(`[data-edit="${subKey}"]`);
         if (!el || subValue == null) return;
         applyScalarField(el, subValue as string);
       });
-
       container.appendChild(clone);
     });
   }
@@ -163,17 +233,14 @@ export default function Editor() {
       el.style.backgroundRepeat = "no-repeat";
       return;
     }
-
     if (role === "href") {
       (el as HTMLAnchorElement).href = value;
       return;
     }
-
     if (role === "img" || el instanceof HTMLImageElement) {
       (el as HTMLImageElement).src = value;
       return;
     }
-
     el.textContent = value;
   }
 
@@ -227,11 +294,15 @@ export default function Editor() {
 
   // ─── Image upload ──────────────────────────────────────────────────────────
 
-  async function uploadImage(file: File, key: string, repeatKey?: string, repeatIndex?: number, subKey?: string) {
+  async function uploadImage(
+    file: File,
+    key: string,
+    repeatKey?: string,
+    repeatIndex?: number,
+    subKey?: string
+  ) {
     const path = `${userId}/${siteId}/images/${Date.now()}-${file.name}`;
-
     await supabase.storage.from("site-assets").upload(path, file, { upsert: true });
-
     const { data } = supabase.storage.from("site-assets").getPublicUrl(path);
     const url = data.publicUrl;
 
@@ -252,7 +323,6 @@ export default function Editor() {
 
   async function persist(showToast = false) {
     if (!siteId) return;
-
     const { data } = await supabase
       .from("user_sites")
       .update({ content, updated_at: new Date().toISOString() })
@@ -264,7 +334,6 @@ export default function Editor() {
       setLastSaved(data.updated_at);
       setDirty(false);
     }
-
     if (showToast) toast({ title: "Saved" });
   }
 
@@ -282,7 +351,6 @@ export default function Editor() {
       });
       if (error) throw error;
 
-      // Save live URL back to the site row
       await supabase
         .from("user_sites")
         .update({
@@ -315,6 +383,17 @@ export default function Editor() {
       year: "numeric",
     })}, ${d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
   }
+
+  // ─── Section filtering ─────────────────────────────────────────────────────
+
+  /**
+   * Only fields with no section tag, or section === "editor", are shown here.
+   * "seo" fields are handled by the SEO settings page.
+   * "inventory" fields are handled by the inventory management page.
+   */
+  const editorFields = Object.entries(editables).filter(
+    ([, field]) => !field.section || field.section === "editor"
+  );
 
   // ─── Field renderer ────────────────────────────────────────────────────────
 
@@ -442,7 +521,7 @@ export default function Editor() {
 
   return (
     <div className="h-screen flex flex-col">
-      {/* HEADER */}
+      {/* TOP BAR */}
       <div className="border-b bg-white px-4 py-2 flex items-center justify-between shrink-0">
         <div className="flex gap-2">
           <Button size="sm" variant="ghost" onClick={handleBack}>
@@ -470,32 +549,59 @@ export default function Editor() {
       <div className="flex flex-1 overflow-hidden">
         {/* LEFT PANEL */}
         <div className="w-[360px] border-r bg-white flex flex-col shrink-0">
-          <div className="p-4 border-b">
+
+          {/* Site name + page selector */}
+          <div className="p-4 border-b space-y-3">
             <h2 className="font-semibold text-sm">{siteName}</h2>
+
+            {/* Page dropdown — only shown when the template has multiple pages */}
+            {pages.length > 1 && (
+              <div className="space-y-1">
+                <p className="text-xs text-gray-500 font-medium">Editing page</p>
+                <select
+                  className="w-full border rounded-md px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-ring"
+                  value={activePage?.file ?? ""}
+                  onChange={(e) => handlePageChange(e.target.value)}
+                >
+                  {pages.map((page) => (
+                    <option key={page.file} value={page.file}>
+                      {page.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
+          {/* Fields — section-filtered */}
           <div className="flex-1 overflow-y-auto p-4 space-y-3">
-            {Object.entries(editables).map(([key, field]) => (
-              <Card key={key} className="p-3">
-                {field.type === "repeat" ? (
-                  <>
-                    <p className="text-sm font-semibold mb-3">{field.label}</p>
-                    {renderRepeatGroup(key, field)}
-                  </>
-                ) : (
-                  <>
-                    <p className="text-sm font-medium mb-2">{field.label}</p>
-                    {renderScalarInput(
-                      key,
-                      field,
-                      content[key],
-                      (v) => updateField(key, v),
-                      (file) => uploadImage(file, key)
-                    )}
-                  </>
-                )}
-              </Card>
-            ))}
+            {editorFields.length === 0 ? (
+              <p className="text-xs text-gray-400 text-center pt-8">
+                All fields on this page are managed in SEO or Inventory settings.
+              </p>
+            ) : (
+              editorFields.map(([key, field]) => (
+                <Card key={key} className="p-3">
+                  {field.type === "repeat" ? (
+                    <>
+                      <p className="text-sm font-semibold mb-3">{field.label}</p>
+                      {renderRepeatGroup(key, field)}
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-sm font-medium mb-2">{field.label}</p>
+                      {renderScalarInput(
+                        key,
+                        field,
+                        content[key],
+                        (v) => updateField(key, v),
+                        (file) => uploadImage(file, key)
+                      )}
+                    </>
+                  )}
+                </Card>
+              ))
+            )}
           </div>
         </div>
 
