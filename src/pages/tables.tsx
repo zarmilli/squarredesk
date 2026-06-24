@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import squeakImage from "/images/speaking.png";
+import { useNavigate } from "react-router-dom";
 
 type SiteRow = {
   id: string;
@@ -17,9 +18,11 @@ type SiteRow = {
   live_url: string | null;
   created_at: string;
   template_name: string;
+  has_inventory: boolean;
 };
 
 export default function Tables() {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [sites, setSites] = useState<SiteRow[]>([]);
   const [deleteTarget, setDeleteTarget] = useState<SiteRow | null>(null);
@@ -38,13 +41,16 @@ export default function Tables() {
     const { data, error } = await supabase
       .from("user_sites")
       .select(`
-        id,
-        site_name,
-        is_published,
-        live_url,
-        created_at,
-        templates ( name )
-      `)
+            id,
+            site_name,
+            is_published,
+            live_url,
+            created_at,
+            templates (
+              name,
+              has_inventory
+            )
+          `)
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
 
@@ -60,6 +66,7 @@ export default function Tables() {
       live_url: s.live_url,
       created_at: s.created_at,
       template_name: s.templates?.name ?? "Unknown",
+      has_inventory: s.templates?.has_inventory ?? false,
     }));
 
     setSites(rows);
@@ -123,7 +130,7 @@ export default function Tables() {
               <table className="w-full">
                 <thead className="bg-stone-50">
                   <tr>
-                    {["WEBSITE", "LINK", "STATUS", "CREATED", "ACTION"].map((h) => (
+                    {["WEBSITE", "LINK", "STATUS", "CREATED", "SEO", "CONTENT"].map((h) => (
                       <th
                         key={h}
                         className="px-6 py-3 text-left text-xs font-normal text-stone-500 uppercase tracking-wider"
@@ -137,7 +144,7 @@ export default function Tables() {
                   {sites.length === 0 ? (
                     <tr>
                       <td
-                        colSpan={5}
+                        colSpan={6}
                         className="px-6 py-12 text-center text-sm text-stone-400"
                       >
                         No websites yet.
@@ -187,14 +194,30 @@ export default function Tables() {
                           {formatDate(site.created_at)}
                         </td>
 
-                        {/* ACTION */}
+                        {/* SEO */}
                         <td className="px-6 py-4 whitespace-nowrap">
                           <Button
-                            variant="destructive"
                             size="sm"
-                            onClick={() => setDeleteTarget(site)}
+                            variant="outline"
+                            onClick={() => navigate(`/seo/${site.id}`)}
                           >
-                            Delete
+                            Edit
+                          </Button>
+                        </td>
+
+                        {/* INVENTORY / BLOG */}
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <Button
+                            size="sm"
+                            variant={site.has_inventory ? "default" : "ghost"}
+                            disabled={!site.has_inventory}
+                            onClick={() => {
+                              if (site.has_inventory) {
+                                navigate(`/content/${site.id}`);
+                              }
+                            }}
+                          >
+                            Edit
                           </Button>
                         </td>
 
