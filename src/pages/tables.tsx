@@ -213,7 +213,7 @@ export default function Tables() {
                             disabled={!site.has_inventory}
                             onClick={() => {
                               if (site.has_inventory) {
-                                navigate(`/content/${site.id}`);
+                                navigate(`/blog?site=${site.id}`);
                               }
                             }}
                           >

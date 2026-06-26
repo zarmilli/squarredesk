@@ -1,135 +1,123 @@
 {
-  "seo_title": {
-    "type": "text",
-    "label": "SEO Title",
-    "section": "seo"
-  },
+  "editor": {
+    "site_name": {
+      "type": "text",
+      "label": "Site Name"
+    },
 
-  "seo_description": {
-    "type": "longtext",
-    "label": "SEO Description",
-    "section": "seo"
-  },
+    "nav_about": {
+      "type": "text",
+      "label": "Nav About"
+    },
 
-  "seo_favicon": {
-    "type": "image",
-    "label": "Favicon",
-    "section": "seo"
-  },
+    "nav_skills": {
+      "type": "text",
+      "label": "Nav Skills"
+    },
 
-  "og_title": {
-    "type": "text",
-    "label": "OG Title",
-    "section": "seo"
-  },
+    "nav_experience": {
+      "type": "text",
+      "label": "Nav Experience"
+    },
 
-  "og_description": {
-    "type": "longtext",
-    "label": "OG Description",
-    "section": "seo"
-  },
+    "nav_work": {
+      "type": "text",
+      "label": "Nav Work"
+    },
 
-  "og_image": {
-    "type": "image",
-    "label": "OG Image",
-    "section": "seo"
-  },
+    "nav_blog": {
+      "type": "text",
+      "label": "Nav Blog"
+    },
 
-  "site_name": {
-    "type": "text",
-    "label": "Site Name",
-    "section": "editor"
-  },
+    "nav_contact": {
+      "type": "text",
+      "label": "Nav Contact"
+    },
 
-  "nav_about": {
-    "type": "text",
-    "label": "Nav About",
-    "section": "editor"
-  },
+    "blog_label": {
+      "type": "text",
+      "label": "Blog Label"
+    },
 
-  "nav_skills": {
-    "type": "text",
-    "label": "Nav Skills",
-    "section": "editor"
-  },
+    "blog_heading": {
+      "type": "text",
+      "label": "Blog Heading"
+    },
 
-  "nav_experience": {
-    "type": "text",
-    "label": "Nav Experience",
-    "section": "editor"
-  },
+    "blog_subheading": {
+      "type": "longtext",
+      "label": "Blog Description"
+    },
 
-  "nav_work": {
-    "type": "text",
-    "label": "Nav Work",
-    "section": "editor"
-  },
-
-  "nav_blog": {
-    "type": "text",
-    "label": "Nav Blog",
-    "section": "editor"
-  },
-
-  "nav_contact": {
-    "type": "text",
-    "label": "Nav Contact",
-    "section": "editor"
-  },
-
-  "blog_label": {
-    "type": "text",
-    "label": "Blog Label",
-    "section": "editor"
-  },
-
-  "blog_heading": {
-    "type": "text",
-    "label": "Blog Heading",
-    "section": "editor"
-  },
-
-  "blog_subheading": {
-    "type": "longtext",
-    "label": "Blog Description",
-    "section": "editor"
-  },
-
-  "articles": {
-    "type": "repeat",
-    "label": "Article",
-    "section": "blog",
-    "fields": {
-      "date": {
-        "type": "text",
-        "label": "Date"
-      },
-
-      "title": {
-        "type": "text",
-        "label": "Title"
-      },
-
-      "image": {
-        "type": "image",
-        "label": "Featured Image"
-      },
-
-      "description": {
-        "type": "longtext",
-        "label": "Article Summary"
-      },
-
-      "content": {
-        "type": "longtext",
-        "label": "Full Article Content"
-      }
+    "copyright_year": {
+      "type": "text",
+      "label": "Copyright Year"
     }
   },
 
-  "copyright_year": {
-    "type": "text",
-    "label": "Copyright Year",
-    "section": "editor"
+  "seo": {
+    "seo_title": {
+      "type": "text",
+      "label": "SEO Title"
+    },
+
+    "seo_description": {
+      "type": "longtext",
+      "label": "SEO Description"
+    },
+
+    "seo_favicon": {
+      "type": "image",
+      "label": "Favicon"
+    },
+
+    "og_title": {
+      "type": "text",
+      "label": "OG Title"
+    },
+
+    "og_description": {
+      "type": "longtext",
+      "label": "OG Description"
+    },
+
+    "og_image": {
+      "type": "image",
+      "label": "OG Image"
+    }
+  },
+
+  "blog": {
+    "articles": {
+      "type": "repeat",
+      "label": "Article",
+      "fields": {
+        "date": {
+          "type": "text",
+          "label": "Date"
+        },
+
+        "title": {
+          "type": "text",
+          "label": "Title"
+        },
+
+        "image": {
+          "type": "image",
+          "label": "Featured Image"
+        },
+
+        "description": {
+          "type": "longtext",
+          "label": "Article Summary"
+        },
+
+        "content": {
+          "type": "longtext",
+          "label": "Full Article Content"
+        }
+      }
+    }
   }
 }

@@ -22,6 +22,7 @@ import Documentation from "@/pages/documentation";
 import CreateSite from "@/pages/create-site";
 import TemplatePicker from "@/pages/template-picker";
 import Editor from "@/pages/editor";
+import Blog from "@/pages/blog";
 import SignIn from "@/pages/auth/sign-in";
 import SignUp from "@/pages/auth/sign-up";
 import NotFound from "@/pages/not-found";
@@ -112,7 +113,7 @@ function Router() {
       <Route path="/create-site" element={<ProtectedRoute><CreateSite /></ProtectedRoute>} />
       <Route path="/template-picker" element={<ProtectedRoute><TemplatePicker /></ProtectedRoute>} />
       <Route path="/editor" element={<ProtectedRoute><Editor /></ProtectedRoute>} />
-
+      <Route path="/blog" element={<ProtectedRoute><Blog /></ProtectedRoute>} />
       <Route path="/auth/sign-in" element={<SignIn />} />
       <Route path="/auth/sign-up" element={<SignUp />} />
       <Route path="/onboarding" element={<Onboarding />} />

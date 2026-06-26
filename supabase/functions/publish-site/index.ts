@@ -5,12 +5,16 @@ interface UserSite {
   id: string
   site_name: string
   template_id: string | null
-  content: Record<string, string> | null
+  content: Record<string, any> | null
   netlify_site_id: string | null
 }
 
 interface Template {
   template_slug: string
+}
+
+interface PageMeta {
+  file: string
 }
 
 const corsHeaders = {
@@ -34,7 +38,7 @@ CONTENT INJECTION
 
 function applyContent(
   templateHtml: string,
-  content: Record<string, string>
+  content: Record<string, any>
 ): string {
 
   let html = templateHtml
@@ -42,28 +46,128 @@ function applyContent(
   for (const key of Object.keys(content)) {
 
     const value = content[key]
+    if (value === undefined || value === null || typeof value === "object") {
+      continue
+    }
 
-    const backgroundRegex = new RegExp(
-      `(<[^>]*data-edit="${key}"[^>]*style="[^"]*background-image:url\\('[^']*'\\)[^"]*"[^>]*>)`,
+    const escapedKey = escapeRegExp(key)
+    const stringValue = String(value)
+
+    const tagRegex = new RegExp(
+      `<([a-zA-Z][\\w:-]*)(?=[^>]*\\bdata-edit="${escapedKey}")[^>]*>`,
       "g"
     )
 
-    html = html.replace(backgroundRegex, (match) => {
-      return match.replace(
-        /background-image:url\('[^']*'\)/,
-        `background-image:url('${value}')`
-      )
+    html = html.replace(tagRegex, (tag, tagName) => {
+      if (hasEditRole(tag, "background")) {
+        return setBackgroundImage(tag, stringValue)
+      }
+
+      if (hasEditRole(tag, "href")) {
+        return setAttribute(tag, "href", stringValue)
+      }
+
+      if (
+        tagName.toLowerCase() === "source"
+      ) {
+        return setAttribute(tag, "srcset", stringValue)
+      }
+
+      if (
+        tagName.toLowerCase() === "img" ||
+        hasEditRole(tag, "img")
+      ) {
+        const imageTag = setAttribute(tag, "src", stringValue)
+        return removeAttribute(imageTag, "srcset")
+      }
+
+      return tag
     })
 
     const textRegex = new RegExp(
-      `(<[^>]*data-edit="${key}"[^>]*>)([\\s\\S]*?)(<\\/[^>]+>)`,
+      `(<(?!img\\b|source\\b)([a-zA-Z][\\w:-]*)(?=[^>]*\\bdata-edit="${escapedKey}")(?![^>]*\\bdata-edit-role="(?:background|href|img)")[^>]*>)([\\s\\S]*?)(<\\/\\2>)`,
       "g"
     )
 
-    html = html.replace(textRegex, `$1${value}$3`)
+    html = html.replace(textRegex, `$1${stringValue}$4`)
   }
 
   return html
+}
+
+function getPageContent(
+  content: Record<string, any>,
+  pageFile: string
+): Record<string, any> {
+  if (!content?.pages) return content ?? {}
+
+  const page = content.pages[pageFile] ?? content.pages["index.html"] ?? {}
+  const result: Record<string, any> = {}
+
+  for (const [key, value] of Object.entries(page)) {
+    if (["editor", "_seo", "seo", "inventory", "blog"].includes(key)) continue
+    result[key] = value
+  }
+
+  for (const section of ["editor", "_seo", "seo", "inventory", "blog"]) {
+    const sectionContent = page[section]
+    if (!sectionContent || typeof sectionContent !== "object") continue
+    Object.assign(result, sectionContent)
+  }
+
+  return result
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+}
+
+function hasEditRole(tag: string, role: string): boolean {
+  return new RegExp(`\\bdata-edit-role="${role}"`).test(tag)
+}
+
+function setAttribute(tag: string, attr: string, value: string): string {
+  const escapedValue = escapeAttribute(value)
+  const attrRegex = new RegExp(`\\s${attr}="[^"]*"`)
+
+  if (attrRegex.test(tag)) {
+    return tag.replace(attrRegex, ` ${attr}="${escapedValue}"`)
+  }
+
+  return tag.replace(/\s*\/?>$/, (ending) =>
+    ending.startsWith("/")
+      ? ` ${attr}="${escapedValue}"${ending}`
+      : ` ${attr}="${escapedValue}">`
+  )
+}
+
+function removeAttribute(tag: string, attr: string): string {
+  return tag.replace(new RegExp(`\\s${attr}="[^"]*"`, "g"), "")
+}
+
+function setBackgroundImage(tag: string, value: string): string {
+  const escapedValue = escapeAttribute(value)
+  const styleMatch = tag.match(/\sstyle="([^"]*)"/)
+
+  if (!styleMatch) {
+    return setAttribute(tag, "style", `background-image:url('${escapedValue}')`)
+  }
+
+  const style = styleMatch[1]
+  const nextStyle = /background-image\s*:\s*url\((["'])?.*?\1\)/.test(style)
+    ? style.replace(
+        /background-image\s*:\s*url\((["'])?.*?\1\)/,
+        `background-image:url('${escapedValue}')`
+      )
+    : `${style};background-image:url('${escapedValue}')`
+
+  return tag.replace(/\sstyle="[^"]*"/, ` style="${nextStyle}"`)
+}
+
+function escapeAttribute(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
 }
 
 /* -----------------------------
@@ -101,14 +205,21 @@ async function createNetlifySite() {
 DEPLOY HTML TO NETLIFY
 ------------------------------*/
 
-async function deployToNetlify(siteId: string, html: string) {
+async function deployToNetlify(siteId: string, files: Record<string, string>) {
 
   const encoder = new TextEncoder()
-  const bytes = encoder.encode(html)
+  const encodedFiles: Record<string, Uint8Array> = {}
+  const manifest: Record<string, string> = {}
 
-  const shaBuffer = await crypto.subtle.digest("SHA-1", bytes)
-  const shaArray = Array.from(new Uint8Array(shaBuffer))
-  const sha = shaArray.map(b => b.toString(16).padStart(2, "0")).join("")
+  for (const [fileName, html] of Object.entries(files)) {
+    const bytes = encoder.encode(html)
+    const shaBuffer = await crypto.subtle.digest("SHA-1", bytes)
+    const shaArray = Array.from(new Uint8Array(shaBuffer))
+    const sha = shaArray.map(b => b.toString(16).padStart(2, "0")).join("")
+
+    encodedFiles[fileName] = bytes
+    manifest[fileName] = sha
+  }
 
   /* create deploy manifest */
 
@@ -121,9 +232,7 @@ async function deployToNetlify(siteId: string, html: string) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        files: {
-          "index.html": sha
-        }
+        files: manifest
       })
     }
   )
@@ -137,25 +246,45 @@ async function deployToNetlify(siteId: string, html: string) {
 
   /* upload file */
 
-  const uploadRes = await fetch(
-    `https://api.netlify.com/api/v1/deploys/${deploy.id}/files/index.html`,
-    {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${NETLIFY_TOKEN}`,
-        "Content-Type": "application/octet-stream"
-      },
-      body: bytes
-    }
-  )
+  for (const [fileName, bytes] of Object.entries(encodedFiles)) {
+    const uploadRes = await fetch(
+      `https://api.netlify.com/api/v1/deploys/${deploy.id}/files/${fileName}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${NETLIFY_TOKEN}`,
+          "Content-Type": "application/octet-stream"
+        },
+        body: bytes
+      }
+    )
 
-  if (!uploadRes.ok) {
-    const err = await uploadRes.text()
-    console.error("Upload error:", err)
-    throw new Error("Failed to upload HTML")
+    if (!uploadRes.ok) {
+      const err = await uploadRes.text()
+      console.error("Upload error:", err)
+      throw new Error(`Failed to upload ${fileName}`)
+    }
   }
 
   return deploy.ssl_url
+}
+
+async function getTemplatePages(templateSlug: string): Promise<PageMeta[]> {
+  const pagesUrl = `${TEMPLATE_BASE_URL}/${templateSlug}/pages.json`
+  const pagesRes = await fetch(pagesUrl)
+
+  if (!pagesRes.ok) {
+    return [{ file: "index.html" }]
+  }
+
+  const pages = await pagesRes.json()
+  if (!Array.isArray(pages) || pages.length === 0) {
+    return [{ file: "index.html" }]
+  }
+
+  return pages
+    .filter((page): page is PageMeta => !!page?.file)
+    .map((page) => ({ file: page.file }))
 }
 
 /* -----------------------------
@@ -204,21 +333,26 @@ serve(async (req) => {
 
     const typedTemplate = template as Template
 
-    const templateUrl =
-      `${TEMPLATE_BASE_URL}/${typedTemplate.template_slug}/index.html`
+    const templatePages = await getTemplatePages(typedTemplate.template_slug)
+    const files: Record<string, string> = {}
 
-    const templateRes = await fetch(templateUrl)
+    for (const page of templatePages) {
+      const templateUrl =
+        `${TEMPLATE_BASE_URL}/${typedTemplate.template_slug}/${page.file}`
 
-    if (!templateRes.ok) {
-      throw new Error("Failed to fetch template HTML")
+      const templateRes = await fetch(templateUrl)
+
+      if (!templateRes.ok) {
+        throw new Error(`Failed to fetch template HTML for ${page.file}`)
+      }
+
+      const templateHtml = await templateRes.text()
+
+      files[page.file] = applyContent(
+        templateHtml,
+        getPageContent(typedSite.content ?? {}, page.file)
+      )
     }
-
-    const templateHtml = await templateRes.text()
-
-    const finalHtml = applyContent(
-      templateHtml,
-      typedSite.content ?? {}
-    )
 
     let netlifySiteId = typedSite.netlify_site_id
 
@@ -240,7 +374,7 @@ serve(async (req) => {
 
     const deployUrl = await deployToNetlify(
       netlifySiteId,
-      finalHtml
+      files
     )
 
     await supabase

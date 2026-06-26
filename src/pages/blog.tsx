@@ -193,7 +193,7 @@ function mergePageContent(
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function Editor() {
+export default function Blog() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Stores a pristine clone of each repeat group's first child per page.
@@ -554,12 +554,11 @@ export default function Editor() {
   // ─── Section filtering ─────────────────────────────────────────────────────
 
   /**
-   * Only fields with no section tag, or section === "editor", are shown here.
-   * "seo" fields are handled by the SEO settings page.
-   * "inventory" fields are handled by the inventory management page.
+   * Only blog-section fields are shown here.
+   * Other grouped sections are handled in their dedicated areas.
    */
   const editorFields = Object.entries(editables).filter(
-    ([, field]) => !field.section || field.section === "editor"
+    ([, field]) => field.section === "blog"
   );
 
   // ─── Field renderer ────────────────────────────────────────────────────────
