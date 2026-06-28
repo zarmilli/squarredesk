@@ -36,6 +36,136 @@ const TEMPLATE_BASE_URL = Deno.env.get("TEMPLATE_BASE_URL")!
 CONTENT INJECTION
 ------------------------------*/
 
+function applyScalarFieldToHtml(
+  html: string,
+  key: string,
+  stringValue: string
+): string {
+  const escapedKey = escapeRegExp(key)
+
+  const tagRegex = new RegExp(
+    `<([a-zA-Z][\\w:-]*)(?=[^>]*\\bdata-edit="${escapedKey}")[^>]*>`,
+    "g"
+  )
+
+  html = html.replace(tagRegex, (tag, tagName) => {
+    if (hasEditRole(tag, "background")) {
+      return setBackgroundImage(tag, stringValue)
+    }
+
+    if (hasEditRole(tag, "href")) {
+      return setAttribute(tag, "href", stringValue)
+    }
+
+    if (tagName.toLowerCase() === "source") {
+      return setAttribute(tag, "srcset", stringValue)
+    }
+
+    if (tagName.toLowerCase() === "img" || hasEditRole(tag, "img")) {
+      const imageTag = setAttribute(tag, "src", stringValue)
+      return removeAttribute(imageTag, "srcset")
+    }
+
+    return tag
+  })
+
+  const textRegex = new RegExp(
+    `(<(?!img\\b|source\\b)([a-zA-Z][\\w:-]*)(?=[^>]*\\bdata-edit="${escapedKey}")(?![^>]*\\bdata-edit-role="(?:background|href|img)")[^>]*>)([\\s\\S]*?)(<\\/\\2>)`,
+    "g"
+  )
+
+  return html.replace(textRegex, `$1${stringValue}$4`)
+}
+
+function findMatchingCloseTag(
+  html: string,
+  tagName: string,
+  searchFrom: number
+): number {
+  let depth = 1
+  let i = searchFrom
+  const openRe = new RegExp(`<${tagName}\\b[^>]*>`, "gi")
+  const closeRe = new RegExp(`</${tagName}>`, "gi")
+
+  while (depth > 0) {
+    openRe.lastIndex = i
+    closeRe.lastIndex = i
+    const openMatch = openRe.exec(html)
+    const closeMatch = closeRe.exec(html)
+
+    if (!closeMatch) return -1
+
+    if (openMatch && openMatch.index < closeMatch.index) {
+      depth++
+      i = openMatch.index + openMatch[0].length
+    } else {
+      depth--
+      if (depth === 0) return closeMatch.index
+      i = closeMatch.index + closeMatch[0].length
+    }
+  }
+
+  return -1
+}
+
+function extractFirstElement(html: string): string | null {
+  const trimmed = html.trimStart()
+  const openMatch = trimmed.match(/^<([a-zA-Z][\w:-]*)\b[^>]*>/)
+  if (!openMatch) return null
+
+  const tagName = openMatch[1]
+  const innerStart = openMatch[0].length
+  const closeIndex = findMatchingCloseTag(trimmed, tagName, innerStart)
+  if (closeIndex === -1) return null
+
+  return trimmed.slice(0, closeIndex + `</${tagName}>`.length)
+}
+
+function applyRepeatGroupHtml(
+  html: string,
+  key: string,
+  items: Record<string, any>[]
+): string {
+  const openTagRegex = new RegExp(
+    `<([a-zA-Z][\\w:-]*)([^>]*\\bdata-repeat="${escapeRegExp(key)}"[^>]*)>`,
+    "i"
+  )
+  const openMatch = openTagRegex.exec(html)
+  if (!openMatch) return html
+
+  const tagName = openMatch[1]
+  const innerStart = openMatch.index + openMatch[0].length
+  const closeIndex = findMatchingCloseTag(html, tagName, innerStart)
+  if (closeIndex === -1) return html
+
+  const innerHtml = html.slice(innerStart, closeIndex)
+  const template = extractFirstElement(innerHtml)
+  if (!template) return html
+
+  const built = items
+    .map((item) => {
+      let fragment = template
+      for (const [subKey, subValue] of Object.entries(item)) {
+        if (subValue === undefined || subValue === null || typeof subValue === "object") {
+          continue
+        }
+        fragment = applyScalarFieldToHtml(fragment, subKey, String(subValue))
+      }
+      return fragment
+    })
+    .join("")
+
+  return html.slice(0, innerStart) + built + html.slice(closeIndex)
+}
+
+function injectWebsiteData(html: string, data: Record<string, unknown>): string {
+  const script = `<script>window.websiteData=${JSON.stringify(data)};</script>`
+  if (html.includes("</body>")) {
+    return html.replace("</body>", `${script}\n</body>`)
+  }
+  return html + script
+}
+
 function applyContent(
   templateHtml: string,
   content: Record<string, any>
@@ -43,53 +173,17 @@ function applyContent(
 
   let html = templateHtml
 
-  for (const key of Object.keys(content)) {
+  for (const [key, value] of Object.entries(content)) {
+    if (Array.isArray(value)) {
+      html = applyRepeatGroupHtml(html, key, value)
+    }
+  }
 
-    const value = content[key]
+  for (const [key, value] of Object.entries(content)) {
     if (value === undefined || value === null || typeof value === "object") {
       continue
     }
-
-    const escapedKey = escapeRegExp(key)
-    const stringValue = String(value)
-
-    const tagRegex = new RegExp(
-      `<([a-zA-Z][\\w:-]*)(?=[^>]*\\bdata-edit="${escapedKey}")[^>]*>`,
-      "g"
-    )
-
-    html = html.replace(tagRegex, (tag, tagName) => {
-      if (hasEditRole(tag, "background")) {
-        return setBackgroundImage(tag, stringValue)
-      }
-
-      if (hasEditRole(tag, "href")) {
-        return setAttribute(tag, "href", stringValue)
-      }
-
-      if (
-        tagName.toLowerCase() === "source"
-      ) {
-        return setAttribute(tag, "srcset", stringValue)
-      }
-
-      if (
-        tagName.toLowerCase() === "img" ||
-        hasEditRole(tag, "img")
-      ) {
-        const imageTag = setAttribute(tag, "src", stringValue)
-        return removeAttribute(imageTag, "srcset")
-      }
-
-      return tag
-    })
-
-    const textRegex = new RegExp(
-      `(<(?!img\\b|source\\b)([a-zA-Z][\\w:-]*)(?=[^>]*\\bdata-edit="${escapedKey}")(?![^>]*\\bdata-edit-role="(?:background|href|img)")[^>]*>)([\\s\\S]*?)(<\\/\\2>)`,
-      "g"
-    )
-
-    html = html.replace(textRegex, `$1${stringValue}$4`)
+    html = applyScalarFieldToHtml(html, key, String(value))
   }
 
   return html
@@ -351,6 +445,19 @@ serve(async (req) => {
       files[page.file] = applyContent(
         templateHtml,
         getPageContent(typedSite.content ?? {}, page.file)
+      )
+    }
+
+    /* Deploy auxiliary pages (e.g. blog-single.html) with shared data */
+    const blogSingleUrl =
+      `${TEMPLATE_BASE_URL}/${typedTemplate.template_slug}/blog-single.html`
+    const blogSingleRes = await fetch(blogSingleUrl)
+
+    if (blogSingleRes.ok) {
+      const blogContent = getPageContent(typedSite.content ?? {}, "blog.html")
+      files["blog-single.html"] = injectWebsiteData(
+        await blogSingleRes.text(),
+        { articles: blogContent.articles ?? [] }
       )
     }
 

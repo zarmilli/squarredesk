@@ -160,52 +160,98 @@ font-size:17px;
 </section>
 
 <script>
-
 const params = new URLSearchParams(window.location.search);
-const articleId = Number(params.get('id') || 0);
+const idParam = params.get("id");
 
-/*
-Load article data from your website builder's
-saved blog repeat group data.
+function getArticle(param, articles) {
 
-Example:
+    if (!articles || !articles.length) return null;
 
-window.websiteData.articles
+    const index = Number(param);
 
-or
+    if (
+        Number.isInteger(index) &&
+        index >= 0 &&
+        index < articles.length
+    ) {
+        return articles[index];
+    }
 
-localStorage
+    return articles.find(article =>
+        String(article.id) === param ||
+        String(article.article_id) === param ||
+        String(article.slug) === param ||
+        String(article.title) === param
+    );
+}
 
-or
+function renderArticle(article) {
 
-Supabase
+    if (!article) return;
 
-depending on how your editor already
-handles repeat groups.
-*/
+    document.title = article.title || document.title;
 
-const articles = window.websiteData?.articles || [];
+    document.getElementById("articleDate").textContent =
+        article.date || "";
 
-const article = articles[articleId];
+    document.getElementById("articleTitle").textContent =
+        article.title || "";
 
-if(article){
+    const image = document.getElementById("articleImage");
 
-document.title = article.title;
+    if (article.image) {
+        image.src = article.image;
+    } else {
+        image.removeAttribute("src");
+    }
 
-document.getElementById('articleDate').textContent =
-article.date || '';
+    document.getElementById("articleDescription").textContent =
+        article.description || "";
 
-document.getElementById('articleTitle').textContent =
-article.title || '';
+    const content = document.getElementById("articleContent");
 
-document.getElementById('articleImage').src =
-article.image || '';
+    if (
+        typeof article.content === "string" &&
+        /<\w+/.test(article.content)
+    ) {
+        content.innerHTML = article.content;
+    } else {
+        content.textContent = article.content || "";
+    }
+}
 
-document.getElementById('articleDescription').textContent =
-article.description || '';
+function loadArticle() {
 
-document.getElementById('articleContent').textContent =
-article.content || '';
+    const articles = window.websiteData?.articles;
+
+    if (!articles || !articles.length) {
+        return false;
+    }
+
+    const article =
+        getArticle(idParam, articles) || articles[0];
+
+    renderArticle(article);
+
+    return true;
+}
+
+// Try immediately
+if (!loadArticle()) {
+
+    // Wait until the editor injects websiteData
+    const observer = new MutationObserver(() => {
+
+        if (loadArticle()) {
+            observer.disconnect();
+        }
+
+    });
+
+    observer.observe(document.documentElement, {
+        childList: true,
+        subtree: true
+    });
 
 }
 

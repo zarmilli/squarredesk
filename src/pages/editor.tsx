@@ -200,6 +200,7 @@ export default function Editor() {
   // Keyed as `${pageFile}::${repeatKey}` so switching pages never cross-contaminates.
   const repeatTemplates = useRef<Record<string, HTMLElement>>({});
   const storedContent = useRef<ContentMap>({});
+  const activePageFile = useRef("index.html");
 
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -289,6 +290,7 @@ export default function Editor() {
    * object so switching pages never loses edits made on another page.
    */
   async function loadPage(page: PageMeta, slug: string, currentContent: ContentMap) {
+    activePageFile.current = page.file;
     setActivePage(page);
 
     const res = await fetch(`/templates/${slug}/${page.editables}`);
@@ -300,7 +302,7 @@ export default function Editor() {
     if (iframeRef.current) {
       iframeRef.current.onload = () => {
         captureRepeatTemplates(page.file);
-        applyContent(pageContent);
+        applyContent(pageContent, page.file);
       };
       iframeRef.current.src = `/templates/${slug}/${page.file}`;
     }
@@ -333,13 +335,15 @@ export default function Editor() {
 
   // ─── Apply content to iframe ───────────────────────────────────────────────
 
-  function applyContent(values: ContentMap) {
+  function applyContent(values: ContentMap, pageFile?: string) {
     const doc = iframeRef.current?.contentDocument;
     if (!doc) return;
 
+    const file = pageFile ?? activePageFile.current;
+
     Object.entries(values).forEach(([key, value]) => {
       if (Array.isArray(value)) {
-        applyRepeatGroup(doc, key, value);
+        applyRepeatGroup(doc, key, value, file);
         return;
       }
       if (value == null) return;
@@ -349,11 +353,16 @@ export default function Editor() {
     });
   }
 
-  function applyRepeatGroup(doc: Document, key: string, values: Record<string, any>[]) {
+  function applyRepeatGroup(
+    doc: Document,
+    key: string,
+    values: Record<string, any>[],
+    pageFile: string
+  ) {
     const container = doc.querySelector<HTMLElement>(`[data-repeat="${key}"]`);
     if (!container) return;
 
-    const tmplKey = `${activePage?.file ?? "index.html"}::${key}`;
+    const tmplKey = `${pageFile}::${key}`;
     const tmpl = repeatTemplates.current[tmplKey];
     if (!tmpl) return;
 
@@ -372,6 +381,8 @@ export default function Editor() {
 
   function applyScalarField(el: HTMLElement, value: string) {
     const role = el.dataset.editRole;
+    // Use tagName — instanceof fails for elements inside the iframe (separate JS realm).
+    const tag = el.tagName.toUpperCase();
 
     if (role === "background") {
       el.style.backgroundImage = `url("${value}")`;
@@ -382,21 +393,16 @@ export default function Editor() {
       return;
     }
     if (role === "href") {
-      (el as HTMLAnchorElement).href = value;
+      el.setAttribute("href", value);
       return;
     }
-    if (el instanceof HTMLSourceElement) {
-      el.srcset = value;
+    if (tag === "SOURCE") {
       el.setAttribute("srcset", value);
       return;
     }
-    if (role === "img" || el instanceof HTMLImageElement) {
+    if (role === "img" || tag === "IMG") {
       el.setAttribute("src", value);
       el.removeAttribute("srcset");
-      if (el instanceof HTMLImageElement) {
-        el.src = value;
-        el.srcset = "";
-      }
       return;
     }
     el.textContent = value;
