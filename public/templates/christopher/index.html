@@ -17,7 +17,7 @@
   <span data-edit="og_description" style="display:none"></span>
   <span data-edit="og_image"       style="display:none"></span>
 
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -34,7 +34,7 @@
       --ctrl-r:   48px;
     }
     html { scroll-behavior: smooth; }
-    body { background: var(--bg); color: var(--text); font-family: 'Playfair Display', serif; font-size: 16px; line-height: 1.6; }
+    body { background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; font-size: 16px; line-height: 1.6; }
     h1,h2,h3,h4 { font-family: 'Plus Jakarta Sans', sans-serif; }
 
     /* NAV */
@@ -133,11 +133,11 @@
     }
 
     /* ABOUT */
-    .about { background: var(--bg); }
+    .about { background: var(--white); }
     .about-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; gap: 80px; }
     .about-text { flex: 1; }
     .about-text .section-title { color: var(--secondary); }
-    .about-text .section-body { color: rgba(6,28,21,0.7); }
+    .about-text .section-body { color: rgba(6,28,21,0.7); font-family: 'Poppins', sans-serif; font-size: 16px; line-height: 1.7; }
     .about-image { width: 380px; height: 440px; flex-shrink: 0; border-radius: var(--card-r); overflow: hidden; border: 2px solid rgba(6,28,21,0.1); }
     .about-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
     @media(max-width:900px) { .about-inner { flex-direction: column; gap: 40px; } .about-image { width: 100%; height: 280px; } }
@@ -145,7 +145,7 @@
     /* SKILLS */
     .skills { background: var(--secondary); }
     .skills .section-title { color: var(--white); }
-    .skills .section-body { color: rgba(255,255,255,0.5); }
+    .skills .section-body { color: rgba(255,255,255,0.5); font-family: 'Poppins', sans-serif; font-size: 16px; line-height: 1.7; }
     .skills-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-top: 48px; }
     .skill-card {
       background: rgba(177,224,157,0.05); border: 1px solid rgba(177,224,157,0.1); border-radius: var(--card-r); padding: 28px 24px;
@@ -164,10 +164,10 @@
     .exp-list { margin-top: 48px; }
     .exp-item { border-top: 1px solid var(--border); padding: 32px 0; display: flex; gap: 48px; align-items: flex-start; }
     .exp-item:last-child { border-bottom: 1px solid var(--border); }
-    .exp-date { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: var(--accent); min-width: 120px; padding-top: 4px; }
+    .exp-date { font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: var(--accent); min-width: 120px; padding-top: 4px; }
     .exp-body { flex: 1; }
     .exp-role { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 600; color: var(--secondary); margin-bottom: 4px; }
-    .exp-company { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; }
+    .exp-company { font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; }
     .exp-desc { font-family: 'Playfair Display', serif; font-size: 15px; line-height: 1.7; color: var(--text2); }
     @media(max-width:600px) { .exp-item { flex-direction: column; gap: 8px; padding: 24px 0; } }
 

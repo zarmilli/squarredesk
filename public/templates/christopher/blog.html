@@ -16,16 +16,16 @@
   <span data-edit="og_description" style="display:none"></span>
   <span data-edit="og_image"       style="display:none"></span>
 
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --primary: #B1E09D; --secondary: #061C15; --accent: #82A89C;
-      --bg: #B1E09D; --text: #111827; --text2: #4B5563; --border: #D1DEDC;
+      --bg: #ffffff; --text: #111827; --text2: #4B5563; --border: #D1DEDC;
       --white: #ffffff; --card-r: 32px; --ctrl-r: 48px;
     }
     html { scroll-behavior: smooth; }
-    body { background: var(--bg); color: var(--text); font-family: 'Playfair Display', serif; font-size: 16px; line-height: 1.6; }
+    body { background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; font-size: 16px; line-height: 1.6; }
     h1,h2,h3,h4 { font-family: 'Plus Jakarta Sans', sans-serif; }
 
     /* NAV */
@@ -60,7 +60,7 @@
     .page-label { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
     .page-label::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
     .page-header h1 { font-size: clamp(36px,5vw,60px); font-weight: 500; color: var(--white); line-height: 1.08; letter-spacing: -0.01em; margin-bottom: 16px; }
-    .page-header p { font-family: 'Playfair Display', serif; font-size: 17px; line-height: 1.7; color: rgba(255,255,255,0.5); max-width: 520px; }
+    .page-header p { font-family: 'Poppins', sans-serif; font-size: 17px; line-height: 1.7; color: rgba(255,255,255,0.5); max-width: 520px; }
     @media(max-width:768px) { .page-header { padding: 60px 20px 40px; } }
 
     /* ARTICLES LIST */
@@ -79,7 +79,7 @@
     }
     .article-image { width: 100%; border-radius: 20px; overflow: hidden; margin-bottom: 20px; border: 1px solid rgba(6,28,21,0.1); }
     .article-image img { width: 100%; aspect-ratio: 16/7; object-fit: cover; display: block; }
-    .article-desc { font-family: 'Playfair Display', serif; font-size: 16px; line-height: 1.75; color: var(--text2); margin-bottom: 28px; }
+    .article-desc { font-family: 'Poppins', sans-serif; font-size: 16px; line-height: 1.75; color: var(--text2); margin-bottom: 28px; }
     .btn-read {
       display: inline-flex; align-items: center; gap: 8px;
       font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600;
@@ -94,8 +94,8 @@
     /* FOOTER */
     footer { background: var(--secondary); border-top: 1px solid rgba(177,224,157,0.08); padding: 48px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
     .footer-logo { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 700; color: var(--primary); letter-spacing: 0.06em; text-transform: uppercase; }
-    .footer-copy { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.3); letter-spacing: 0.06em; }
-    .footer-squarre { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.25); letter-spacing: 0.06em; }
+    .footer-copy { font-family: 'Poppins', sans-serif; font-size: 14px; color: rgba(255,255,255,0.3); letter-spacing: 0.06em; }
+    .footer-squarre { font-family: 'Poppins', sans-serif; font-size: 14px; color: rgba(255,255,255,0.25); letter-spacing: 0.06em; }
     .footer-squarre a { color: rgba(177,224,157,0.5); text-decoration: underline; }
     .footer-squarre a:hover { color: var(--primary); }
     @media(max-width:600px) { footer { padding: 32px 20px; flex-direction: column; align-items: flex-start; } }

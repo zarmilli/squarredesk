@@ -725,7 +725,7 @@ export default function Blog() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* LEFT PANEL */}
-        <div className="w-[360px] border-r bg-white flex flex-col shrink-0">
+        <div className="w-[600px] border-r bg-white flex flex-col shrink-0">
 
           {/* Site name + page selector */}
           <div className="p-4 border-b space-y-3">
