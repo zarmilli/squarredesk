@@ -73,7 +73,7 @@ export default function SignIn() {
   };
 
   return (
-    <div className="min-h-screen flex bg-white">
+    <div className="min-h-screen flex bg-[--background]">
 
       {/* LEFT FORM */}
       <div className="w-full lg:w-[38%] flex items-center justify-center px-12">
@@ -82,7 +82,7 @@ export default function SignIn() {
 
           <div>
             <h1 className="text-2xl font-semibold">Welcome back</h1>
-            <p className="text-sm text-gray-500 mt-1">Sign in to your account</p>
+            <p className="text-sm text-[#3f4328] mt-1">Sign in to your account</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -152,7 +152,7 @@ export default function SignIn() {
 
           <p className="text-center text-sm">
             Don’t have an account?{" "}
-            <Link to="/auth/sign-up" className="text-primary">
+            <Link to="/auth/sign-up" className="text-[#3f4328] font-medium hover:underline">
               Sign up
             </Link>
           </p>

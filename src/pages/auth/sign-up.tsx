@@ -110,7 +110,7 @@ export default function SignUp() {
   };
 
   return (
-    <div className="min-h-screen flex bg-white">
+    <div className="min-h-screen flex bg-[--background]">
 
       {/* LEFT FORM */}
       <div className="w-full lg:w-[38%] flex items-center justify-center px-12 relative">
@@ -119,7 +119,7 @@ export default function SignUp() {
 
           <div>
             <h1 className="text-2xl font-semibold">Create account</h1>
-            <p className="text-sm text-gray-500 mt-1">Start building today</p>
+            <p className="text-sm text-[#3f4328] mt-1">Start building today</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -190,7 +190,7 @@ export default function SignUp() {
 
           <p className="text-center text-sm">
             Already have an account?{" "}
-            <Link to="/#/auth/sign-in" className="text-primary">
+            <Link to="/#/auth/sign-in" className="text-[#3f4328] font-medium hover:underline">
               Sign in
             </Link>
           </p>
