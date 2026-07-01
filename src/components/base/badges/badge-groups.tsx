@@ -77,8 +77,8 @@ const colorClasses: Record<Theme, Record<Color, { root?: string; addon?: string;
             icon: "text-utility-warning-500",
         },
         success: {
-            root: "bg-green-50 text-green-700 ring-green-200 hover:bg-green-100",
-            addon: "bg-green-100 text-green-700 ring-green-200",
+            root: "bg-green-50/30 text-white-500 ring-green-200 hover:bg-green-100",
+            addon: "bg-green-100/30 text-green-500 ring-green-200",
             icon: "text-green-500",
         },
     },

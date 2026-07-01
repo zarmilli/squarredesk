@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import EditButton from "@/components/ui/EditButton";
+import EditButtonBlack from "@/components/ui/EditButtonBlack";
 import { Progress } from "@/components/ui/progress";
 import { MoreVertical } from "lucide-react";
 import { projectsData } from "@/lib/data";
@@ -119,18 +121,18 @@ export default function Tables() {
       <div className="space-y-6">
 
         {/* WEBSITES TABLE */}
-        <Card className="border-stone-200">
-          <CardHeader className="border-b border-stone-200">
-            <CardTitle className="text-lg font-semibold text-stone-900">
+        <Card className="border-stone-800">
+          <CardHeader className="border-b border-stone-800">
+            <CardTitle className="text-lg font-semibold text-stone-300">
               My Websites
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-stone-50">
+                <thead className="bg-transparent border-b border-stone-800">
                   <tr>
-                    {["WEBSITE", "LINK", "STATUS", "CREATED", "SEO", "CONTENT"].map((h) => (
+                    {["WEBSITE", "LINK", "STATUS", "CREATED", "SEO", "Inventory/Blogs"].map((h) => (
                       <th
                         key={h}
                         className="px-6 py-3 text-left text-xs font-normal text-stone-500 uppercase tracking-wider"
@@ -140,7 +142,7 @@ export default function Tables() {
                     ))}
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-stone-200">
+                <tbody className="bg-[#121212] divide-y divide-stone-200">
                   {sites.length === 0 ? (
                     <tr>
                       <td
@@ -152,7 +154,7 @@ export default function Tables() {
                     </tr>
                   ) : (
                     sites.map((site) => (
-                      <tr key={site.id} className="hover:bg-stone-50">
+                      <tr key={site.id} className="hover:bg-transparent hover:bg-stone-800 transition-colors duration-200">
 
                         {/* WEBSITE */}
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -161,7 +163,7 @@ export default function Tables() {
                               {site.site_name?.charAt(0).toUpperCase() ?? "?"}
                             </div>
                             <div>
-                              <div className="text-sm font-medium text-stone-900">
+                              <div className="text-sm font-medium text-stone-300">
                                 {site.site_name}
                               </div>
                               <div className="text-sm text-stone-500">
@@ -196,20 +198,12 @@ export default function Tables() {
 
                         {/* SEO */}
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => navigate(`/seo/${site.id}`)}
-                          >
-                            Edit
-                          </Button>
+                          <EditButton onClick={() => navigate(`/seo/${site.id}`)} />
                         </td>
 
                         {/* INVENTORY / BLOG */}
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <Button
-                            size="sm"
-                            variant={site.has_inventory ? "default" : "ghost"}
+                          <EditButtonBlack
                             disabled={!site.has_inventory}
                             onClick={() => {
                               if (site.has_inventory) {
@@ -218,7 +212,7 @@ export default function Tables() {
                             }}
                           >
                             Edit
-                          </Button>
+                          </EditButtonBlack>
                         </td>
 
                       </tr>
@@ -235,16 +229,16 @@ export default function Tables() {
 
           {/* Blurred table */}
           <div className="pointer-events-none select-none">
-            <Card className="border-stone-200 blur-sm">
-              <CardHeader className="border-b border-stone-200">
-                <CardTitle className="text-lg font-semibold text-stone-900">
+            <Card className="border-stone-800 bg-black/70 backdrop-blur-sm">
+              <CardHeader className="border-b border-stone-800">
+                <CardTitle className="text-lg font-semibold text-stone-300">
                   Projects table
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-stone-50">
+                    <thead className="bg-transparent">
                       <tr>
                         {["PROJECT", "BUDGET", "STATUS", "COMPLETION", "ACTION"].map((h) => (
                           <th
@@ -256,7 +250,7 @@ export default function Tables() {
                         ))}
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-stone-200">
+                    <tbody className="bg-transparent divide-y divide-stone-200">
                       {projectsData.map((project) => (
                         <tr key={project.id}>
                           <td className="px-6 py-4 whitespace-nowrap">
@@ -269,12 +263,12 @@ export default function Tables() {
                               >
                                 {project.icon.charAt(0).toUpperCase()}
                               </div>
-                              <span className="font-normal text-stone-900">
+                              <span className="font-normal text-stone-300">
                                 {project.name}
                               </span>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-stone-900">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-stone-300">
                             {project.budget}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
@@ -303,10 +297,10 @@ export default function Tables() {
           </div>
 
           {/* Enterprise overlay */}
-          <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-white/60 backdrop-blur-sm">
+          <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/60 backdrop-blur-sm">
             <div className="flex flex-col items-center text-center gap-3 px-6 max-w-sm">
               <img src={squeakImage} className="w-24" alt="Squeak the parrot" />
-              <h3 className="text-lg font-semibold text-stone-900">
+              <h3 className="text-lg font-semibold text-stone-300">
                 Hade boss, projects are coming soon
               </h3>
               <p className="text-sm text-stone-500 leading-relaxed">

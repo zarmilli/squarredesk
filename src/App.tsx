@@ -49,7 +49,7 @@ function Layout({
   const [themeConfigOpen, setThemeConfigOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-stone-50 grain-texture">
+    <div className="flex h-screen bg-background text-foreground">
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
@@ -78,12 +78,12 @@ function Layout({
           </div>
         </div>
 
-        <Card className="flex-1 border border-stone-200 bg-white">
+        <Card className="flex-1 border border-border bg-card text-card-foreground">
           {title && (
             <div className="pt-6 px-6 pb-4">
-              <h1 className="text-xl font-semibold">{title}</h1>
-              {description && <p className="text-sm text-stone-600">{description}</p>}
-              <div className="border-b mt-4" />
+              <h1 className="text-xl font-semibold text-foreground">{title}</h1>
+              {description && <p className="text-sm text-muted-foreground">{description}</p>}
+              <div className="border-b border-border mt-4" />
             </div>
           )}
 

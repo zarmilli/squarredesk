@@ -44,11 +44,6 @@ const navItems = [
     icon: Globe,
   },
   {
-    title: "Notifications",
-    href: "/notifications",
-    icon: Bell,
-  },
-  {
     title: "Subscriptions",
     href: "/subscriptions",
     icon: CreditCard,
@@ -100,8 +95,8 @@ export function Sidebar({
     <aside className="w-60 bg-white lg:bg-transparent flex flex-col relative z-10 h-full border-r border-stone-200 lg:border-0">
       {/* Brand Header */}
       <div className="p-6 pb-0 relative z-10 flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-stone-900">
-          Squarre Desk
+        <h1 className="text-lg font-semibold text-foreground">
+          Squarredesk
         </h1>
         {/* Close button for mobile */}
         {onClose && (
@@ -109,7 +104,7 @@ export function Sidebar({
             variant="ghost"
             size="sm"
             onClick={onClose}
-            className="lg:hidden p-1 text-stone-600 hover:text-stone-900 hover:bg-stone-100"
+            className="lg:hidden p-1 text-stone-600 hover:text-stone-50 hover:bg-[#121212] border-0 shadow-none ring-0"
           >
             <X className="h-5 w-5" />
           </Button>
@@ -126,10 +121,10 @@ export function Sidebar({
             <NavLink key={item.href} to={item.href}>
               <div
                 className={cn(
-                  "flex items-center text-sm font-normal rounded-lg cursor-pointer",
+                  "flex items-center text-sm font-normal rounded-lg cursor-pointer px-3 py-2 mb-1 transition-colors duration-200 border-0 shadow-none ring-0",
                   isActive
-                    ? "px-3 py-2 shadow-sm hover:shadow-md bg-stone-800 hover:bg-stone-700 relative bg-gradient-to-b from-stone-700 to-stone-800 border border-stone-900 text-stone-50 hover:bg-gradient-to-b hover:from-stone-800 hover:to-stone-800 hover:border-stone-900 after:absolute after:inset-0 after:rounded-[inherit] after:box-shadow after:shadow-[inset_0_1px_0px_rgba(255,255,255,0.25),inset_0_-2px_0px_rgba(0,0,0,0.35)] after:pointer-events-none duration-300 ease-in align-middle select-none font-sans text-center antialiased"
-                    : "px-3 py-2 text-stone-700 hover:bg-stone-100 transition-colors duration-200 border border-transparent"
+                    ? "bg-[#131313] text-stone-50 hover:bg-[#121212]"
+                    : "text-stone-700 hover:bg-[#121212] hover:text-stone-50"
                 )}
               >
                 <Icon className="mr-3 w-4 h-4" />
@@ -140,12 +135,12 @@ export function Sidebar({
         })}
 
         {session && (
-          <div className="pt-4 border-t border-stone-200">
+          <div className="pt-4 border-t border-stone-700">
             <Button
               type="button"
               variant="ghost"
               onClick={handleLogout}
-              className="w-full justify-start px-3 py-2 text-sm font-normal rounded-lg text-stone-700 hover:bg-stone-100 transition-colors duration-200"
+              className="w-full justify-start px-3 py-2 text-sm font-normal rounded-lg text-stone-700 hover:bg-[#121212] hover:text-red-500 transition-colors duration-200 border-0 shadow-none ring-0"
             >
               <LogOut className="mr-3 w-4 h-4" />
               Log Out

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import UpgradeButton from "@/components/ui/upgradeButton";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
@@ -229,7 +230,7 @@ export default function Subscriptions() {
       <div className="max-w-7xl mx-auto space-y-8">
 
         {/* CURRENT SUBSCRIPTION */}
-        <Card className="bg-white dark:bg-stone-800 border-0">
+        <Card className="bg-transparent dark:bg-[stone-800] border-2 border-white/10">
           <CardHeader>
             <CardTitle>Current Subscription</CardTitle>
           </CardHeader>
@@ -238,7 +239,7 @@ export default function Subscriptions() {
 
               {/* PLAN DETAILS */}
               <div className="space-y-4">
-                <div className="bg-stone-50 dark:bg-stone-700/30 rounded-lg p-4">
+                <div className="bg-transparent dark:bg-transparent rounded-lg p-4">
                   <h3 className="text-sm font-medium text-stone-900 dark:text-white mb-3">Plan Details</h3>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
@@ -267,7 +268,7 @@ export default function Subscriptions() {
               </div>
 
               {/* USAGE */}
-              <div className="bg-stone-50 dark:bg-stone-700/30 rounded-lg p-4">
+              <div className="bg-transparent dark:bg-transparent rounded-lg p-4">
                 <h3 className="text-sm font-medium mb-3">Usage</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between">
@@ -285,7 +286,7 @@ export default function Subscriptions() {
               </div>
 
               {/* ACTIONS */}
-              <div className="bg-stone-50 dark:bg-stone-700/30 rounded-lg p-4">
+              <div className="bg-transparent dark:bg-transparent rounded-lg p-4">
                 <h3 className="text-sm font-medium mb-3">Settings & Actions</h3>
                 <div className="space-y-4">
 
@@ -334,7 +335,7 @@ export default function Subscriptions() {
               <Card
                 key={plan.id}
                 className={cn(
-                  "relative bg-white dark:bg-stone-800 border",
+                  "relative bg-white dark:bg-[#242424] border-1 border-stone-800 dark:border-stone-800",
                   isCurrent && "ring-2 ring-primary"
                 )}
               >
@@ -368,14 +369,22 @@ export default function Subscriptions() {
                     ))}
                   </ul>
 
-                  <Button
-                    variant={isCurrent ? "ghost" : "default"}
-                    className="w-full mt-6"
-                    disabled={isCurrent}
-                    onClick={() => handlePricingPlanClick(plan.id)}
-                  >
-                    {isCurrent ? "Current Plan" : "Choose Plan"}
-                  </Button>
+                  {isCurrent ? (
+                    <Button
+                      variant="ghost"
+                      className="w-full mt-6"
+                      disabled
+                    >
+                      Current Plan
+                    </Button>
+                  ) : (
+                    <UpgradeButton
+                      className="w-full mt-6 justify-center"
+                      onClick={() => handlePricingPlanClick(plan.id)}
+                    >
+                      Choose Plan
+                    </UpgradeButton>
+                  )}
                 </CardContent>
               </Card>
             );
@@ -383,14 +392,14 @@ export default function Subscriptions() {
         </div>
 
         {/* BILLING HISTORY */}
-        <Card className="bg-white dark:bg-stone-800 border border-stone-200">
+        <Card className="bg-transparent dark:bg-transparent border border-stone-800">
           <CardHeader>
             <CardTitle>Billing History</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-stone-50 dark:bg-stone-700">
+                <thead className="bg-stone-50 dark:bg-transparent">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs uppercase">Date</th>
                     <th className="px-6 py-3 text-left text-xs uppercase">Plan</th>

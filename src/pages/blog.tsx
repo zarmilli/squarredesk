@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
+import BackButton from "@/components/ui/BackButton";
+import SaveButton from "@/components/ui/SaveButton";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { BadgeWithDot } from "@/components/base/badges/badges";
@@ -701,12 +703,8 @@ export default function Blog() {
       {/* TOP BAR */}
       <div className="border-b bg-white px-4 py-2 flex items-center justify-between shrink-0">
         <div className="flex gap-2">
-          <Button size="sm" variant="ghost" onClick={handleBack}>
-            ← Back
-          </Button>
-          <Button size="sm" onClick={() => persist(true)}>
-            Save
-          </Button>
+          <BackButton onClick={handleBack} />
+          <SaveButton onClick={() => persist(true)} />
         </div>
 
         <div className="flex items-center gap-3">

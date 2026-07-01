@@ -14,16 +14,16 @@ export function Footer() {
               by{" "}
               <a
                 href="https://squarre.vercel.app"
-                className="font-semibold text-stone-900 hover:text-stone-700 transition-colors"
+                className="font-semibold text-[#3f4328] hover:text-stone-300 transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Squarre desk
+                Squarredesk
               </a>{" "}• 
               Distributed by{" "}
               <a
                 href="https://squarre.vercel.app"
-                className="font-semibold text-stone-900 hover:text-stone-700 transition-colors"
+                className="font-semibold text-[#3f4328] hover:text-stone-300 transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
               >

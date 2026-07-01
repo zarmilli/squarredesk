@@ -4,20 +4,25 @@ import { supabase } from "@/lib/supabase"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import SaveButton from "@/components/ui/SaveButton"
+import UpgradeButton from "@/components/ui/upgradeButton"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Edit } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
 import { BadgeWithFlag, BadgeWithDot } from "@/components/base/badges/badges"
+import { cn } from "@/lib/utils"
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover"
 import squeakImage from "/images/speaking.png"
+import profileHeaderImage from "/images/profile-header.png"
+import BackButton from "@/components/ui/BackButton"
 
 type Profile = {
   user_id: string
@@ -104,7 +109,7 @@ export default function Profile() {
         <div className="max-w-7xl mx-auto space-y-6">
 
           {/* HEADER SKELETON */}
-          <div className="bg-stone-900 rounded-xl p-8">
+          <div className="bg-[#3f4328] rounded-xl p-8">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <Skeleton className="w-16 h-16 rounded-full bg-stone-700" />
@@ -172,12 +177,18 @@ export default function Profile() {
       <div className="max-w-7xl mx-auto">
 
         {/* HEADER */}
-        <div className="bg-stone-900 rounded-xl p-8 mb-6">
-          <div className="flex items-center justify-between">
+        <div className="relative mb-6 overflow-hidden rounded-xl border border-white/10">
+          <div
+            className="absolute inset-0 scale-105 bg-cover bg-center"
+            style={{ backgroundImage: `url(${profileHeaderImage})` }}
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.86)_0%,rgba(0,0,0,0.5)_48%,rgba(0,0,0,0.22)_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.14),transparent_58%)]" />
 
+          <div className="relative z-10 flex items-center justify-between p-8">
             <div className="flex items-center">
-              <Avatar className="w-16 h-16 border-2 border-white/20">
-                <AvatarFallback className="bg-stone-700 text-white text-lg">
+              <Avatar className="h-16 w-16 border-2 border-white/10">
+                <AvatarFallback className="bg-stone-700 text-lg text-white">
                   {initials}
                 </AvatarFallback>
               </Avatar>
@@ -191,13 +202,13 @@ export default function Profile() {
             </div>
 
             <div className="flex space-x-3">
-              <Button variant="default" onClick={() => navigate("/subscription")}>
+              <Button variant="secondary" onClick={() => navigate("/subscription")}>
                 Subscription
               </Button>
-              <Button variant="default" onClick={() => navigate("/messages")}>
+              <Button variant="secondary" onClick={() => navigate("/messages")}>
                 Message
               </Button>
-              <Button variant="default" onClick={() => navigate("/marketplace")}>
+              <Button variant="secondary" onClick={() => navigate("/marketplace")}>
                 Marketplace
               </Button>
             </div>
@@ -205,10 +216,10 @@ export default function Profile() {
         </div>
 
         {/* CARDS */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1  lg:grid-cols-3 gap-6">
 
           {/* BUSINESS INFORMATION */}
-          <Card>
+          <Card className="border-none border-white/10">
             <CardHeader>
               <div className="flex justify-between items-center">
                 <CardTitle>Business Information</CardTitle>
@@ -258,7 +269,7 @@ export default function Profile() {
           </Card>
 
           {/* PERSONAL INFORMATION */}
-          <Card>
+          <Card className="border-none border-white/10">
             <CardHeader>
               <div className="flex justify-between items-center">
                 <CardTitle>Personal Information</CardTitle>
@@ -293,7 +304,7 @@ export default function Profile() {
 
             {/* Card content — blurred when on free plan */}
             <div className={!canNetwork ? "pointer-events-none select-none" : ""}>
-              <Card className={!canNetwork ? "blur-sm" : ""}>
+              <Card className={cn("border-none border-white/10", !canNetwork ? "blur-sm" : "")}>
                 <CardHeader>
                   <CardTitle>Others In Your Field</CardTitle>
                 </CardHeader>
@@ -378,10 +389,10 @@ export default function Profile() {
 
             {/* Upgrade overlay — only shown on free plan */}
             {!canNetwork && (
-              <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-white/60 backdrop-blur-sm">
+              <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/70 backdrop-blur-sm">
                 <div className="flex flex-col items-center text-center gap-3 px-6 max-w-xs">
                   <img src={squeakImage} className="w-20" alt="Squeak the parrot" />
-                  <h3 className="text-base font-semibold text-stone-900">
+                  <h3 className="text-base font-semibold text-stone-300">
                     Connect with others
                   </h3>
                   <p className="text-sm text-stone-500 leading-relaxed">
@@ -396,13 +407,12 @@ export default function Profile() {
                       Pro
                     </Badge>
                   </div>
-                  <Button
-                    size="sm"
+                  <UpgradeButton
                     className="w-full mt-1"
                     onClick={() => navigate("/subscriptions")}
                   >
                     Upgrade Plan
-                  </Button>
+                  </UpgradeButton>
                 </div>
               </div>
             )}
@@ -480,11 +490,12 @@ export default function Profile() {
                 </>
               )}
 
-              <Button className="w-full mt-4" onClick={handleSave}>
-                Save Changes
-              </Button>
-
             </div>
+
+            <DialogFooter className="mt-6 -mx-6 -mb-6 flex justify-end gap-2 rounded-b-lg border-t border-stone-200 bg-stone-100 px-4 py-3">
+              <BackButton onClick={() => setEditType(null)} />
+              <SaveButton onClick={handleSave} />
+            </DialogFooter>
           </DialogContent>
         </Dialog>
 

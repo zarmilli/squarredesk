@@ -29,10 +29,10 @@ export default function CreateSite() {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50 flex flex-col">
+    <div className="min-h-screen bg-[--background] flex flex-col">
 
       {/* Top bar */}
-      <div className="p-4 border-b bg-white flex items-center gap-2">
+      <div className="p-4 border-b bg-[--card] flex items-center gap-2">
         <Button variant="ghost" size="sm" onClick={handleBack}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
@@ -52,13 +52,26 @@ export default function CreateSite() {
             Choose a name to get started. You can change this later.
           </p>
 
+          <div className="w-full overflow-hidden rounded-none border-0 bg-[--background]">
+            <div
+              className="relative w-full bg-stone-200"
+              style={{ aspectRatio: "1920 / 1080", clipPath: "inset(0 0 22px 0)" }}
+            >
+              <img
+                src="/images/namesite.gif"
+                alt="Site naming preview"
+                className="h-full w-full object-cover"
+              />
+            </div>
+          </div>
+
           <Input
             placeholder="My awesome website"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
 
-          <Button className="w-full" onClick={handleNext} disabled={!name.trim()}>
+          <Button className="w-full bg-[#121212] border-0 shadow-none ring-0" onClick={handleNext} disabled={!name.trim()}>
             Next
           </Button>
         </div>

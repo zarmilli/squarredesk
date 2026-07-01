@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import BackButton from "@/components/ui/BackButton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft } from "lucide-react";
 
@@ -56,15 +57,7 @@ export default function Marketplace() {
 
       {/* BACK + HEADER */}
       <div className="mb-6">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="-ml-2 mb-3"
-          onClick={() => navigate("/profile")}
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Profile
-        </Button>
+        <BackButton onClick={() => navigate("/")} />
 
         <h1 className="text-2xl font-semibold text-stone-900">Marketplace</h1>
         <p className="text-sm text-stone-500 mt-1">

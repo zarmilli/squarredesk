@@ -38,7 +38,7 @@
   --theme-secondary: var(--secondary);
   --theme-secondary-foreground: var(--secondary-foreground);
   --theme-radius: var(--radius);
-  --theme-font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --theme-font-family: 'Inter', sans-serif;
   --theme-font-size-base: 14px;
   --theme-font-weight-normal: 400;
   --theme-font-weight-medium: 500;
@@ -47,15 +47,15 @@
 }
 
 .dark {
-  --background: hsl(240, 10%, 3.9%);
-  --foreground: hsl(0, 0%, 98%);
+  --background: #0d0d0d;
+  --foreground: #fafafa;
   --muted: hsl(240, 3.7%, 15.9%);
   --muted-foreground: hsl(240, 5%, 64.9%);
-  --popover: hsl(240, 10%, 3.9%);
+  --popover: #09090b;
   --popover-foreground: hsl(0, 0%, 98%);
-  --card: hsl(240, 10%, 3.9%);
+  --card: #121212;
   --card-foreground: hsl(0, 0%, 98%);
-  --border: hsl(240, 3.7%, 15.9%);
+  --border: #1c1c1c;
   --input: hsl(240, 3.7%, 15.9%);
   --primary: hsl(0, 0%, 100%);
   --primary-foreground: hsl(0, 0%, 0%);

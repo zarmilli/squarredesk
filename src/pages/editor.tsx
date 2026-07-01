@@ -2,8 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
+import BackButton from "@/components/ui/BackButton";
+import SaveButton from "@/components/ui/SaveButton";
+import PublishButton from "@/components/ui/PublishButton";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import UploadFile from "@/components/ui/uploadfile";
 import { BadgeWithDot } from "@/components/base/badges/badges";
 import { useToast } from "@/hooks/use-toast";
 
@@ -570,6 +574,28 @@ export default function Editor() {
 
   // ─── Field renderer ────────────────────────────────────────────────────────
 
+  function renderPreview(value: string) {
+    const isVideo = /\.(mp4|webm|ogg)$/i.test(value);
+
+    if (isVideo) {
+      return (
+        <video
+          src={value}
+          controls
+          className="w-full h-24 object-cover rounded-md border bg-black"
+        />
+      );
+    }
+
+    return (
+      <img
+        src={value}
+        alt="preview"
+        className="w-full h-24 object-cover rounded-md border"
+      />
+    );
+  }
+
   function renderScalarInput(
     key: string,
     field: EditableField,
@@ -582,6 +608,7 @@ export default function Editor() {
       case "url":
         return (
           <Input
+            className="w-full border-0 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             value={value ?? ""}
             placeholder={field.label}
             onChange={(e) => onChange(e.target.value)}
@@ -591,7 +618,7 @@ export default function Editor() {
       case "longtext":
         return (
           <textarea
-            className="w-full border rounded-md p-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+            className="w-full border-0 rounded-md p-2 text-sm bg-background resize-none focus:outline-none focus:ring-2 focus:ring-ring"
             rows={3}
             value={value ?? ""}
             placeholder={field.label}
@@ -602,17 +629,12 @@ export default function Editor() {
       case "image":
         return (
           <div className="space-y-2">
-            {value && (
-              <img
-                src={value}
-                alt="preview"
-                className="w-full h-24 object-cover rounded-md border"
-              />
-            )}
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={(e) => e.target.files && onImageChange(e.target.files[0])}
+            {value && renderPreview(value)}
+            <UploadFile
+              accept="image/*,video/*"
+              label="Upload image or video"
+              description="PNG, JPG, GIF, MP4, WEBM"
+              onFileSelect={(file) => file && onImageChange(file)}
             />
           </div>
         );
@@ -641,7 +663,7 @@ export default function Editor() {
     return (
       <div className="space-y-3">
         {items.map((item, index) => (
-          <Card key={index} className="p-3 border bg-gray-50 space-y-3">
+          <Card key={index} className="p-3 border-none bg-gray-50 space-y-3">
             <div className="flex items-center justify-between">
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
                 {field.label} {items.length > 1 ? `#${index + 1}` : ""}
@@ -695,14 +717,10 @@ export default function Editor() {
   return (
     <div className="h-screen flex flex-col">
       {/* TOP BAR */}
-      <div className="border-b bg-white px-4 py-2 flex items-center justify-between shrink-0">
+      <div className="border-b bg-[--background] px-4 py-2 flex items-center justify-between shrink-0">
         <div className="flex gap-2">
-          <Button size="sm" variant="ghost" onClick={handleBack}>
-            ← Back
-          </Button>
-          <Button size="sm" onClick={() => persist(true)}>
-            Save
-          </Button>
+          <BackButton onClick={handleBack} />
+          <SaveButton onClick={() => persist(true)} />
         </div>
 
         <div className="flex items-center gap-3">
@@ -713,15 +731,13 @@ export default function Editor() {
           >
             {dirty ? "Unsaved changes" : formatSaved()}
           </BadgeWithDot>
-          <Button size="sm" onClick={publishSite}>
-            Publish
-          </Button>
+          <PublishButton onClick={publishSite} />
         </div>
       </div>
 
       <div className="flex flex-1 overflow-hidden">
         {/* LEFT PANEL */}
-        <div className="w-[360px] border-r bg-white flex flex-col shrink-0">
+        <div className="w-[360px] border-r bg-[--card] flex flex-col shrink-0">
 
           {/* Site name + page selector */}
           <div className="p-4 border-b space-y-3">
@@ -754,7 +770,7 @@ export default function Editor() {
               </p>
             ) : (
               editorFields.map(([key, field]) => (
-                <Card key={key} className="p-3">
+                <Card key={key} className="p-3 border-0 bg-transparent space-y-2">
                   {field.type === "repeat" ? (
                     <>
                       <p className="text-sm font-semibold mb-3">{field.label}</p>
