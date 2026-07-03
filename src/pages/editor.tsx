@@ -748,7 +748,7 @@ export default function Editor() {
               <div className="space-y-1">
                 <p className="text-xs text-gray-500 font-medium">Editing page</p>
                 <select
-                  className="w-full border rounded-md px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="w-full border rounded-md px-3 py-2 text-sm bg-[--background] focus:outline-none focus:ring-2 focus:ring-ring"
                   value={activePage?.file ?? ""}
                   onChange={(e) => handlePageChange(e.target.value)}
                 >

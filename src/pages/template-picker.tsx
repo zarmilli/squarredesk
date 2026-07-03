@@ -119,7 +119,7 @@ export default function TemplatePicker() {
       : templates.filter(t => t.category === activeCategory);
 
   return (
-    <div className="min-h-screen bg-stone-50 p-6">
+    <div className="min-h-screen bg-[--background] p-6">
 
       <div className="flex items-center gap-3 mb-4">
         <Button variant="ghost" size="sm" onClick={handleBack}>
@@ -166,7 +166,7 @@ export default function TemplatePicker() {
       {!loading && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {filtered.map(t => (
-            <Card key={t.id} className="p-4 space-y-3">
+            <Card key={t.id} className="p-4 space-y-3 border-0">
 
               <div className="relative">
                 <img src={t.thumbnail_url} className="rounded" />

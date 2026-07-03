@@ -29,6 +29,7 @@ import NotFound from "@/pages/not-found";
 import Onboarding from "@/pages/onboarding";
 import Marketplace from "@/pages/Marketplace";
 import MarketplaceProduct from "@/pages/MarketplaceProduct";
+import Payments from "@/pages/payments";
 
 import { AuthProvider } from "@/context/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -107,6 +108,7 @@ function Router() {
       <Route path="/tables" element={<ProtectedRoute><Layout title="Tables"><Tables /></Layout></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><Layout title="Notifications"><Notifications /></Layout></ProtectedRoute>} />
       <Route path="/subscriptions" element={<ProtectedRoute><Layout title="Subscriptions"><Subscriptions /></Layout></ProtectedRoute>} />
+      <Route path="/payments" element={<ProtectedRoute><Layout title="Payments"><Payments /></Layout></ProtectedRoute>} />
       <Route path="/documentation" element={<ProtectedRoute><Layout title="Documentation"><Documentation /></Layout></ProtectedRoute>} />
 
       {/* FULLSCREEN onboarding */}

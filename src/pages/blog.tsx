@@ -588,6 +588,7 @@ export default function Blog() {
       case "url":
         return (
           <Input
+            className="w-full border-0 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             value={value ?? ""}
             placeholder={field.label}
             onChange={(e) => onChange(e.target.value)}
@@ -597,7 +598,7 @@ export default function Blog() {
       case "longtext":
         return (
           <textarea
-            className="w-full border rounded-md p-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+            className="w-full border-0 rounded-md p-2 text-sm bg-background resize-none focus:outline-none focus:ring-2 focus:ring-ring"
             rows={3}
             value={value ?? ""}
             placeholder={field.label}
@@ -647,7 +648,7 @@ export default function Blog() {
     return (
       <div className="space-y-3">
         {items.map((item, index) => (
-          <Card key={index} className="p-3 border bg-gray-50 space-y-3">
+          <Card key={index} className="p-3 border-none bg-gray-50 space-y-3">
             <div className="flex items-center justify-between">
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
                 {field.label} {items.length > 1 ? `#${index + 1}` : ""}
@@ -701,7 +702,7 @@ export default function Blog() {
   return (
     <div className="h-screen flex flex-col">
       {/* TOP BAR */}
-      <div className="border-b bg-white px-4 py-2 flex items-center justify-between shrink-0">
+      <div className="border-b bg-[--background] px-4 py-2 flex items-center justify-between shrink-0">
         <div className="flex gap-2">
           <BackButton onClick={handleBack} />
           <SaveButton onClick={() => persist(true)} />
@@ -723,7 +724,7 @@ export default function Blog() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* LEFT PANEL */}
-        <div className="w-[600px] border-r bg-white flex flex-col shrink-0">
+        <div className="w-[40%] border-r bg-[--card] flex flex-col shrink-0">
 
           {/* Site name + page selector */}
           <div className="p-4 border-b space-y-3">
@@ -734,7 +735,7 @@ export default function Blog() {
               <div className="space-y-1">
                 <p className="text-xs text-gray-500 font-medium">Editing page</p>
                 <select
-                  className="w-full border rounded-md px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="w-full border rounded-md px-3 py-2 text-sm bg-[--background] focus:outline-none focus:ring-2 focus:ring-ring"
                   value={activePage?.file ?? ""}
                   onChange={(e) => handlePageChange(e.target.value)}
                 >
@@ -756,7 +757,7 @@ export default function Blog() {
               </p>
             ) : (
               editorFields.map(([key, field]) => (
-                <Card key={key} className="p-3">
+                <Card key={key} className="p-3 border-0 bg-transparent space-y-2">
                   {field.type === "repeat" ? (
                     <>
                       <p className="text-sm font-semibold mb-3">{field.label}</p>

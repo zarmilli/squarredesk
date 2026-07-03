@@ -1,6 +1,6 @@
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { 
+import {
   LayoutDashboard, 
   User, 
   Table, 
@@ -14,7 +14,8 @@ import {
   LogOut,
   X,
   Moon,
-  Sun
+  Sun,
+  Wallet
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -47,6 +48,11 @@ const navItems = [
     title: "Subscriptions",
     href: "/subscriptions",
     icon: CreditCard,
+  },
+  {
+    title: "Payments",
+    href: "/payments",
+    icon: Wallet,
   },
 ];
 
