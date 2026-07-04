@@ -17,7 +17,7 @@ import Confetti from "react-confetti";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type FieldType = "text" | "longtext" | "url" | "image" | "boolean" | "repeat";
+type FieldType = "text" | "longtext" | "url" | "image" | "boolean" | "icon" | "logo" | "repeat";
 
 /**
  * section:
@@ -33,6 +33,7 @@ type EditableField = {
   max?: number;
   section?: FieldSection;
   fields?: Record<string, EditableField>;
+  options?: Array<{ label: string; value: string }>;
 };
 
 /**
@@ -383,10 +384,26 @@ export default function Editor() {
     });
   }
 
-  function applyScalarField(el: HTMLElement, value: string) {
+  function applyScalarField(el: HTMLElement, value: any) {
     const role = el.dataset.editRole;
     // Use tagName — instanceof fails for elements inside the iframe (separate JS realm).
     const tag = el.tagName.toUpperCase();
+
+    if (role === "logo") {
+      if (value && typeof value === "object" && (value.imageUrl || value.image)) {
+        const imageUrl = value.imageUrl || value.image;
+        el.innerHTML = "";
+        const img = document.createElement("img");
+        img.src = imageUrl;
+        img.alt = value.text || "Logo";
+        img.className = "logo-image";
+        el.appendChild(img);
+        return;
+      }
+
+      el.textContent = typeof value === "object" ? value?.text ?? "" : value ?? "";
+      return;
+    }
 
     if (role === "background") {
       el.style.backgroundImage = `url("${value}")`;
@@ -467,7 +484,8 @@ export default function Editor() {
     key: string,
     repeatKey?: string,
     repeatIndex?: number,
-    subKey?: string
+    subKey?: string,
+    transform?: (url: string) => any
   ) {
     const path = `${userId}/${siteId}/images/${Date.now()}-${file.name}`;
     await supabase.storage.from("site-assets").upload(path, file, { upsert: true });
@@ -476,9 +494,13 @@ export default function Editor() {
 
     if (repeatKey !== undefined && repeatIndex !== undefined && subKey !== undefined) {
       updateRepeatField(repeatKey, repeatIndex, subKey, url);
+    } else if (transform) {
+      updateField(key, transform(url));
     } else {
       updateField(key, url);
     }
+
+    return url;
   }
 
   // ─── Autosave ──────────────────────────────────────────────────────────────
@@ -639,6 +661,102 @@ export default function Editor() {
           </div>
         );
 
+      case "icon":
+        return (
+          <div className="space-y-2">
+            <div className="rounded-md bg-transparent p-1">
+              {field.options?.length ? (
+                <div className="grid grid-cols-5 gap-2">
+                  {field.options.map((option) => {
+                    const selected = (value ?? field.options?.[0]?.value ?? "") === option.value;
+                    return (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => onChange(option.value)}
+                        className={`flex h-10 w-10 items-center justify-center rounded-md text-xl transition-colors ${
+                          selected
+                            ? "bg-[--card] text-white"
+                            : "bg-[--background] text-slate-100 hover:bg-[--card]"
+                        }`}
+                        title={option.label}
+                        aria-label={option.label}
+                      >
+                        {option.value}
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="rounded-md bg-[--background] px-3 py-2 text-sm text-slate-400">
+                  No icons available
+                </div>
+              )}
+            </div>
+          </div>
+        );
+
+      case "logo": {
+        const logoValue =
+          value && typeof value === "object" && !Array.isArray(value)
+            ? {
+                text: value.text ?? "",
+                imageUrl: value.imageUrl ?? value.image ?? "",
+              }
+            : {
+                text: typeof value === "string" ? value : "",
+                imageUrl: "",
+              };
+
+        return (
+          <div className="space-y-2">
+            <Input
+              className="w-full border-0 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              value={logoValue.text ?? ""}
+              placeholder={field.label}
+              onChange={(e) =>
+                onChange({
+                  ...logoValue,
+                  text: e.target.value,
+                })
+              }
+            />
+
+            {logoValue.imageUrl ? (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between rounded-md border border-slate-700 bg-[--background] px-3 py-2">
+                  <img
+                    src={logoValue.imageUrl}
+                    alt="logo preview"
+                    className="h-12 w-auto rounded-md object-contain"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => onChange({ ...logoValue, imageUrl: "" })}
+                    className="text-xs font-medium text-red-400 transition-colors hover:text-red-300"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            ) : null}
+
+            <UploadFile
+              accept="image/*"
+              label="Upload logo image"
+              description="PNG, JPG, SVG"
+              onFileSelect={(file) => {
+                if (!file) return;
+                void uploadImage(file, key, undefined, undefined, undefined, (url) => ({
+                  ...logoValue,
+                  imageUrl: url,
+                }));
+              }}
+            />
+          </div>
+        );
+      }
+
       case "boolean":
         return (
           <input
@@ -663,7 +781,7 @@ export default function Editor() {
     return (
       <div className="space-y-3">
         {items.map((item, index) => (
-          <Card key={index} className="p-3 border-none bg-gray-50 space-y-3">
+          <Card key={index} className="p-3 border-none bg-[--background] space-y-3">
             <div className="flex items-center justify-between">
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
                 {field.label} {items.length > 1 ? `#${index + 1}` : ""}

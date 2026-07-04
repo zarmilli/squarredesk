@@ -1,8 +1,8 @@
 {
   "editor": {
     "site_name": {
-      "type": "text",
-      "label": "Site Name"
+      "type": "logo",
+      "label": "Site Name / Logo"
     },
 
     "nav_about": {
@@ -105,8 +105,44 @@
       "label": "Skill",
       "fields": {
         "icon": {
-          "type": "text",
-          "label": "Icon"
+          "type": "icon",
+          "label": "Icon",
+          "options": [
+            { "label": "📦", "value": "📦" },
+            { "label": "📞", "value": "📞" },
+            { "label": "🔧", "value": "🔧" },
+            { "label": "🔨", "value": "🔨" },
+            { "label": "📅", "value": "📅" },
+            { "label": "📝", "value": "📝" },
+            { "label": "💻", "value": "💻" },
+            { "label": "📱", "value": "📱" },
+            { "label": "🌐", "value": "🌐" },
+            { "label": "⚡", "value": "⚡" },
+            { "label": "🎯", "value": "🎯" },
+            { "label": "📊", "value": "📊" },
+            { "label": "✏️", "value": "✏️" },
+            { "label": "💡", "value": "💡" },
+            { "label": "🚀", "value": "🚀" },
+            { "label": "💼", "value": "💼" },
+            { "label": "📈", "value": "📈" },
+            { "label": "💳", "value": "💳" },
+            { "label": "🧠", "value": "🧠" },
+            { "label": "🛠️", "value": "🛠️" },
+            { "label": "⚙️", "value": "⚙️" },
+            { "label": "🌐", "value": "🌐" },
+            { "label": "📱", "value": "📱" },
+            { "label": "☁️", "value": "☁️" },
+            { "label": "🔐", "value": "🔐" },
+            { "label": "📣", "value": "📣" },
+            { "label": "🎤", "value": "🎤" },
+            { "label": "🧾", "value": "🧾" },
+            { "label": "🤝", "value": "🤝" },
+            { "label": "📚", "value": "📚" },
+            { "label": "🧩", "value": "🧩" },
+            { "label": "📡", "value": "📡" },
+            { "label": "✨", "value": "✨" },
+            { "label": "🧪", "value": "🧪" }
+          ]
         },
         "name": {
           "type": "text",

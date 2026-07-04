@@ -47,6 +47,10 @@
     .logo {
       font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 700;
       color: var(--primary); letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .logo img, .logo-image {
+      height: 24px; width: auto; object-fit: contain; display: block;
     }
     .nav-links { display: flex; gap: 32px; align-items: center; }
     .nav-links a {
@@ -226,7 +230,7 @@
 <body>
 
   <nav id="nav">
-    <a href="index.html" class="logo" data-edit="site_name">CHRIS M</a>
+    <a href="index.html" class="logo" data-edit="site_name" data-edit-role="logo">CHRIS M</a>
     <button class="burger" id="burger"><span></span><span></span><span></span></button>
     <div class="nav-links" id="navLinks">
       <a href="#about"      data-edit="nav_about">About</a>
@@ -384,8 +388,8 @@
   </section>
 
   <footer>
-    <div class="footer-logo" data-edit="site_name">CHRIS M</div>
-    <div class="footer-copy">© <span data-edit="copyright_year">2026</span> <span data-edit="site_name">Chris. O Moleme</span>. All rights reserved.</div>
+    <div class="footer-logo" data-edit="site_name" data-edit-role="logo">CHRIS M</div>
+    <div class="footer-copy">© <span data-edit="copyright_year">2026</span> <span data-edit="site_name" data-edit-role="logo">Chris. O Moleme</span>. All rights reserved.</div>
     <div class="footer-squarre">Want your own site? <a href="https://squarre.vercel.app" target="_blank">Made using Squarre</a></div>
   </footer>
 

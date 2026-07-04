@@ -15,7 +15,7 @@ import Confetti from "react-confetti";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type FieldType = "text" | "longtext" | "url" | "image" | "boolean" | "repeat";
+type FieldType = "text" | "longtext" | "url" | "image" | "boolean" | "icon" | "repeat";
 
 /**
  * section:
@@ -31,6 +31,7 @@ type EditableField = {
   max?: number;
   section?: FieldSection;
   fields?: Record<string, EditableField>;
+  options?: Array<{ label: string; value: string }>;
 };
 
 /**
@@ -621,6 +622,30 @@ export default function Blog() {
               accept="image/*"
               onChange={(e) => e.target.files && onImageChange(e.target.files[0])}
             />
+          </div>
+        );
+
+      case "icon":
+        return (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 rounded-md border bg-background px-3 py-2">
+              <span className="text-lg leading-none">{value ?? field.options?.[0]?.value ?? "✦"}</span>
+              <select
+                className="w-full rounded-md bg-[--background] text-sm text-slate-100 outline-none"
+                value={value ?? field.options?.[0]?.value ?? ""}
+                onChange={(e) => onChange(e.target.value)}
+              >
+                {field.options?.length ? (
+                  field.options.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))
+                ) : (
+                  <option value="">No icons available</option>
+                )}
+              </select>
+            </div>
           </div>
         );
 
