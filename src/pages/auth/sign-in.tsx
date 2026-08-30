@@ -126,7 +126,7 @@ export default function SignIn() {
               </div>
 
               <Link to="/auth/forgot-password">
-                <Button type="button" variant="secondary" size="sm">
+                <Button type="button" variant="ghost" size="sm">
                   Forgot?
                 </Button>
               </Link>
@@ -141,11 +141,11 @@ export default function SignIn() {
           <Separator />
 
           <div className="grid grid-cols-2 gap-3">
-            <Button variant="secondary" onClick={() => handleOAuth("google")}>
+            <Button variant="outline" onClick={() => handleOAuth("google")}>
               Google
             </Button>
 
-            <Button variant="secondary" onClick={() => handleOAuth("github")}>
+            <Button variant="outline" onClick={() => handleOAuth("github")}>
               GitHub
             </Button>
           </div>

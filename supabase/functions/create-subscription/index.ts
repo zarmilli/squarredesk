@@ -13,7 +13,7 @@ type PlanKey = "basic" | "pro"
 const PLANS: Record<PlanKey, { name: string; amount: string }> = {
   basic: {
     name: "Squarre Basic Plan",
-    amount: "49.00",
+    amount: "1.00",
   },
   pro: {
     name: "Squarre Pro Plan",

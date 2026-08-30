@@ -49,7 +49,7 @@ export function MiniChart({ data, labels, activeColor = "#3b82f6" }: MiniChartPr
                 {chartData.map((entry, index) => (
                   <Cell 
                     key={`cell-${index}`} 
-                    fill={entry.isActive ? activeColor : "hsl(var(--muted))"} 
+                    fill={entry.isActive ? activeColor : "var(--muted)"} 
                     className="transition-all duration-200"
                   />
                 ))}

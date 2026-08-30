@@ -30,7 +30,7 @@ const subscriptionPlans = [
   {
     id: "basic",
     name: "Basic",
-    price: "R49",
+    price: "R79",
     period: "/month",
     description: "Great for freelancers",
     features: [
@@ -453,7 +453,7 @@ export default function Subscriptions() {
               This will revert you back to the free plan.
             </p>
             <div className="flex justify-center gap-4">
-              <Button variant="secondary" onClick={() => setPauseModal(false)}>
+              <Button variant="outline" onClick={() => setPauseModal(false)}>
                 Cancel
               </Button>
               <Button onClick={pauseSubscription}>

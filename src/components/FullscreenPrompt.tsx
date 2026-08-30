@@ -19,15 +19,16 @@ export default function FullscreenPrompt() {
           <h2 className="text-lg font-semibold text-stone-900">Best viewed fullscreen or in landscape mode</h2>
           <p className="text-sm text-stone-500 mt-1">While we want to provide the best experience, some features may not display correctly in smaller windows. Rotate your device for the best view or open on a desktop.</p>
         </div>
-        <Button className="w-full" onClick={requestFullscreen}>
+        <Button variant="default" className="w-full" onClick={requestFullscreen}>
           Enter Fullscreen
         </Button>
-        <button
-          className="text-xs text-stone-400 hover:text-stone-600 underline"
+        <Button
+          variant="link"
+          className="text-xs w-full text-stone-400 hover:text-stone-600 underline"
           onClick={() => setDismissed(true)}
         >
           Continue without fullscreen
-        </button>
+        </Button>
       </div>
     </div>
   );

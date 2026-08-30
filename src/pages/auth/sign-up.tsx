@@ -64,7 +64,7 @@ export default function SignUp() {
       return;
     }
 
-    // Replace the supabase.from("profiles").insert(...) block with this:
+    
     const { error: profileError } = await supabase
       .from("profiles")
       .update({
@@ -180,10 +180,10 @@ export default function SignUp() {
           <Separator />
 
           <div className="grid grid-cols-2 gap-3">
-            <Button variant="secondary" onClick={() => handleOAuth("google")}>
+            <Button variant="outline" onClick={() => handleOAuth("google")}>
               Google
             </Button>
-            <Button variant="secondary" onClick={() => handleOAuth("github")}>
+            <Button variant="outline" onClick={() => handleOAuth("github")}>
               GitHub
             </Button>
           </div>

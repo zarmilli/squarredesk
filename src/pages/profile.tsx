@@ -202,13 +202,13 @@ export default function Profile() {
             </div>
 
             <div className="flex space-x-3">
-              <Button variant="secondary" onClick={() => navigate("/subscription")}>
+              <Button variant="outline" onClick={() => navigate("/subscription")}>
                 Subscription
               </Button>
-              <Button variant="secondary" onClick={() => navigate("/messages")}>
+              <Button variant="outline" onClick={() => navigate("/messages")}>
                 Message
               </Button>
-              <Button variant="secondary" onClick={() => navigate("/marketplace")}>
+              <Button variant="outline" onClick={() => navigate("/marketplace")}>
                 Marketplace
               </Button>
             </div>
