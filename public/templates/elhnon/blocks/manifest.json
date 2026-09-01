@@ -1,0 +1,8 @@
+{
+  "hero": ["default", "minimal"],
+  "catalog": ["default"],
+  "policy": ["default"],
+  "products": ["default"],
+  "promo": ["default"],
+  "testimonials": ["default"]
+}

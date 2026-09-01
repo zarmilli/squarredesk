@@ -71,12 +71,9 @@ export default function Marketplace() {
   if (loading) {
     return (
       <div className="h-full overflow-y-auto p-6 custom-scrollbar">
-        <div className="mb-6">
-          <BackButton onClick={() => navigate("/")} />
-        </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, index) => (
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, index) => (
             <div key={index} className="space-y-3 animate-pulse">
               <div className="h-72 rounded-xl bg-muted" />
               <div className="h-5 w-2/3 rounded bg-muted" />
@@ -90,14 +87,9 @@ export default function Marketplace() {
 
   return (
     <div className="h-full overflow-y-auto p-6 custom-scrollbar">
-      <div className="mb-6">
-        <BackButton onClick={() => navigate("/")} />
-      </div>
 
       <Wishlist1
         items={wishlistItems}
-        title="Marketplace"
-        description="Everything your business needs, branded and ready to go."
         showActionButton={false}
         onViewProduct={(item) => navigate(`/marketplace/${item.id}`)}
         onRemoveItem={() => undefined}

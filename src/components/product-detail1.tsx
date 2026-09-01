@@ -80,11 +80,13 @@ type SizeOptionProps = option;
 interface RadioGroupProps {
   options?: Array<option>;
   field: ControllerRenderProps<FormType>;
+  onSelect?: (value: string) => void;
 }
 
 interface ProductFormProps {
-  hinges?: Record<FieldName, Hinges>;
-  selected: FormType;
+  hinges?: Partial<Record<FieldName, Hinges>>;
+  selected: Partial<FormType>;
+  onSelect?: (value: string) => void;
 }
 
 const MAX_STARS = 5;
@@ -193,24 +195,81 @@ const PRODUCT_DETAILS = {
   ],
 };
 
+type ProductVariant = {
+  size: string;
+  price: number;
+};
+
 interface ProductDetail1Props {
   className?: string;
+  product?: {
+    id?: string;
+    name?: string;
+    description?: string;
+    image_url?: string;
+    variants?: ProductVariant[];
+  } | null;
+  selectedVariant?: ProductVariant | null;
+  onSelectVariant?: (variant: ProductVariant) => void;
+  onBuyNow?: (variant?: ProductVariant | null) => void;
 }
 
-const ProductDetail1 = ({ className }: ProductDetail1Props) => {
+const ProductDetail1 = ({
+  className,
+  product,
+  selectedVariant,
+  onSelectVariant,
+  onBuyNow,
+}: ProductDetail1Props) => {
+  const safeProduct = product ?? {
+    name: PRODUCT_DETAILS.name,
+    description: PRODUCT_DETAILS.description,
+    image_url: PRODUCT_DETAILS.images[0]?.src,
+    variants: PRODUCT_DETAILS.hinges.size.options?.map((option) => ({
+      size: option.label,
+      price: PRODUCT_DETAILS.price.regular,
+    })),
+  };
+
+  const variantOptions =
+    safeProduct.variants?.map((variant) => ({
+      id: variant.size,
+      label: variant.size,
+      value: variant.size,
+      stockInfo: {
+        stockStatusCode: "IN_STOCK" as StockStatusCode,
+      },
+    })) ?? [];
+
+  const currentPrice = selectedVariant?.price ?? safeProduct.variants?.[0]?.price ?? PRODUCT_DETAILS.price.regular;
+  const defaultSelectedSize = selectedVariant?.size ?? safeProduct.variants?.[0]?.size ?? PRODUCT_DETAILS.size;
+
+  const images = safeProduct.image_url
+    ? [
+        {
+          srcset: safeProduct.image_url,
+          src: safeProduct.image_url,
+          alt: safeProduct.name ?? "Product image",
+          width: 1200,
+          height: 1200,
+          sizes: "100vw",
+        },
+      ]
+    : PRODUCT_DETAILS.images;
+
   return (
-    <section className={cn("py-32", className)}>
-      <div className="container">
+    <section className={cn("py-6 md:py-10", className)}>
+      <div className="container max-w-6xl px-0 md:px-2">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
           <div>
-            <ProductImages images={PRODUCT_DETAILS.images} />
+            <ProductImages images={images} />
           </div>
           <div className="space-y-6">
             <div className="space-y-4">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="flex-1">
-                  <h1 className="text-4xl font-bold tracking-tight lg:text-5xl">
-                    {PRODUCT_DETAILS.name}
+                  <h1 className="text-3xl font-bold tracking-tight lg:text-5xl">
+                    {safeProduct.name}
                   </h1>
                   <div className="mt-3 flex flex-wrap items-center gap-4">
                     <Reviews
@@ -223,24 +282,44 @@ const ProductDetail1 = ({ className }: ProductDetail1Props) => {
                     </Badge>
                   </div>
                 </div>
-                <Price {...PRODUCT_DETAILS.price} />
+                <Price regular={currentPrice} currency="ZAR" />
               </div>
 
               <p className="text-muted-foreground">
-                {PRODUCT_DETAILS.description}
+                {safeProduct.description}
               </p>
             </div>
 
-            <Button size="lg" className="w-full">
+            <Button
+              size="lg"
+              className="w-full"
+              onClick={() => onBuyNow?.(selectedVariant ?? safeProduct.variants?.[0] ?? null)}
+            >
               Buy Now
             </Button>
 
             <ProductForm
-              hinges={PRODUCT_DETAILS.hinges}
+              hinges={{
+                size: {
+                  label: "Select size",
+                  id: "size",
+                  name: "size",
+                  options: variantOptions,
+                },
+              }}
               selected={{
-                size: PRODUCT_DETAILS.size,
+                size: defaultSelectedSize,
                 color: PRODUCT_DETAILS.color,
                 quantity: 1,
+              }}
+              onSelect={(value) => {
+                const matchedVariant = safeProduct.variants?.find(
+                  (variant) => variant.size === value,
+                );
+
+                if (matchedVariant) {
+                  onSelectVariant?.(matchedVariant);
+                }
               }}
             />
 
@@ -396,7 +475,7 @@ const formSchema = z.object({
   size: z.string(),
 });
 
-const ProductForm = ({ hinges, selected }: ProductFormProps) => {
+const ProductForm = ({ hinges, selected, onSelect }: ProductFormProps) => {
   const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -423,7 +502,11 @@ const ProductForm = ({ hinges, selected }: ProductFormProps) => {
               <legend className="text-base font-semibold">
                 {sizeHinges.label}
               </legend>
-              <SizeRadioGroup field={field} options={sizeHinges.options} />
+              <SizeRadioGroup
+                field={field}
+                options={sizeHinges.options}
+                onSelect={onSelect}
+              />
             </fieldset>
           )}
         />
@@ -464,7 +547,7 @@ const Price = ({ regular, sale, currency }: PriceProps) => {
   );
 };
 
-const SizeRadioGroup = ({ options, field }: RadioGroupProps) => {
+const SizeRadioGroup = ({ options, field, onSelect }: RadioGroupProps) => {
   if (!options) return;
 
   return (
@@ -474,6 +557,7 @@ const SizeRadioGroup = ({ options, field }: RadioGroupProps) => {
       onValueChange={(value) => {
         if (value != field.value && value) {
           field.onChange(value);
+          onSelect?.(value);
         }
       }}
       className="flex flex-wrap gap-3"

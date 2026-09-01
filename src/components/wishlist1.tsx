@@ -123,17 +123,9 @@ const Wishlist1 = ({
   };
 
   return (
-    <section className={cn("py-16 md:py-24", className)}>
-      <div className="container max-w-6xl">
+    <section className={cn("py-6 md:py-8", className)}>
+      <div className="container max-w-[1600px] px-2 md:px-4">
         <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
-              {title}
-            </h1>
-            <p className="mt-1 text-muted-foreground">
-              {description ?? `${wishlistItems.length} items saved`}
-            </p>
-          </div>
           {showActionButton && wishlistItems.length > 0 && (
             <Button variant="outline">
               <ShoppingCart className="mr-2 size-4" />
@@ -143,7 +135,7 @@ const Wishlist1 = ({
         </div>
 
         {wishlistItems.length > 0 ? (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {wishlistItems.map((item) => (
               <Card key={item.id} className="group gap-0 overflow-hidden p-0">
                 <div className="relative">

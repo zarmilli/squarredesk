@@ -1,0 +1,102 @@
+ /* ===== PROMO SECTION ===== */
+ <style>
+    .promo {
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+    .promo.promo-alt {
+      /* image left, text right — default order */
+    }
+    /* Promo text half */
+    .promo-text {
+      width: 50vw;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 80px 64px;
+      background: var(--green-pale);
+    }
+    .promo.promo-alt .promo-text {
+      background: var(--beige-mid);
+    }
+    .promo-text h2 {
+      font-size: clamp(24px, 2.8vw, 44px);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 18px;
+      color: var(--text-dark);
+    }
+    .promo-text p {
+      font-size: clamp(14px, 1.2vw, 16px);
+      font-weight: 300;
+      line-height: 1.8;
+      color: var(--text-mid);
+      margin-bottom: 32px;
+      max-width: 420px;
+    }
+    .promo-text p:last-child { margin-bottom: 0; }
+    .btn-promo {
+      display: inline-block;
+      background: var(--green-dark);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 14px 32px;
+      border-radius: 50px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+      width: fit-content;
+    }
+    .btn-promo:hover { background: var(--green-mid); transform: translateY(-2px); }
+    /* Promo image half */
+    .promo-image {
+      width: 50vw;
+      flex-shrink: 0;
+    }
+    .promo-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      border-radius: 0;
+    }
+    /* Mobile: each half = 50vh, stacked */
+    @media (max-width: 768px) {
+      .promo {
+        height: 100vh;
+        flex-direction: column;
+      }
+      /* Promo 1: content first (top), image second (bottom) */
+      .promo:not(.promo-alt):not(.promo-nocta-after-catalog) .promo-text { order: 1; }
+      .promo:not(.promo-alt):not(.promo-nocta-after-catalog) .promo-image { order: 2; }
+      .promo-text {
+        width: 100%;
+        height: 50vh;
+        padding: 36px 24px 28px;
+      }
+      .promo-image {
+        width: 100%;
+        height: 50vh;
+      }
+      .promo-text p { max-width: 100%; }
+    }
+ </style>
+
+ <!-- PROMO SECTION 1 — text left, image right; mobile: content first, image second -->
+ <section class="promo">
+   <div class="promo-text">
+     <h2 data-edit="promo_title">Born From Nature, Backed by Science</h2>
+     <p data-edit="promo_description">Every formula starts with responsibly sourced botanicals and is clinically tested for efficacy and safety. We believe beautiful skin should never come at the cost of the planet.</p>
+     <a class="btn-promo" data-edit="promo_link" data-edit-role="href" href="#catalog">
+       <span data-edit="promo_cta">Explore the Range</span>
+     </a>
+   </div>
+   <div class="promo-image">
+     <img data-edit="promo_image" src="https://images.pexels.com/photos/6970053/pexels-photo-6970053.jpeg" alt="Promo" />
+   </div>
+ </section>

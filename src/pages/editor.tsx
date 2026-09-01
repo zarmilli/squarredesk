@@ -50,6 +50,12 @@ type PageMeta = {
   editables: string;
 };
 
+type BlockSlot = {
+  slot: string;
+  variants: string[];
+  current: string;
+};
+
 type Editables = Record<string, EditableField>;
 type ContentMap = Record<string, any>;
 
@@ -196,6 +202,33 @@ function mergePageContent(
   return result;
 }
 
+async function applyBlocks(
+  shellHtml: string,
+  blocks: Record<string, string>,
+  templateSlug: string
+): Promise<string> {
+  let html = shellHtml;
+
+  const slotRegex = /<!-- block:(\w+) -->/g;
+  const matches = Array.from(html.matchAll(slotRegex));
+
+  for (const match of matches) {
+    const slot = match[1];
+    const variant = blocks[slot] ?? "default";
+
+    const res = await fetch(
+      `/templates/${templateSlug}/blocks/${slot}/${variant}.html`
+    );
+
+    if (res.ok) {
+      const blockHtml = await res.text();
+      html = html.replace(match[0], blockHtml);
+    }
+  }
+
+  return html;
+}
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function Editor() {
@@ -221,6 +254,8 @@ export default function Editor() {
 
   const [editables, setEditables] = useState<Editables>({});
   const [content, setContent] = useState<ContentMap>({});
+  const [blocks, setBlocks] = useState<Record<string, string>>({});
+  const [availableBlocks, setAvailableBlocks] = useState<BlockSlot[]>([]);
   const [userId, setUserId] = useState("");
   const [dirty, setDirty] = useState(false);
   const [lastSaved, setLastSaved] = useState<string | null>(null);
@@ -243,12 +278,15 @@ export default function Editor() {
 
     const { data: site } = await supabase
       .from("user_sites")
-      .select("site_name, template_id, content, updated_at")
+      .select("site_name, template_id, content, blocks, updated_at")
       .eq("id", siteId)
       .single();
     if (!site) return;
 
+    const initialBlocks = (site.blocks as Record<string, string> | null) ?? {};
+
     setSiteName(site.site_name);
+    setBlocks(initialBlocks);
     storedContent.current = parseStoredContent(site.content);
     setLastSaved(site.updated_at);
 
@@ -261,6 +299,7 @@ export default function Editor() {
 
     const slug = template.template_slug;
     setTemplateSlug(slug);
+    await loadBlockManifest(slug, initialBlocks);
 
     // ── Try to load pages.json. If it 404s this is a single-page template. ──
     let resolvedPages: PageMeta[] = [];
@@ -287,6 +326,51 @@ export default function Editor() {
     await loadPage(resolvedPages[0], slug, storedContent.current);
   }
 
+  async function loadBlockManifest(
+    slug: string,
+    initialBlocks: Record<string, string> = blocks
+  ) {
+    try {
+      const res = await fetch(`/templates/${slug}/blocks/manifest.json`);
+      if (!res.ok) {
+        setAvailableBlocks([]);
+        return;
+      }
+
+      const manifest = await res.json();
+      const slots: BlockSlot[] = Object.entries(manifest).map(([slot, variants]) => ({
+        slot,
+        variants: variants as string[],
+        current: initialBlocks[slot] ?? "default",
+      }));
+      setAvailableBlocks(slots);
+    } catch {
+      setAvailableBlocks([]);
+    }
+  }
+
+  async function renderPageIntoIframe(
+    page: PageMeta,
+    slug: string,
+    pageContent: ContentMap,
+    selectedBlocks: Record<string, string>
+  ) {
+    const shellRes = await fetch(`/templates/${slug}/${page.file}`);
+    if (!shellRes.ok) return;
+
+    const shellHtml = await shellRes.text();
+    const assembledHtml = await applyBlocks(shellHtml, selectedBlocks, slug);
+    const iframe = iframeRef.current;
+    if (!iframe?.contentDocument) return;
+
+    const doc = iframe.contentDocument;
+    doc.open();
+    doc.write(assembledHtml);
+    doc.close();
+    captureRepeatTemplates(page.file);
+    applyContent(pageContent, page.file);
+  }
+
   // ─── Load a specific page ──────────────────────────────────────────────────
 
   /**
@@ -304,13 +388,38 @@ export default function Editor() {
     setEditables(fields);
     setContent(pageContent);
 
-    if (iframeRef.current) {
-      iframeRef.current.onload = () => {
-        captureRepeatTemplates(page.file);
-        applyContent(pageContent, page.file);
-      };
-      iframeRef.current.src = `/templates/${slug}/${page.file}`;
-    }
+    await renderPageIntoIframe(page, slug, pageContent, blocks);
+  }
+
+  async function swapBlock(slot: string, variant: string) {
+    const updated = { ...blocks, [slot]: variant };
+    setBlocks(updated);
+    setAvailableBlocks((prev) =>
+      prev.map((item) => (item.slot === slot ? { ...item, current: variant } : item))
+    );
+
+    if (!templateSlug || !activePage || !siteId) return;
+
+    const shellRes = await fetch(`/templates/${templateSlug}/${activePage.file}`);
+    if (!shellRes.ok) return;
+
+    const shellHtml = await shellRes.text();
+    const assembled = await applyBlocks(shellHtml, updated, templateSlug);
+    const iframe = iframeRef.current;
+    if (!iframe?.contentDocument) return;
+
+    const doc = iframe.contentDocument;
+    doc.open();
+    doc.write(assembled);
+    doc.close();
+    captureRepeatTemplates(activePage.file);
+    applyContent(content, activePage.file);
+
+    setDirty(true);
+    await supabase
+      .from("user_sites")
+      .update({ blocks: updated, updated_at: new Date().toISOString() })
+      .eq("id", siteId);
   }
 
   // ─── Handle page selection from dropdown ──────────────────────────────────
@@ -523,7 +632,11 @@ export default function Editor() {
 
     const { data } = await supabase
       .from("user_sites")
-      .update({ content: nextContent, updated_at: new Date().toISOString() })
+      .update({
+        content: nextContent,
+        blocks,
+        updated_at: new Date().toISOString(),
+      })
       .eq("id", siteId)
       .select("updated_at")
       .single();
@@ -876,6 +989,30 @@ export default function Editor() {
                     </option>
                   ))}
                 </select>
+              </div>
+            )}
+
+            {availableBlocks.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-xs text-gray-500 font-medium">Block variants</p>
+                {availableBlocks.map((slot) => (
+                  <div key={slot.slot} className="space-y-1">
+                    <label className="text-[10px] uppercase tracking-wide text-gray-500">
+                      {slot.slot}
+                    </label>
+                    <select
+                      value={slot.current}
+                      onChange={(e) => void swapBlock(slot.slot, e.target.value)}
+                      className="w-full border rounded-md px-3 py-2 text-sm bg-[--background] focus:outline-none focus:ring-2 focus:ring-ring"
+                    >
+                      {slot.variants.map((variant) => (
+                        <option key={variant} value={variant}>
+                          {variant}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ))}
               </div>
             )}
           </div>

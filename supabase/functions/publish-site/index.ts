@@ -158,6 +158,31 @@ function applyRepeatGroupHtml(
   return html.slice(0, innerStart) + built + html.slice(closeIndex)
 }
 
+async function applyBlocks(
+  shellHtml: string,
+  blocks: Record<string, string>,
+  templateSlug: string
+): Promise<string> {
+  let html = shellHtml
+
+  const slotRegex = /<!-- block:(\w+) -->/g
+  const matches = [...html.matchAll(slotRegex)]
+
+  for (const match of matches) {
+    const slot = match[1]
+    const variant = blocks[slot] ?? "default"
+    const blockUrl = `${TEMPLATE_BASE_URL}/${templateSlug}/blocks/${slot}/${variant}.html`
+    const blockRes = await fetch(blockUrl)
+
+    if (blockRes.ok) {
+      const blockHtml = await blockRes.text()
+      html = html.replace(match[0], blockHtml)
+    }
+  }
+
+  return html
+}
+
 function injectWebsiteData(html: string, data: Record<string, unknown>): string {
   const script = `<script>window.websiteData=${JSON.stringify(data)};</script>`
   if (html.includes("</body>")) {
@@ -401,7 +426,7 @@ serve(async (req) => {
 
     const { data: site } = await supabase
       .from("user_sites")
-      .select("id, site_name, template_id, content, netlify_site_id")
+      .select("id, site_name, template_id, content, blocks, netlify_site_id")
       .eq("id", siteId)
       .single()
 
@@ -441,9 +466,15 @@ serve(async (req) => {
       }
 
       const templateHtml = await templateRes.text()
+      const blocksData = (typedSite.blocks ?? {}) as Record<string, string>
+      const assembledHtml = await applyBlocks(
+        templateHtml,
+        blocksData,
+        typedTemplate.template_slug
+      )
 
       files[page.file] = applyContent(
-        templateHtml,
+        assembledHtml,
         getPageContent(typedSite.content ?? {}, page.file)
       )
     }

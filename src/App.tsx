@@ -30,6 +30,7 @@ import Onboarding from "@/pages/onboarding";
 import Marketplace from "@/pages/Marketplace";
 import MarketplaceProduct from "@/pages/MarketplaceProduct";
 import Overview from "@/pages/overview";
+import AccountOpen from "@/pages/accountOpen";
 
 import { AuthProvider } from "@/context/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -110,21 +111,21 @@ function Router() {
       <Route path="/subscriptions" element={<ProtectedRoute><Layout title="Subscriptions"><Subscriptions /></Layout></ProtectedRoute>} />
       <Route path="/overview" element={<ProtectedRoute><Layout title="Overview"><Overview /></Layout></ProtectedRoute>} />
       <Route path="/documentation" element={<ProtectedRoute><Layout title="Documentation"><Documentation /></Layout></ProtectedRoute>} />
-      <Route path="/marketplace" element={<Marketplace />} />
+      <Route path="/marketplace" element={<ProtectedRoute><Layout title="Marketplace"><Marketplace /></Layout></ProtectedRoute>} />
+      <Route path="/marketplace/:id" element={<ProtectedRoute><Layout title="Marketplace"><MarketplaceProduct /></Layout></ProtectedRoute>} />
 
       {/* FULLSCREEN onboarding */}
       <Route path="/create-site" element={<ProtectedRoute><CreateSite /></ProtectedRoute>} />
       <Route path="/template-picker" element={<ProtectedRoute><TemplatePicker /></ProtectedRoute>} />
       <Route path="/editor" element={<ProtectedRoute><Editor /></ProtectedRoute>} />
       <Route path="/blog" element={<ProtectedRoute><Blog /></ProtectedRoute>} />
+      <Route path="/accountOpen" element={<ProtectedRoute><AccountOpen /></ProtectedRoute>} />
       <Route path="/auth/sign-in" element={<SignIn />} />
       <Route path="/auth/sign-up" element={<SignUp />} />
       <Route path="/onboarding" element={<Onboarding />} />
       <Route path="/auth/confirmation" element={<ConfirmEmail />} />
       <Route path="/payment/success" element={<PaymentSuccess />} />
       <Route path="/payment/cancelled" element={<PaymentCancelled />} />
-      <Route path="/marketplace" element={<Marketplace />} />
-      <Route path="/marketplace/:id" element={<MarketplaceProduct />} />
 
       <Route path="*" element={<ProtectedRoute><NotFound /></ProtectedRoute>} />
     </Routes>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ComponentProps } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { CreditCard } from "@/components/shared-assets/credit-card/credit-card";
 import { StatsCard1 } from "@/components/stats-card1";
@@ -47,6 +48,8 @@ function FullWidthCreditCard(props: ComponentProps<typeof CreditCard>) {
 }
 
 export default function Payments() {
+  const navigate = useNavigate();
+
   return (
     <div className="grid h-full grid-cols-1 gap-8 p-6 lg:grid-cols-3">
       {/* Main — 2 columns */}
@@ -112,15 +115,30 @@ export default function Payments() {
               cardNumber="4532 8891 0044 2210"
               cardHolder="Thubelihle Zulu"
               cardExpiration="06/28"
-              type="transparent-gradient"
-            />
-            <FullWidthCreditCard
-              company="Capitec Business Account"
-              cardNumber="5289 4412 0099 8831"
-              cardHolder="Thubelihle Zulu"
-              cardExpiration="09/29"
               type="gray-light"
             />
+            <div className="relative overflow-hidden rounded-2xl">
+              <FullWidthCreditCard
+                company="Capitec Business Account"
+                cardNumber="5289 4412 0099 8831"
+                cardHolder="Thubelihle Zulu"
+                cardExpiration="09/29"
+                type="transparent-gradient"
+              />
+
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/55 px-5 text-center backdrop-blur-[2px]">
+                <p className="max-w-xs text-lg font-semibold text-white">
+                  Open a Capitec business account
+                </p>
+                <Button
+                  type="button"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90"
+                  onClick={() => navigate("/accountOpen")}
+                >
+                  Open account
+                </Button>
+              </div>
+            </div>
           </div>
 
           <div className="mt-4 grid grid-cols-2 gap-3">

@@ -1,0 +1,122 @@
+ /* ===== TESTIMONIALS ===== */
+ <style>
+    .testimonials {
+      background: var(--white);
+      padding: 90px 24px;
+      text-align: center;
+    }
+    .testimonials h2 {
+      font-size: clamp(24px, 3.5vw, 38px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 56px;
+      color: var(--text-dark);
+    }
+    .carousel-wrapper {
+      max-width: 680px;
+      margin: auto;
+      min-height: 160px;
+    }
+    .carousel-slide { display: none; animation: fadeIn 0.4s ease; }
+    .carousel-slide.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .testimonial-quote {
+      font-size: clamp(16px, 2vw, 19px);
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--text-mid);
+      font-style: italic;
+      margin-bottom: 24px;
+    }
+    .testimonial-name {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--green-dark);
+    }
+    .carousel-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+      margin-top: 40px;
+    }
+    .carousel-btn {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: 2px solid var(--green-dark);
+      background: transparent;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, color 0.2s;
+      color: var(--green-dark);
+    }
+    .carousel-btn:hover { background: var(--green-dark); color: var(--white); }
+    .carousel-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .carousel-dots { display: flex; gap: 8px; }
+    .carousel-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--beige-mid);
+      border: 1.5px solid var(--beige-deep);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .carousel-dot.active { background: var(--green-dark); border-color: var(--green-dark); }
+ </style>
+
+ <!-- TESTIMONIALS -->
+ <section id="testimonials" class="testimonials">
+   <h2 data-edit="testimonials_title">What Our Community Says</h2>
+   <div class="carousel-wrapper">
+     <div data-repeat="testimonials">
+       <div class="carousel-slide active">
+         <p class="testimonial-quote" data-edit="testimonial">"My skin has never looked this good. After just two weeks on the Glow Serum my friends started asking what I was using — absolutely life-changing."</p>
+         <div class="testimonial-name" data-edit="name">Amara L.</div>
+       </div>
+       <div class="carousel-slide">
+         <p class="testimonial-quote" data-edit="testimonial">"Finally a skincare brand that actually delivers on its promises. Clean ingredients, beautiful packaging, and results I can see and feel."</p>
+         <div class="testimonial-name" data-edit="name">Priya N.</div>
+       </div>
+       <div class="carousel-slide">
+         <p class="testimonial-quote" data-edit="testimonial">"I have sensitive skin and I've struggled to find products that don't cause a reaction. Everything from this brand has been gentle and so effective."</p>
+         <div class="testimonial-name" data-edit="name">Sophie R.</div>
+       </div>
+     </div>
+   </div>
+   <div class="carousel-controls">
+     <button class="carousel-btn" id="prevBtn" aria-label="Previous">
+       <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+     </button>
+     <div class="carousel-dots" id="carouselDots"></div>
+     <button class="carousel-btn" id="nextBtn" aria-label="Next">
+       <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+     </button>
+   </div>
+ </section>
+
+ <script>
+   // Carousel
+   const slides = document.querySelectorAll('.carousel-slide');
+   const dotsContainer = document.getElementById('carouselDots');
+   let current = 0;
+
+   slides.forEach((_, i) => {
+     const dot = document.createElement('div');
+     dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+     dot.addEventListener('click', () => goTo(i));
+     dotsContainer.appendChild(dot);
+   });
+
+   function goTo(index) {
+     slides[current].classList.remove('active');
+     dotsContainer.children[current].classList.remove('active');
+     current = (index + slides.length) % slides.length;
+     slides[current].classList.add('active');
+     dotsContainer.children[current].classList.add('active');
+   }
+
+   document.getElementById('prevBtn').addEventListener('click', () => goTo(current - 1));
+   document.getElementById('nextBtn').addEventListener('click', () => goTo(current + 1));
+ </script>

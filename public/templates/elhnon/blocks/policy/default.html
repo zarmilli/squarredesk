@@ -1,0 +1,74 @@
+ /* ===== POLICY ===== */
+ <style>
+    .policy {
+      background: var(--bg);
+      padding: 90px 48px;
+    }
+    .policy h2 {
+      font-size: clamp(24px, 3.5vw, 38px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      text-align: center;
+      margin-bottom: 56px;
+      color: var(--text-dark);
+    }
+    .policy-list {
+      max-width: 760px;
+      margin: auto;
+    }
+    .policy-item {
+      border-top: 1px solid var(--beige-deep);
+      padding: 26px 0;
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .policy-item:last-child { border-bottom: 1px solid var(--beige-deep); }
+    .policy-num {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--green-dark);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding-top: 3px;
+      min-width: 28px;
+    }
+    .policy-item p {
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.7;
+      color: var(--text-mid);
+    }
+    @media (max-width: 600px) { .policy { padding: 64px 20px; } }
+ </style>
+
+ <!-- POLICY -->
+ <section id="policy" class="policy">
+   <h2 data-edit="policy_title">Our Policy</h2>
+   <div class="policy-list" data-repeat="policies">
+     <div class="policy-item">
+       <span class="policy-num">01</span>
+       <p data-edit="policy_text">All products are dermatologist tested and free from parabens, sulfates, and artificial fragrances. We are committed to clean beauty.</p>
+     </div>
+     <div class="policy-item">
+       <span class="policy-num">02</span>
+       <p data-edit="policy_text">Orders are processed within 1–2 business days. Standard shipping takes 3–5 business days and you will receive a tracking number via email.</p>
+     </div>
+     <div class="policy-item">
+       <span class="policy-num">03</span>
+       <p data-edit="policy_text">We accept returns on unopened products within 30 days. If a product causes a reaction, contact us and we will arrange an exchange or refund.</p>
+     </div>
+     <div class="policy-item">
+       <span class="policy-num">04</span>
+       <p data-edit="policy_text">We never test on animals. All formulations are certified cruelty-free and our packaging is made from recycled or recyclable materials.</p>
+     </div>
+   </div>
+ </section>
+
+ <script>
+   // Policy numbering
+   document.querySelectorAll('.policy-item').forEach((item, i) => {
+     const num = item.querySelector('.policy-num');
+     if (num) num.textContent = String(i + 1).padStart(2, '0');
+   });
+ </script>
