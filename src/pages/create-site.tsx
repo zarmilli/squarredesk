@@ -71,7 +71,7 @@ export default function CreateSite() {
             onChange={(e) => setName(e.target.value)}
           />
 
-          <Button variant="default" className="w-full bg-[#121212] border-0 shadow-none ring-0" onClick={handleNext} disabled={!name.trim()}>
+          <Button variant="default" className="w-full" onClick={handleNext} disabled={!name.trim()}>
             Next
           </Button>
         </div>

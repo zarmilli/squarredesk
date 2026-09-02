@@ -161,3 +161,25 @@ Texture Background - You can modify these values:
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: var(--foreground);
 }
+
+.editor-scrollbar {
+  scrollbar-color: #212121 var(--card);
+  scrollbar-width: thin;
+}
+
+.editor-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.editor-scrollbar::-webkit-scrollbar-track {
+  background: var(--card);
+}
+
+.editor-scrollbar::-webkit-scrollbar-thumb {
+  background: #212121;
+  border-radius: 4px;
+}
+
+.editor-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #212121;
+}

@@ -153,7 +153,7 @@ export default function TemplatePicker() {
       </div>
 
       {loading && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 6 }).map((_, i) => (
             <Card key={i} className="p-4 animate-pulse space-y-3">
               <div className="h-40 bg-stone-200 rounded" />
@@ -164,12 +164,12 @@ export default function TemplatePicker() {
       )}
 
       {!loading && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {filtered.map(t => (
-            <Card key={t.id} className="p-4 space-y-3 border-0">
+            <Card key={t.id} className="w-fit max-w-full space-y-3 border-0 p-4">
 
               <div className="relative">
-                <img src={t.thumbnail_url} className="rounded" />
+                <img src={t.thumbnail_url} className="block h-auto max-w-full rounded" />
 
                 {t.availability !== "free" && (
                   <div className="absolute top-2 right-2">
@@ -182,14 +182,14 @@ export default function TemplatePicker() {
 
               <h3 className="font-medium">{t.name}</h3>
 
-              <div className="flex gap-2">
-                <Button className="w-full" onClick={() => chooseTemplate(t)}>
+              <div className="flex w-full gap-2">
+                <Button className="min-w-0 flex-1" onClick={() => chooseTemplate(t)}>
                   Choose
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="w-full"
+                  className="min-w-0 flex-1"
                   onClick={() => window.open(t.preview_url)}
                 >
                   Demo

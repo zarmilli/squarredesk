@@ -1,0 +1,209 @@
+ <style>
+    .catalog-section {
+      background: var(--white);
+      padding: 80px 24px;
+    }
+    .catalog-section h2 {
+      font-size: clamp(24px, 3.5vw, 38px);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+      margin-bottom: 40px;
+      color: var(--text-dark);
+    }
+    .catalog-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-radius: 0px;
+      gap: 16px;
+    }
+    /* 1st, 6th, 11th... span full row with full-image overlay */
+    .catalog-grid .product-card:nth-child(5n+1) {
+      grid-column: 1 / -1;
+      position: relative;
+      background: var(--beige-mid);
+      border-radius: 0px;
+      overflow: hidden;
+    }
+    .catalog-grid .product-card:nth-child(5n+1) img {
+      width: 100%;
+      aspect-ratio: 16/7;
+      object-fit: cover;
+      display: block;
+      opacity: 0.9;
+    }
+    .catalog-grid .product-card:nth-child(5n+1) .card-body {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 28px 32px;
+      background: linear-gradient(to top, rgba(30,20,10,0.65) 0%, rgba(30,20,10,0) 100%);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: flex-start;
+    }
+    .catalog-grid .product-card:nth-child(5n+1) .product-name {
+      font-size: clamp(18px, 2.5vw, 28px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--white);
+      white-space: normal;
+    }
+    .catalog-grid .product-card:nth-child(5n+1) .product-price {
+      font-size: 18px;
+      color: rgba(255,255,255,0.85);
+    }
+    .catalog-grid .product-card:nth-child(5n+1) .product-cta {
+      color: rgba(255,255,255,0.75);
+      margin-top: 2px;
+    }
+    /* Standard product card */
+    .product-card {
+      background: var(--white);
+      border-radius: 0px;
+      overflow: hidden;
+    }
+    .product-card img {
+      width: 100%;
+      aspect-ratio: 1/1.2;
+      object-fit: cover;
+      display: block;
+    }
+    .product-card .card-body {
+      padding: 14px 0px 18px;
+    }
+    .product-card .product-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .product-card .product-price {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--green-dark);
+      margin-bottom: 8px;
+    }
+    .product-card .product-cta {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-mid);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .catalog-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .catalog-grid .product-card:nth-child(5n+1) { grid-column: 1 / -1; }
+      .catalog-grid .product-card:nth-child(5n+1) img { aspect-ratio: 3/1; }
+      .catalog-grid .product-card:nth-child(5n+1) .card-body { padding: 16px 20px; }
+    }
+ </style>
+
+ <!-- CATALOG (infinite, 1st then every 5th spans) -->
+ <section id="catalog" class="catalog-section">
+   <div class="catalog-inner">
+     <h2 data-edit="catalog_title">Shop All Products</h2>
+     <div class="catalog-grid" data-repeat="catalog">
+
+       <div class="product-card">
+         <img data-edit="image" src="https://assets.bash.com/cms/1200x/filters:quality(100):format(webp)/Promo_Spotlight_Web_1_4ee4eac809.jpg" alt="Product" />
+         <div class="card-body">
+           <div class="product-name" data-edit="name">Elhnon Bamboo Taable</div>
+           <div class="product-price" data-edit="price">R16,800</div>
+           <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+         </div>
+       </div>
+
+       <div class="product-card">
+         <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/213802634-300-400/5c2c0a09-eaba-45d1-8f49-d658e431898b.jpg?v=638901770538200000" alt="Product" />
+         <div class="card-body">
+           <div class="product-name" data-edit="name">Hydra Cream SPF 30</div>
+           <div class="product-price" data-edit="price">R145</div>
+           <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+         </div>
+       </div>
+
+       <div class="product-card">
+         <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/213890753-300-400/c7a02f21-cd00-4d97-ad7c-62ae3e6dbf71.jpg?v=638901797868100000" alt="Product" />
+         <div class="card-body">
+           <div class="product-name" data-edit="name">Cleansing Balm Rose</div>
+           <div class="product-price" data-edit="price">R138</div>
+           <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+         </div>
+       </div>
+
+       <div class="product-card">
+         <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/213825016-300-400/532a5e69-6f29-48cb-b318-cd1ddd7798fb.jpg?v=638901778206770000" alt="Product" />
+         <div class="card-body">
+           <div class="product-name" data-edit="name">Vitamin C Eye Gel</div>
+           <div class="product-price" data-edit="price">R152</div>
+           <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+         </div>
+       </div>
+
+       <div class="product-card">
+         <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/213870305-300-400/7246c238-1593-4e21-8401-cf7adc5423f5.jpg?v=638901791539800000" alt="Product" />
+         <div class="card-body">
+           <div class="product-name" data-edit="name">Retinol Night Repair</div>
+           <div class="product-price" data-edit="price">R174</div>
+           <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+         </div>
+       </div>
+
+       <div class="product-card">
+         <img data-edit="image" src="https://assets.bash.com/cms/800x/filters:quality(100):format(webp)/Bash_17_Feb26_BEAUTY_Desktop_800_X408_3116926c7e.jpg" alt="Product" />
+         <div class="card-body">
+           <div class="product-name" data-edit="name">Pore Refining Toner</div>
+           <div class="product-price" data-edit="price">R134</div>
+           <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+         </div>
+       </div>
+
+       <div class="product-card">
+         <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/223852747-300-400/7527db4e-2c7e-4fb7-8f28-b42e18641614.png?v=639051870987670000" alt="Product" />
+         <div class="card-body">
+           <div class="product-name" data-edit="name">Hyaluronic Booster</div>
+           <div class="product-price" data-edit="price">R158</div>
+           <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+         </div>
+       </div>
+
+       <div class="product-card">
+         <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/223853015-300-400/79f08c16-d83a-46bc-b7f7-de89c42b362e.png?v=639051873087900000" alt="Product" />
+         <div class="card-body">
+           <div class="product-name" data-edit="name">AHA Exfoliant Peel</div>
+           <div class="product-price" data-edit="price">R149</div>
+           <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+         </div>
+       </div>
+
+       <div class="product-card">
+         <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/223852770-300-400/a900858c-7b3d-48ef-a81f-6d5953ff1290.png?v=639051871277870000" alt="Product" />
+         <div class="card-body">
+           <div class="product-name" data-edit="name">Soothing Aloe Gel</div>
+           <div class="product-price" data-edit="price">R128</div>
+           <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+         </div>
+       </div>
+
+       <div class="product-card">
+         <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/223851801-300-400/6243b4ad-997d-445f-99a0-a734d5490787.png?v=639051859817830000" alt="Product" />
+         <div class="card-body">
+           <div class="product-name" data-edit="name">Barrier Repair Mask</div>
+           <div class="product-price" data-edit="price">R142</div>
+           <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+         </div>
+       </div>
+
+     </div>
+   </div>
+ </section>

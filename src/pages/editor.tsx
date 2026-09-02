@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card";
 import UploadFile from "@/components/ui/uploadfile";
 import { BadgeWithDot } from "@/components/base/badges/badges";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 import happyImage from "/images/happy.png";
 import squeakImage from "/images/speaking.png";
@@ -18,7 +19,6 @@ import Confetti from "react-confetti";
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type FieldType = "text" | "longtext" | "url" | "image" | "boolean" | "icon" | "logo" | "repeat";
-
 /**
  * section:
  *   "editor"    → (default) shown in the main editor panel
@@ -36,11 +36,6 @@ type EditableField = {
   options?: Array<{ label: string; value: string }>;
 };
 
-/**
- * A page entry inside pages.json (multi-page templates).
- * Single-page templates have no pages.json — the editor falls back to index.html
- * and editables.json at the template root.
- */
 type PageMeta = {
   /** Shown in the dropdown, e.g. "Home", "About", "Services" */
   label: string;
@@ -106,7 +101,6 @@ function normalizeEditables(rawEditables: ContentMap): Editables {
     return result;
   }, {});
 }
-
 function getPageEditorContent(
   storedContent: ContentMap,
   pageFile: string,
@@ -222,11 +216,58 @@ async function applyBlocks(
 
     if (res.ok) {
       const blockHtml = await res.text();
-      html = html.replace(match[0], blockHtml);
+      const parsed = new DOMParser().parseFromString(
+        `<body>${blockHtml}</body>`,
+        "text/html"
+      );
+      const blockRoot = Array.from(parsed.body.children).find(
+        (element) => !["STYLE", "SCRIPT"].includes(element.tagName)
+      );
+      blockRoot?.setAttribute("data-editor-block", slot);
+      html = html.replace(match[0], parsed.body.innerHTML);
     }
   }
 
   return html;
+}
+
+function BlockVariantCard({
+  slot,
+  variant,
+  isSelected,
+  templateSlug,
+  onSelect,
+}: {
+  slot: string;
+  variant: string;
+  isSelected: boolean;
+  templateSlug: string;
+  onSelect: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className={cn(
+        "w-full overflow-hidden rounded-lg border-2 text-left transition-all",
+        isSelected
+          ? "border-stone-900 shadow-md"
+          : "border-stone-200 hover:border-stone-400"
+      )}
+    >
+      <img
+        src={`/templates/${templateSlug}/blocks/${slot}/${variant}.png`}
+        alt={`${variant} variant`}
+        className="w-full"
+      />
+      <div className="flex items-center justify-between bg-[#121212] px-2 py-1.5">
+        <span className="text-xs font-medium capitalize text-stone-700">
+          {variant}
+        </span>
+        {isSelected && <span className="text-xs text-stone-400">Active</span>}
+      </div>
+    </button>
+  );
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -256,6 +297,7 @@ export default function Editor() {
   const [content, setContent] = useState<ContentMap>({});
   const [blocks, setBlocks] = useState<Record<string, string>>({});
   const [availableBlocks, setAvailableBlocks] = useState<BlockSlot[]>([]);
+  const [themesOpen, setThemesOpen] = useState(false);
   const [userId, setUserId] = useState("");
   const [dirty, setDirty] = useState(false);
   const [lastSaved, setLastSaved] = useState<string | null>(null);
@@ -323,7 +365,7 @@ export default function Editor() {
     setPages(resolvedPages);
 
     // Always start on the first page.
-    await loadPage(resolvedPages[0], slug, storedContent.current);
+    await loadPage(resolvedPages[0], slug, storedContent.current, initialBlocks);
   }
 
   async function loadBlockManifest(
@@ -378,7 +420,12 @@ export default function Editor() {
    * and sets the activePage state. Content is shared across all pages in one
    * object so switching pages never loses edits made on another page.
    */
-  async function loadPage(page: PageMeta, slug: string, currentContent: ContentMap) {
+  async function loadPage(
+    page: PageMeta,
+    slug: string,
+    currentContent: ContentMap,
+    selectedBlocks: Record<string, string> = blocks
+  ) {
     activePageFile.current = page.file;
     setActivePage(page);
 
@@ -388,7 +435,7 @@ export default function Editor() {
     setEditables(fields);
     setContent(pageContent);
 
-    await renderPageIntoIframe(page, slug, pageContent, blocks);
+    await renderPageIntoIframe(page, slug, pageContent, selectedBlocks);
   }
 
   async function swapBlock(slot: string, variant: string) {
@@ -414,6 +461,7 @@ export default function Editor() {
     doc.close();
     captureRepeatTemplates(activePage.file);
     applyContent(content, activePage.file);
+    scrollIframeToBlock(slot);
 
     setDirty(true);
     await supabase
@@ -465,6 +513,19 @@ export default function Editor() {
         .querySelectorAll<HTMLElement>(`[data-edit="${key}"]`)
         .forEach((el) => applyScalarField(el, value));
     });
+  }
+
+  function scrollIframeToBlock(slot: string) {
+    const doc = iframeRef.current?.contentDocument;
+    const block = doc?.querySelector<HTMLElement>(`[data-editor-block="${slot}"]`);
+    block?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function scrollIframeToField(key: string) {
+    const doc = iframeRef.current?.contentDocument;
+    const field = Array.from(doc?.querySelectorAll<HTMLElement>("[data-edit]") ?? [])
+      .find((element) => element.dataset.edit === key);
+    field?.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
   function applyRepeatGroup(
@@ -542,6 +603,7 @@ export default function Editor() {
 
   function updateField(key: string, value: any) {
     setDirty(true);
+    scrollIframeToField(key);
     setContent((prev) => {
       const updated = { ...prev, [key]: value };
       applyContent(updated);
@@ -577,6 +639,7 @@ export default function Editor() {
 
   function updateRepeatField(key: string, index: number, subKey: string, value: any) {
     setDirty(true);
+    scrollIframeToField(subKey);
     setContent((prev) => {
       const arr = [...(prev[key] ?? [])];
       arr[index] = { ...arr[index], [subKey]: value };
@@ -967,12 +1030,19 @@ export default function Editor() {
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* LEFT PANEL */}
-        <div className="w-[360px] border-r bg-[--card] flex flex-col shrink-0">
+        {/* EDITOR PANEL */}
+        <div className="flex w-[360px] shrink-0 flex-col border-r bg-[--card]">
 
           {/* Site name + page selector */}
-          <div className="p-4 border-b space-y-3">
-            <h2 className="font-semibold text-sm">{siteName}</h2>
+          <div className="space-y-3 border-b p-4">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="truncate text-sm font-semibold">{siteName}</h2>
+              {availableBlocks.length > 0 && (
+                <Button size="sm" variant="outline" onClick={() => setThemesOpen(true)}>
+                  Themes
+                </Button>
+              )}
+            </div>
 
             {/* Page dropdown — only shown when the template has multiple pages */}
             {pages.length > 1 && (
@@ -992,33 +1062,10 @@ export default function Editor() {
               </div>
             )}
 
-            {availableBlocks.length > 0 && (
-              <div className="space-y-2">
-                <p className="text-xs text-gray-500 font-medium">Block variants</p>
-                {availableBlocks.map((slot) => (
-                  <div key={slot.slot} className="space-y-1">
-                    <label className="text-[10px] uppercase tracking-wide text-gray-500">
-                      {slot.slot}
-                    </label>
-                    <select
-                      value={slot.current}
-                      onChange={(e) => void swapBlock(slot.slot, e.target.value)}
-                      className="w-full border rounded-md px-3 py-2 text-sm bg-[--background] focus:outline-none focus:ring-2 focus:ring-ring"
-                    >
-                      {slot.variants.map((variant) => (
-                        <option key={variant} value={variant}>
-                          {variant}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
 
           {/* Fields — section-filtered */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          <div className="editor-scrollbar flex-1 overflow-y-auto p-4 space-y-3">
             {editorFields.length === 0 ? (
               <p className="text-xs text-gray-400 text-center pt-8">
                 All fields on this page are managed in SEO or Inventory settings.
@@ -1046,11 +1093,49 @@ export default function Editor() {
                 </Card>
               ))
             )}
-          </div>
         </div>
+          </div>
 
         {/* IFRAME PREVIEW */}
         <iframe ref={iframeRef} className="flex-1 border-0" title="Site preview" />
+
+        {/* THEMES PANEL */}
+        <div
+          className={cn(
+            "shrink-0 overflow-hidden border-l bg-[--card] transition-[width] duration-300 ease-in-out",
+            themesOpen ? "w-[320px]" : "w-0"
+          )}
+        >
+          <div className="h-full w-[320px] overflow-y-auto editor-scrollbar">
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b bg-[--card] px-4 py-3">
+              <h2 className="text-sm font-semibold">Themes</h2>
+              <Button size="sm" variant="outline" onClick={() => setThemesOpen(false)}>
+                Back
+              </Button>
+            </div>
+            <div className="space-y-6 p-4">
+              {availableBlocks.map(({ slot, variants, current }) => (
+                <div key={slot}>
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-stone-400">
+                    {slot}
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {variants.map((variant) => (
+                      <BlockVariantCard
+                        key={variant}
+                        slot={slot}
+                        variant={variant}
+                        isSelected={current === variant}
+                        templateSlug={templateSlug}
+                        onSelect={() => void swapBlock(slot, variant)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* DEPLOY MODAL */}
