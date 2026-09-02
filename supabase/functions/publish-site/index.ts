@@ -473,10 +473,12 @@ serve(async (req) => {
         typedTemplate.template_slug
       )
 
-      files[page.file] = applyContent(
+      const finalHtml = applyContent(
         assembledHtml,
         getPageContent(typedSite.content ?? {}, page.file)
-      )
+      ).replace("{{SQUARRE_SITE_ID}}", typedSite.id)
+
+      files[page.file] = finalHtml
     }
 
     /* Deploy auxiliary pages (e.g. blog-single.html) with shared data */
