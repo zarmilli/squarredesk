@@ -15,7 +15,8 @@ import {
   X,
   Moon,
   Sun,
-  Wallet
+  Wallet,
+  BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -43,6 +44,11 @@ const navItems = [
     title: "My Sites",
     href: "/tables",
     icon: Globe,
+  },
+  {
+    title: "Analytics",
+    href: "/analytics",
+    icon: BarChart3,
   },
   {
     title: "Subscriptions",

@@ -29,6 +29,8 @@ import NotFound from "@/pages/not-found";
 import Onboarding from "@/pages/onboarding";
 import Marketplace from "@/pages/Marketplace";
 import MarketplaceProduct from "@/pages/MarketplaceProduct";
+import Analytics from "@/pages/analytics";
+import Stats from "@/pages/stats";
 import Overview from "@/pages/overview";
 import AccountOpen from "@/pages/accountOpen";
 
@@ -106,13 +108,15 @@ function Router() {
       {/* Dashboard routes */}
       <Route path="/" element={<ProtectedRoute><Layout><Dashboard /></Layout></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><Layout title="Profile"><Profile /></Layout></ProtectedRoute>} />
-      <Route path="/tables" element={<ProtectedRoute><Layout title="Tables"><Tables /></Layout></ProtectedRoute>} />
+      <Route path="/tables" element={<ProtectedRoute><Layout title="My Sites"><Tables /></Layout></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><Layout title="Notifications"><Notifications /></Layout></ProtectedRoute>} />
       <Route path="/subscriptions" element={<ProtectedRoute><Layout title="Subscriptions"><Subscriptions /></Layout></ProtectedRoute>} />
       <Route path="/overview" element={<ProtectedRoute><Layout title="Overview"><Overview /></Layout></ProtectedRoute>} />
       <Route path="/documentation" element={<ProtectedRoute><Layout title="Documentation"><Documentation /></Layout></ProtectedRoute>} />
       <Route path="/marketplace" element={<ProtectedRoute><Layout title="Marketplace"><Marketplace /></Layout></ProtectedRoute>} />
       <Route path="/marketplace/:id" element={<ProtectedRoute><Layout title="Marketplace"><MarketplaceProduct /></Layout></ProtectedRoute>} />
+      <Route path="/analytics" element={<ProtectedRoute><Layout title="Site Analytics"><Analytics /></Layout></ProtectedRoute>} />
+      <Route path="/stats/:id" element={<ProtectedRoute><Layout title="Site Traffic"><Stats /></Layout></ProtectedRoute>} />
 
       {/* FULLSCREEN onboarding */}
       <Route path="/create-site" element={<ProtectedRoute><CreateSite /></ProtectedRoute>} />
