@@ -896,5 +896,118 @@
       if (num) num.textContent = String(i + 1).padStart(2, '0');
     });
   </script>
+  <script>
+    (async () => {
+      const SITE_ID = "{{SQUARRE_SITE_ID}}";
+      if (!SITE_ID || SITE_ID === "{{SQUARRE_SITE_ID}}") return;
+
+      // ── Device ────────────────────────────────────────────────────
+      const ua = navigator.userAgent;
+      const device =
+        /Mobi|Android/i.test(ua) && !/Tablet|iPad/i.test(ua) ? "mobile"
+        : /Tablet|iPad/i.test(ua) || (/Android/i.test(ua) && !/Mobile/i.test(ua)) ? "tablet"
+        : /Win|Mac|Linux|CrOS/i.test(navigator.platform) ? "desktop"
+        : "unknown";
+
+      // ── Visitor hash ──────────────────────────────────────────────
+      let hash = localStorage.getItem("visitor_hash");
+      if (!hash) {
+        hash = crypto.randomUUID();
+        localStorage.setItem("visitor_hash", hash);
+      }
+
+      // ── Location ──────────────────────────────────────────────────
+      let city = null, province = null, country = null;
+      try {
+        const geoRes = await fetch("https://ipapi.co/json/");
+        if (geoRes.ok) {
+          const geo = await geoRes.json();
+          city     = geo.city          ?? null;
+          province = geo.region        ?? null;
+          country  = geo.country_name  ?? null;
+        }
+      } catch {}
+
+      // ── Record visit — capture row id for later updates ───────────
+      let visitId = null;
+      const startTime = Date.now();
+
+      try {
+        const res = await fetch(
+          "https://suwiamrsjmbvhceqxchp.supabase.co/rest/v1/site_visits",
+          {
+            method: "POST",
+            headers: {
+              apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1d2lhbXJzam1idmhjZXF4Y2hwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ5NDM4MDEsImV4cCI6MjA4MDUxOTgwMX0.4V8Ec8pvDYZyM0WYO3ePMa7yrHTuvbVdoCK9eYhH6zk",
+              Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1d2lhbXJzam1idmhjZXF4Y2hwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ5NDM4MDEsImV4cCI6MjA4MDUxOTgwMX0.4V8Ec8pvDYZyM0WYO3ePMa7yrHTuvbVdoCK9eYhH6zk",
+              "Content-Type": "application/json",
+              Prefer: "return=representation,resolution=ignore-duplicates",
+            },
+            body: JSON.stringify({
+              site_id: SITE_ID,
+              visitor_hash: hash,
+              device,
+              city,
+              province,
+              country,
+            }),
+          }
+        );
+
+        if (res.ok) {
+          const rows = await res.json();
+          if (rows?.length > 0) visitId = rows[0].id;
+        }
+      } catch {}
+
+      // ── Engagement tracking ───────────────────────────────────────
+      let engaged = false;
+
+      const markEngaged = () => {
+        if (engaged || !visitId) return;
+        engaged = true;
+
+        navigator.sendBeacon(
+          `https://suwiamrsjmbvhceqxchp.supabase.co/rest/v1/site_visits?id=eq.${visitId}`,
+          new Blob(
+            [JSON.stringify({ engaged: true })],
+            { type: "application/json" }
+          )
+        );
+      };
+
+      window.addEventListener("scroll", () => {
+        const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+        if (pct > 0.3) markEngaged();
+      }, { passive: true });
+
+      document.addEventListener("click", markEngaged, { once: true });
+
+      // ── Duration tracking ─────────────────────────────────────────
+      let durationSent = false;
+
+      const sendDuration = () => {
+        if (durationSent || !visitId) return;
+        durationSent = true;
+
+        const duration = Math.round((Date.now() - startTime) / 1000);
+        if (duration < 1) return;
+
+        navigator.sendBeacon(
+          `https://suwiamrsjmbvhceqxchp.supabase.co/rest/v1/site_visits?id=eq.${visitId}`,
+          new Blob(
+            [JSON.stringify({ duration_seconds: duration })],
+            { type: "application/json" }
+          )
+        );
+      };
+
+      window.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "hidden") sendDuration();
+      });
+      window.addEventListener("pagehide", sendDuration);
+
+    })();
+    </script>
 </body>
 </html>

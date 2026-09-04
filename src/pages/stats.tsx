@@ -1,85 +1,37 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Activity, CreditCard, DollarSign, Users } from "lucide-react";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/lib/supabase";
+import { Analytics } from "@/components/dashboard/analytics";
+import { RecentSales } from "@/components/dashboard/recent-sales";
+import {
+  getStartDate,
+  getTrafficData,
+  timeframeLabels,
+  type Timeframe,
+  type Visit,
+} from "@/lib/site-analytics";
 
-type Timeframe = "today" | "week" | "month" | "all";
-type Visit = { created_at: string | null; device: string | null };
-type TrafficPoint = { label: string; visits: number };
-
-const timeframeLabels: Record<Timeframe, string> = {
-  today: "Today",
-  week: "This week",
-  month: "This month",
-  all: "All time",
-};
-
-const chartConfig = {
-  visits: { label: "Visits", color: "var(--primary)" },
-};
-
-const deviceColors = ["var(--primary)", "var(--secondary)"];
-
-function startOfDay(date: Date) {
-  const result = new Date(date);
-  result.setHours(0, 0, 0, 0);
-  return result;
-}
-
-function getStartDate(timeframe: Timeframe) {
-  const now = new Date();
-  if (timeframe === "today") return startOfDay(now);
-  if (timeframe === "week") {
-    const result = startOfDay(now);
-    result.setDate(result.getDate() - 6);
-    return result;
-  }
-  if (timeframe === "month") {
-    const result = startOfDay(now);
-    result.setDate(result.getDate() - 29);
-    return result;
-  }
-  return null;
-}
-
-function getBucket(date: Date, timeframe: Timeframe) {
-  if (timeframe === "today") return `${String(date.getHours()).padStart(2, "0")}:00`;
-  if (timeframe === "week") return date.toLocaleDateString("en-ZA", { weekday: "short" });
-  if (timeframe === "month") return String(date.getDate());
-  return date.toLocaleDateString("en-ZA", { month: "short", year: "2-digit" });
-}
-
-function getTrafficData(visits: Visit[], timeframe: Timeframe): TrafficPoint[] {
-  const counts = new Map<string, number>();
-  visits.forEach((visit) => {
-    if (!visit.created_at) return;
-    const bucket = getBucket(new Date(visit.created_at), timeframe);
-    counts.set(bucket, (counts.get(bucket) ?? 0) + 1);
-  });
-  return Array.from(counts, ([label, visits]) => ({ label, visits }));
-}
-
-function getDeviceData(visits: Visit[]) {
-  const counts = new Map<string, number>([["Mobile", 0], ["Desktop", 0]]);
-  visits.forEach((visit) => {
-    const device = visit.device?.toLowerCase();
-    if (device?.includes("mobile")) counts.set("Mobile", (counts.get("Mobile") ?? 0) + 1);
-    else if (device?.includes("desktop") || device?.includes("web")) {
-      counts.set("Desktop", (counts.get("Desktop") ?? 0) + 1);
-    }
-  });
-  return Array.from(counts, ([name, value], index) => ({ name, value, fill: deviceColors[index] }));
-}
+const chartConfig = { visits: { label: "Visits", color: "var(--primary)" } };
 
 export default function Stats() {
   const { id: siteId } = useParams<{ id: string }>();
   const [timeframe, setTimeframe] = useState<Timeframe>("today");
   const [visits, setVisits] = useState<Visit[]>([]);
+  const [monthlyVisits, setMonthlyVisits] = useState<Visit[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -93,7 +45,7 @@ export default function Stats() {
       const startDate = getStartDate(timeframe);
       let query = supabase
         .from("site_visits")
-        .select("created_at, device")
+        .select("created_at, device, visitor_hash")
         .eq("site_id", siteId)
         .order("created_at", { ascending: true });
       if (startDate) query = query.gte("created_at", startDate.toISOString());
@@ -110,78 +62,153 @@ export default function Stats() {
     };
   }, [siteId, timeframe]);
 
+  useEffect(() => {
+    let active = true;
+    async function loadMonthlyVisits() {
+      if (!siteId) return;
+      const { data, error } = await supabase
+        .from("site_visits")
+        .select("created_at, device, visitor_hash")
+        .eq("site_id", siteId)
+        .gte("created_at", getStartDate("month")?.toISOString() ?? "")
+        .order("created_at", { ascending: true });
+      if (error) console.error(error);
+      if (active) setMonthlyVisits((data as Visit[] | null) ?? []);
+    }
+    void loadMonthlyVisits();
+    return () => {
+      active = false;
+    };
+  }, [siteId]);
+
   const trafficData = getTrafficData(visits, timeframe);
-  const deviceData = getDeviceData(visits);
+  const monthlyTraffic = monthlyVisits.length;
 
   return (
-    <div className="grid h-full grid-cols-1 gap-8 p-6 lg:grid-cols-3">
-      <main className="lg:col-span-2">
-        <Card>
-          <CardHeader className="flex-row items-start justify-between gap-4">
-            <div>
-              <CardTitle>Site traffic</CardTitle>
-              <CardDescription>{timeframeLabels[timeframe]} visits</CardDescription>
-            </div>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" size="sm">{timeframeLabels[timeframe]}</Button>
-              </PopoverTrigger>
-              <PopoverContent align="end" className="w-40 p-1">
-                {(Object.keys(timeframeLabels) as Timeframe[]).map((option) => (
-                  <Button key={option} variant="ghost" className="w-full justify-start" onClick={() => setTimeframe(option)}>
-                    {timeframeLabels[option]}
-                  </Button>
-                ))}
-              </PopoverContent>
-            </Popover>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="h-[400px] w-full">
-              <BarChart data={trafficData} margin={{ top: 10, right: 16, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="label" axisLine={false} tickLine={false} />
-                <YAxis allowDecimals={false} axisLine={false} tickLine={false} />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="visits" fill="var(--color-visits)" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ChartContainer>
-            {loading && <p className="text-center text-sm text-muted-foreground">Loading traffic...</p>}
-          </CardContent>
-        </Card>
-      </main>
+    <div className="h-full overflow-y-auto p-6">
+      <div className="mb-2 flex items-center justify-between space-y-2">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Site traffic</h1>
+          <p className="text-sm text-muted-foreground">
+            Monitor visitors and engagement for this site.
+          </p>
+        </div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="sm">
+              {timeframeLabels[timeframe]}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent align="end" className="w-40 p-1">
+            {(Object.keys(timeframeLabels) as Timeframe[]).map((option) => (
+              <Button
+                key={option}
+                variant="ghost"
+                className="w-full justify-start"
+                onClick={() => setTimeframe(option)}
+              >
+                {timeframeLabels[option]}
+              </Button>
+            ))}
+          </PopoverContent>
+        </Popover>
+      </div>
 
-      <aside>
-        <Card>
-          <CardHeader>
-            <CardTitle>Devices</CardTitle>
-            <CardDescription>{timeframeLabels[timeframe]} visits</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer
-              config={{ mobile: { label: "Mobile", color: deviceColors[0] }, desktop: { label: "Desktop", color: deviceColors[1] } }}
-              className="mx-auto h-[345px] w-full"
-            >
-              <PieChart>
-                <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-                <Pie data={deviceData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={65} outerRadius={105} paddingAngle={4}>
-                  {deviceData.map((entry) => <Cell key={entry.name} fill={entry.fill} />)}
-                </Pie>
-              </PieChart>
-            </ChartContainer>
-            <div className="space-y-2 text-sm">
-              {deviceData.map((device) => (
-                <div key={device.name} className="flex items-center justify-between">
-                  <span className="flex items-center gap-2">
-                    <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: device.fill }} />
-                    {device.name}
-                  </span>
-                  <span className="font-medium tabular-nums">{device.value.toLocaleString()}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </aside>
+      <Tabs orientation="vertical" defaultValue="overview" className="space-y-4">
+        <div className="w-full overflow-x-auto pb-2">
+          <TabsList>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="reports" disabled>
+              Reports
+            </TabsTrigger>
+            <TabsTrigger value="notifications" disabled>
+              Notifications
+            </TabsTrigger>
+          </TabsList>
+        </div>
+
+        <TabsContent value="overview" className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-10 pt-4">
+                <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent className="pb-4">
+                <div className="text-2xl font-bold">R45,231.89</div>
+                <p className="text-xs text-muted-foreground">Demo statistic</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-10 pt-4">
+                <CardTitle className="text-sm font-medium">Total Traffic</CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent className="pb-4">
+                <div className="text-2xl font-bold">{monthlyTraffic.toLocaleString()}</div>
+                <p className="text-xs text-muted-foreground">Current month visits</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-10 pt-4">
+                <CardTitle className="text-sm font-medium">Sales</CardTitle>
+                <CreditCard className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent className="pb-4">
+                <div className="text-2xl font-bold">+12,234</div>
+                <p className="text-xs text-muted-foreground">Demo statistic</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-10 pt-4">
+                <CardTitle className="text-sm font-medium">Active Sales</CardTitle>
+                <Activity className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent className="pb-4">
+                <div className="text-2xl font-bold">+573</div>
+                <p className="text-xs text-muted-foreground">Demo statistic</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
+            <Card className="col-span-1 lg:col-span-4">
+              <CardHeader>
+                <CardTitle>Site traffic</CardTitle>
+                <CardDescription>{timeframeLabels[timeframe]} visits</CardDescription>
+              </CardHeader>
+              <CardContent className="ps-2">
+                <ChartContainer config={chartConfig} className="h-[300px] w-full">
+                  <BarChart data={trafficData} margin={{ top: 10, right: 16, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="label" axisLine={false} tickLine={false} />
+                    <YAxis allowDecimals={false} axisLine={false} tickLine={false} />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Bar dataKey="visits" fill="var(--color-visits)" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ChartContainer>
+                {loading && (
+                  <p className="text-center text-sm text-muted-foreground">Loading traffic...</p>
+                )}
+              </CardContent>
+            </Card>
+            <Card className="col-span-1 lg:col-span-3">
+              <CardHeader>
+                <CardTitle>Recent Sales</CardTitle>
+                <CardDescription>You made 265 sales this month.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <RecentSales />
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="analytics" className="space-y-4">
+          <Analytics visits={visits} timeframe={timeframe} onTimeframeChange={setTimeframe} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
