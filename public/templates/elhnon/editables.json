@@ -32,7 +32,7 @@
   },
 
   "editor": {
-    "site_name": { "type": "text", "label": "Site / brand name" },
+    "site_name": { "type": "text", "label": "My example shop" },
 
     "banner_text": { "type": "text", "label": "News banner text" },
     "banner_link": { "type": "url",  "label": "News banner link" },

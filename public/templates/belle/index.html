@@ -800,117 +800,113 @@
     });
   </script>
   <script>
-    (async () => {
-      const SITE_ID = "{{SQUARRE_SITE_ID}}";
-      if (!SITE_ID || SITE_ID === "{{SQUARRE_SITE_ID}}") return;
+(async () => {
+  const SITE_ID = "{{SQUARRE_SITE_ID}}";
+  if (!SITE_ID || SITE_ID === "{{SQUARRE_SITE_ID}}") return;
 
-      // ── Device ────────────────────────────────────────────────────
-      const ua = navigator.userAgent;
-      const device =
-        /Mobi|Android/i.test(ua) && !/Tablet|iPad/i.test(ua) ? "mobile"
-        : /Tablet|iPad/i.test(ua) || (/Android/i.test(ua) && !/Mobile/i.test(ua)) ? "tablet"
-        : /Win|Mac|Linux|CrOS/i.test(navigator.platform) ? "desktop"
-        : "unknown";
+  const TRACKER_URL = "https://suwiamrsjmbvhceqxchp.supabase.co/functions/v1/track-visit";
 
-      // ── Visitor hash ──────────────────────────────────────────────
-      let hash = localStorage.getItem("visitor_hash");
-      if (!hash) {
-        hash = crypto.randomUUID();
-        localStorage.setItem("visitor_hash", hash);
-      }
+  // ── Device ────────────────────────────────────────────────────
+  const ua = navigator.userAgent;
+  const device =
+    /Mobi|Android/i.test(ua) && !/Tablet|iPad/i.test(ua) ? "mobile"
+    : /Tablet|iPad/i.test(ua) || (/Android/i.test(ua) && !/Mobile/i.test(ua)) ? "tablet"
+    : /Win|Mac|Linux|CrOS/i.test(navigator.platform) ? "desktop"
+    : "unknown";
 
-      // ── Location ──────────────────────────────────────────────────
-      let city = null, province = null, country = null;
-      try {
-        const geoRes = await fetch("https://ipapi.co/json/");
-        if (geoRes.ok) {
-          const geo = await geoRes.json();
-          city     = geo.city          ?? null;
-          province = geo.region        ?? null;
-          country  = geo.country_name  ?? null;
-        }
-      } catch {}
+  // ── Visitor hash ──────────────────────────────────────────────
+  let hash = localStorage.getItem("visitor_hash");
+  if (!hash) {
+    hash = crypto.randomUUID();
+    localStorage.setItem("visitor_hash", hash);
+  }
 
-      // ── Record visit — capture row id for later updates ───────────
-      let visitId = null;
-      const startTime = Date.now();
+  // ── Location ──────────────────────────────────────────────────
+  let city = null, province = null, country = null;
+  try {
+    const geoRes = await fetch("https://ipapi.co/json/");
+    if (geoRes.ok) {
+      const geo = await geoRes.json();
+      city     = geo.city         ?? null;
+      province = geo.region       ?? null;
+      country  = geo.country_name ?? null;
+    }
+  } catch {}
 
-      try {
-        const res = await fetch(
-          "https://suwiamrsjmbvhceqxchp.supabase.co/rest/v1/site_visits",
-          {
-            method: "POST",
-            headers: {
-              apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1d2lhbXJzam1idmhjZXF4Y2hwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ5NDM4MDEsImV4cCI6MjA4MDUxOTgwMX0.4V8Ec8pvDYZyM0WYO3ePMa7yrHTuvbVdoCK9eYhH6zk",
-              Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1d2lhbXJzam1idmhjZXF4Y2hwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ5NDM4MDEsImV4cCI6MjA4MDUxOTgwMX0.4V8Ec8pvDYZyM0WYO3ePMa7yrHTuvbVdoCK9eYhH6zk",
-              "Content-Type": "application/json",
-              Prefer: "return=representation,resolution=ignore-duplicates",
-            },
-            body: JSON.stringify({
-              site_id: SITE_ID,
-              visitor_hash: hash,
-              device,
-              city,
-              province,
-              country,
-            }),
-          }
-        );
+  // ── Record visit ──────────────────────────────────────────────
+  let visitId = null;
+  const startTime = Date.now();
 
-        if (res.ok) {
-          const rows = await res.json();
-          if (rows?.length > 0) visitId = rows[0].id;
-        }
-      } catch {}
+  try {
+    const res = await fetch(TRACKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "visit",
+        site_id: SITE_ID,
+        visitor_hash: hash,
+        device,
+        city,
+        province,
+        country,
+      }),
+    });
 
-      // ── Engagement tracking ───────────────────────────────────────
-      let engaged = false;
+    if (res.ok) {
+      const data = await res.json();
+      visitId = data.id ?? null;
+    }
+  } catch {}
 
-      const markEngaged = () => {
-        if (engaged || !visitId) return;
-        engaged = true;
+  // ── Engagement tracking ───────────────────────────────────────
+  let engaged = false;
 
-        navigator.sendBeacon(
-          `https://suwiamrsjmbvhceqxchp.supabase.co/rest/v1/site_visits?id=eq.${visitId}`,
-          new Blob(
-            [JSON.stringify({ engaged: true })],
-            { type: "application/json" }
-          )
-        );
-      };
+  const markEngaged = () => {
+    if (engaged || !visitId) return;
+    engaged = true;
 
-      window.addEventListener("scroll", () => {
-        const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight);
-        if (pct > 0.3) markEngaged();
-      }, { passive: true });
+    // sendBeacon to edge function — POST only, no custom headers needed
+    navigator.sendBeacon(
+      TRACKER_URL,
+      new Blob(
+        [JSON.stringify({ action: "update", visit_id: visitId, engaged: true })],
+        { type: "application/json" }
+      )
+    );
+  };
 
-      document.addEventListener("click", markEngaged, { once: true });
+  window.addEventListener("scroll", () => {
+    const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+    if (pct > 0.3) markEngaged();
+  }, { passive: true });
 
-      // ── Duration tracking ─────────────────────────────────────────
-      let durationSent = false;
+  document.addEventListener("click", markEngaged, { once: true });
 
-      const sendDuration = () => {
-        if (durationSent || !visitId) return;
-        durationSent = true;
+  // ── Duration tracking ─────────────────────────────────────────
+  let durationSent = false;
 
-        const duration = Math.round((Date.now() - startTime) / 1000);
-        if (duration < 1) return;
+  const sendDuration = () => {
+    if (durationSent || !visitId) return;
+    durationSent = true;
 
-        navigator.sendBeacon(
-          `https://suwiamrsjmbvhceqxchp.supabase.co/rest/v1/site_visits?id=eq.${visitId}`,
-          new Blob(
-            [JSON.stringify({ duration_seconds: duration })],
-            { type: "application/json" }
-          )
-        );
-      };
+    const duration = Math.round((Date.now() - startTime) / 1000);
+    if (duration < 1) return;
 
-      window.addEventListener("visibilitychange", () => {
-        if (document.visibilityState === "hidden") sendDuration();
-      });
-      window.addEventListener("pagehide", sendDuration);
+    navigator.sendBeacon(
+      TRACKER_URL,
+      new Blob(
+        [JSON.stringify({ action: "update", visit_id: visitId, duration_seconds: duration })],
+        { type: "application/json" }
+      )
+    );
+  };
 
-    })();
-    </script>
+  window.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") sendDuration();
+  });
+  window.addEventListener("pagehide", sendDuration);
+
+})();
+</script>
 </body>
 </html>
