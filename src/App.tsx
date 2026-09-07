@@ -23,6 +23,7 @@ import CreateSite from "@/pages/create-site";
 import TemplatePicker from "@/pages/template-picker";
 import Editor from "@/pages/editor";
 import Blog from "@/pages/blog";
+import Seo from "@/pages/seo";
 import SignIn from "@/pages/auth/sign-in";
 import SignUp from "@/pages/auth/sign-up";
 import NotFound from "@/pages/not-found";
@@ -33,6 +34,7 @@ import Analytics from "@/pages/analytics";
 import Stats from "@/pages/stats";
 import Overview from "@/pages/overview";
 import AccountOpen from "@/pages/accountOpen";
+import Messages from "@/pages/messages";
 
 import { AuthProvider } from "@/context/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -108,6 +110,7 @@ function Router() {
       {/* Dashboard routes */}
       <Route path="/" element={<ProtectedRoute><Layout><Dashboard /></Layout></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><Layout title="Profile"><Profile /></Layout></ProtectedRoute>} />
+      <Route path="/messages" element={<ProtectedRoute><Layout title="Messages"><Messages /></Layout></ProtectedRoute>} />
       <Route path="/tables" element={<ProtectedRoute><Layout title="My Sites"><Tables /></Layout></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><Layout title="Notifications"><Notifications /></Layout></ProtectedRoute>} />
       <Route path="/subscriptions" element={<ProtectedRoute><Layout title="Subscriptions"><Subscriptions /></Layout></ProtectedRoute>} />
@@ -123,6 +126,7 @@ function Router() {
       <Route path="/template-picker" element={<ProtectedRoute><TemplatePicker /></ProtectedRoute>} />
       <Route path="/editor" element={<ProtectedRoute><Editor /></ProtectedRoute>} />
       <Route path="/blog" element={<ProtectedRoute><Blog /></ProtectedRoute>} />
+      <Route path="/seo/:siteId" element={<ProtectedRoute><Layout title="SEO"><Seo /></Layout></ProtectedRoute>} />
       <Route path="/accountOpen" element={<ProtectedRoute><AccountOpen /></ProtectedRoute>} />
       <Route path="/auth/sign-in" element={<SignIn />} />
       <Route path="/auth/sign-up" element={<SignUp />} />

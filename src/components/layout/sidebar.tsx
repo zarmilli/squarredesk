@@ -17,6 +17,7 @@ import {
   Sun,
   Wallet,
   BarChart3,
+  MessagesSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -39,6 +40,11 @@ const navItems = [
     title: "Profile",
     href: "/profile",
     icon: User,
+  },
+  {
+    title: "Messages",
+    href: "/messages",
+    icon: MessagesSquare,
   },
   {
     title: "My Sites",
