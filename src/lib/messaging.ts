@@ -1,48 +1,47 @@
-// lib/messaging.ts
-
 import { supabase } from "@/lib/supabase"
 
 // ── Get or create a conversation between two users ──────────────
-// Prevents duplicate conversations between the same two people
 export async function getOrCreateConversation(
   currentUserId: string,
   otherUserId: string
 ): Promise<string> {
 
-  // Check if a conversation already exists between these two users
-  const { data: existing } = await supabase
+  // Find conversations where current user is a participant
+  const { data: myParticipations } = await supabase
     .from("conversation_participants")
     .select("conversation_id")
     .eq("user_id", currentUserId)
 
-  if (existing && existing.length > 0) {
-    const conversationIds = existing.map(p => p.conversation_id)
+  const myConversationIds = (myParticipations ?? []).map(p => p.conversation_id)
 
+  // If current user has conversations, check if other user shares any
+  if (myConversationIds.length > 0) {
     const { data: shared } = await supabase
       .from("conversation_participants")
       .select("conversation_id")
       .eq("user_id", otherUserId)
-      .in("conversation_id", conversationIds)
+      .in("conversation_id", myConversationIds)
 
     if (shared && shared.length > 0) {
       return shared[0].conversation_id
     }
   }
 
-  // No existing conversation — create one
-  const { data: conversation } = await supabase
-    .from("conversations")
-    .insert({})
-    .select("id")
-    .single()
+  // No existing conversation — use a service role edge function
+  // to create conversation + add both participants atomically
+  const { data, error } = await supabase.functions.invoke("create-conversation", {
+    body: {
+      currentUserId,
+      otherUserId,
+    },
+  })
 
-  // Add both participants
-  await supabase.from("conversation_participants").insert([
-    { conversation_id: conversation!.id, user_id: currentUserId },
-    { conversation_id: conversation!.id, user_id: otherUserId },
-  ])
+  if (error || !data?.conversationId) {
+    console.error("Failed to create conversation:", error)
+    throw new Error("Could not start conversation")
+  }
 
-  return conversation!.id
+  return data.conversationId
 }
 
 // ── Fetch all conversations for the current user ────────────────
@@ -69,11 +68,11 @@ export async function getMessages(conversationId: string) {
     .from("messages")
     .select(`
       id,
-      conversation_id,
       content,
       created_at,
       deleted_at,
       sender_id,
+      conversation_id,
       profiles (
         first_name,
         last_name
@@ -126,7 +125,7 @@ export async function deleteMessage(messageId: string) {
     .eq("id", messageId)
 }
 
-// ── Get unread count for a conversation ────────────────────────
+// ── Get unread count ────────────────────────────────────────────
 export async function getUnreadCount(
   conversationId: string,
   userId: string
