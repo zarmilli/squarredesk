@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useState } from "react"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import { format } from "date-fns"
 import {
   ArrowLeft,
@@ -38,6 +39,8 @@ const getAvatarUrl = (user: ProfileSummary) => user.avatar_url || user.avatar ||
 const getInitials = (name: string) => name.split(" ").filter(Boolean).map((part) => part[0]).join("").slice(0, 2).toUpperCase()
 
 export default function Messages() {
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const { user: currentUser } = useAuth()
   const { toast } = useToast()
   const [users, setUsers] = useState<ProfileSummary[]>([])
@@ -121,6 +124,14 @@ export default function Messages() {
   }, [currentUser?.id])
 
   useEffect(() => {
+    const conversationId = searchParams.get("conversation")
+    if (!conversationId || loading || !conversations.some(({ id }) => id === conversationId)) return
+
+    setSelectedConversationId(conversationId)
+    setMobileOpen(true)
+  }, [conversations, loading, searchParams])
+
+  useEffect(() => {
     if (!selectedConversationId || !currentUser) return
     let active = true
 
@@ -154,12 +165,13 @@ export default function Messages() {
     setMobileOpen(true)
   }
 
-  const startConversation = async (profile: ProfileSummary) => {
-    if (!currentUser) return
-    const conversationId = await getOrCreateConversation(currentUser.id, profile.user_id)
+  const handleChat = async (otherUserId: string) => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
+    const conversationId = await getOrCreateConversation(user.id, otherUserId)
     await loadInbox()
-    setSelectedConversationId(conversationId)
-    setMobileOpen(true)
+    navigate(`/messages?conversation=${conversationId}`)
   }
 
   const handleSend = async (event: FormEvent) => {
@@ -222,7 +234,7 @@ export default function Messages() {
           </> : <div className="flex flex-1 flex-col items-center justify-center space-y-6"><div className="flex size-16 items-center justify-center rounded-full border-2 border-border"><MessagesSquare className="size-8" /></div><div className="space-y-2 text-center"><h1 className="text-xl font-semibold">Your messages</h1><p className="text-sm text-muted-foreground">Send a message to start a chat.</p></div><Button onClick={() => setNewChatOpen(true)}>Send message</Button></div>}
         </div>
       </section>
-      <NewChat users={users} open={newChatOpen} onOpenChange={setNewChatOpen} onStart={startConversation} />
+      <NewChat users={users} open={newChatOpen} onOpenChange={setNewChatOpen} onStart={handleChat} />
     </div>
   )
 }

@@ -25,7 +25,7 @@ type NewChatProps = {
   users: ProfileSummary[]
   open: boolean
   onOpenChange: (open: boolean) => void
-  onStart: (user: ProfileSummary) => Promise<void>
+  onStart: (otherUserId: string) => Promise<void>
 }
 
 const getAvatarUrl = (user: ProfileSummary) => user.avatar_url || user.avatar || undefined
@@ -44,7 +44,7 @@ export function NewChat({ users, onOpenChange, open, onStart }: NewChatProps) {
     if (!selectedUser) return
     setStarting(true)
     try {
-      await onStart(selectedUser)
+      await onStart(selectedUser.user_id)
       handleOpenChange(false)
     } finally {
       setStarting(false)
