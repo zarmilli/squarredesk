@@ -1,5 +1,3 @@
-// templates/my-ecommerce-template/store.js
-
 const SITE_ID = "{{SQUARRE_SITE_ID}}";
 const SUPABASE_URL = "https://suwiamrsjmbvhceqxchp.supabase.co";
 const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1d2lhbXJzam1idmhjZXF4Y2hwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ5NDM4MDEsImV4cCI6MjA4MDUxOTgwMX0.4V8Ec8pvDYZyM0WYO3ePMa7yrHTuvbVdoCK9eYhH6zk";
