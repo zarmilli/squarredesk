@@ -31,6 +31,7 @@ const supabase = createClient(
 
 const NETLIFY_TOKEN = Deno.env.get("NETLIFY_API_TOKEN")!
 const TEMPLATE_BASE_URL = Deno.env.get("TEMPLATE_BASE_URL")!
+const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!
 
 /* -----------------------------
 CONTENT INJECTION
@@ -477,7 +478,9 @@ serve(async (req) => {
       const finalHtml = applyContent(
         assembledHtml,
         getPageContent(typedSite.content ?? {}, page.file)
-      ).replace("{{SQUARRE_SITE_ID}}", typedSite.id)
+      )
+        .replaceAll("{{SQUARRE_SITE_ID}}", typedSite.id)
+        .replaceAll("{{SQUARRE_ANON_KEY}}", SUPABASE_ANON_KEY)
 
       files[page.file] = finalHtml
     }
