@@ -52,23 +52,17 @@ export async function getOrCreateConversation(
 export async function getMessages(conversationId: string) {
   const supabase = getClient()
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("messages")
-    .select(`
-      id,
-      content,
-      created_at,
-      deleted_at,
-      sender_id,
-      conversation_id,
-      profiles (
-        first_name,
-        last_name
-      )
-    `)
+    .select("id, content, created_at, deleted_at, sender_id, conversation_id")
     .eq("conversation_id", conversationId)
     .is("deleted_at", null)
     .order("created_at", { ascending: true })
+
+  if (error) {
+    console.error("getMessages error:", error)
+    return []
+  }
 
   return data ?? []
 }

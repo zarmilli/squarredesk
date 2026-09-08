@@ -1,6 +1,6 @@
-import { FormEvent, useEffect, useState } from "react"
+import { Fragment, FormEvent, useEffect, useRef, useState } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
-import { format } from "date-fns"
+import { format, isSameDay } from "date-fns"
 import {
   ArrowLeft,
   Edit,
@@ -55,6 +55,7 @@ export default function Messages() {
   const [loading, setLoading] = useState(true)
   const [newChatOpen, setNewChatOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const selectedConversation = conversations.find(({ id }) => id === selectedConversationId)
 
@@ -209,6 +210,10 @@ export default function Messages() {
     }
   }, [selectedConversationId, currentUser?.id])
 
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages])
+
   const openConversation = (conversationId: string) => {
     setSelectedConversationId(conversationId)
     setMobileOpen(true)
@@ -305,7 +310,9 @@ export default function Messages() {
                       <div className="ml-2 min-w-0">
                         <span className="block truncate font-medium">{name}</span>
                         <span className="block line-clamp-2 text-ellipsis text-muted-foreground">
-                          {conversation.lastMessage?.content ?? "No messages yet"}
+                          {conversation.lastMessage
+                            ? `${conversation.lastMessage.sender_id === currentUser?.id ? "You: " : ""}${conversation.lastMessage.content}`
+                            : "No messages yet"}
                         </span>
                       </div>
                     </button>
@@ -367,23 +374,40 @@ export default function Messages() {
 
               {/* Messages + input */}
               <div className="flex min-h-0 flex-1 flex-col gap-2 p-4">
-                <div className="flex min-h-0 flex-1 flex-col-reverse gap-4 overflow-y-auto py-2">
-                  {messages.map((message) => (
-                    <div
-                      key={message.id}
-                      className={cn(
-                        "max-w-72 break-words px-3 py-2 shadow-sm",
-                        message.sender_id === currentUser?.id
-                          ? "self-end rounded-[16px_16px_0_16px] bg-primary text-primary-foreground"
-                          : "self-start rounded-[16px_16px_16px_0] bg-muted"
-                      )}
-                    >
-                      <p>{message.content}</p>
-                      <span className="mt-1 block text-xs opacity-70">
-                        {format(new Date(message.created_at), "h:mm a")}
-                      </span>
-                    </div>
-                  ))}
+                <div className="editor-scrollbar flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto py-2">
+                  {messages.map((message, index) => {
+                    const messageDate = new Date(message.created_at)
+                    const previousMessage = messages[index - 1]
+                    const isNewDate =
+                      !previousMessage ||
+                      !isSameDay(messageDate, new Date(previousMessage.created_at))
+
+                    return (
+                      <Fragment key={message.id}>
+                        {isNewDate && (
+                          <div className="flex items-center gap-3 py-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                            <Separator className="flex-1" />
+                            <span>{format(messageDate, "MMMM d, yyyy")}</span>
+                            <Separator className="flex-1" />
+                          </div>
+                        )}
+                        <div
+                          className={cn(
+                            "max-w-72 break-words px-3 py-2 shadow-sm",
+                            message.sender_id === currentUser?.id
+                              ? "self-end rounded-[16px_16px_0_16px] bg-primary text-primary-foreground"
+                              : "self-start rounded-[16px_16px_16px_0] bg-muted"
+                          )}
+                        >
+                          <p>{message.content}</p>
+                          <span className="mt-1 block text-xs opacity-70">
+                            {format(messageDate, "h:mm a")}
+                          </span>
+                        </div>
+                      </Fragment>
+                    )
+                  })}
+                  <div ref={messagesEndRef} />
                 </div>
 
                 <form className="flex w-full flex-none gap-2" onSubmit={handleSend}>
