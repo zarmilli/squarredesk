@@ -3,6 +3,31 @@
     "meta_title": { 
       "type": "text", 
       "label": "Page title" 
+    },
+
+    "seo_description": {
+      "type": "longtext",
+      "label": "SEO Description"
+    },
+
+    "seo_favicon": {
+      "type": "image",
+      "label": "Favicon"
+    },
+
+    "og_title": {
+      "type": "text",
+      "label": "OG Title"
+    },
+
+    "og_description": {
+      "type": "longtext",
+      "label": "OG Description"
+    },
+
+    "og_image": {
+      "type": "image",
+      "label": "OG Image"
     }
   },
 

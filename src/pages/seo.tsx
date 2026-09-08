@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import UploadFile from "@/components/ui/uploadfile";
 import { useToast } from "@/hooks/use-toast";
 
 type FieldType = "text" | "longtext" | "url" | "image" | "boolean" | "icon" | "logo" | "repeat";
@@ -95,6 +96,7 @@ export default function Seo() {
   const [storedContent, setStoredContent] = useState<ContentMap>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [userId, setUserId] = useState("");
 
   useEffect(() => {
     void loadSeo();
@@ -102,6 +104,13 @@ export default function Seo() {
 
   async function loadSeo() {
     if (!siteId) return;
+
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (!sessionData.session) {
+      navigate("/auth/sign-in");
+      return;
+    }
+    setUserId(sessionData.session.user.id);
 
     const { data: site } = await supabase
       .from("user_sites")
@@ -151,6 +160,27 @@ export default function Seo() {
 
   function updateField(key: string, value: any) {
     setContent((previous) => ({ ...previous, [key]: value }));
+  }
+
+  async function uploadImage(file: File, key: string) {
+    if (!siteId || !userId) return;
+
+    const path = `${userId}/${siteId}/seo/${Date.now()}-${file.name}`;
+    const { error: uploadError } = await supabase.storage
+      .from("site-assets")
+      .upload(path, file, { upsert: true });
+
+    if (uploadError) {
+      toast({
+        title: "Image upload failed",
+        description: uploadError.message,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const { data } = supabase.storage.from("site-assets").getPublicUrl(path);
+    updateField(key, data.publicUrl);
   }
 
   async function publishInBackground() {
@@ -215,6 +245,28 @@ export default function Seo() {
 
     if (field.type === "boolean") {
       return <input type="checkbox" checked={Boolean(value)} onChange={(event) => updateField(key, event.target.checked)} />;
+    }
+
+    if (field.type === "image") {
+      return (
+        <div className="space-y-2">
+          {value && (
+            <img
+              src={value}
+              alt={`${field.label} preview`}
+              className="h-32 w-full rounded-md border border-border object-cover"
+            />
+          )}
+          <UploadFile
+            accept="image/*"
+            label={`Upload ${field.label.toLowerCase()}`}
+            description="PNG, JPG, GIF, WEBP"
+            onFileSelect={(file) => {
+              if (file) void uploadImage(file, key);
+            }}
+          />
+        </div>
+      );
     }
 
     return (
