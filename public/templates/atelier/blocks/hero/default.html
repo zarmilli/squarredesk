@@ -1,0 +1,87 @@
+ <style>
+    .hero {
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+    .hero-text {
+      width: 50vw;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 120px 64px 80px 64px;
+      background: var(--beige);
+    }
+    .hero-text h1 {
+      font-size: clamp(28px, 3.5vw, 56px);
+      font-weight: 500;
+      text-transform: uppercase;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--text-dark);
+      margin-bottom: 22px;
+    }
+    .hero-text p {
+      font-size: clamp(14px, 1.2vw, 16px);
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--text-mid);
+      margin-bottom: 36px;
+      max-width: 420px;
+    }
+    .btn-primary {
+      display: inline-block;
+      background: var(--green-dark);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 14px 32px;
+      border-radius: 30px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+      width: fit-content;
+    }
+    .btn-primary:hover { background: var(--green-mid); transform: translateY(-2px); }
+    .hero-image {
+      width: 50vw;
+      flex-shrink: 0;
+    }
+    .hero-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    @media (max-width: 768px) {
+      .hero {
+        height: 100vh;
+        flex-direction: column-reverse;
+      }
+      .hero-image {
+        width: 100%;
+        height: 50vh;
+      }
+      .hero-text {
+        width: 100%;
+        height: 50vh;
+        padding: 36px 24px 28px;
+        justify-content: center;
+      }
+      .hero-text p { max-width: 100%; margin-bottom: 24px; }
+    }
+ </style>
+
+  <section id="hero" class="hero">
+    <div class="hero-text">
+      <h1 data-edit="hero_title">Skin That Feels Like You</h1>
+      <p data-edit="hero_description">Clean, plant-based formulas crafted for real skin. No harsh chemicals, no compromises — just radiant, healthy skin every day.</p>
+      <a href="#picks" class="btn-primary" data-edit="hero_cta_link" data-edit-role="href">
+        <span data-edit="hero_cta">Shop Now</span>
+      </a>
+    </div>
+    <div class="hero-image">
+      <img data-edit="hero_image" src="https://images.pexels.com/photos/3685530/pexels-photo-3685530.jpeg" alt="Hero" />
+    </div>
+  </section>

@@ -1,0 +1,181 @@
+  <style>
+    .products-section {
+      padding: 80px 24px;
+      background: var(--white);
+    }
+    .products-section h2 {
+      font-size: clamp(24px, 3.5vw, 38px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 40px;
+      color: var(--text-dark);
+    }
+    .products-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* 4-col grid */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    /* Featured card — full image with overlay details bottom-left */
+    .product-card-featured {
+      grid-column: 1 / -1;
+      position: relative;
+      border-radius: 0px;
+      overflow: hidden;
+      background: var(--beige-mid);
+    }
+    .product-card-featured img {
+      width: 100%;
+      aspect-ratio: 16/7;
+      object-fit: cover;
+      display: block;
+      opacity: 0.9;
+    }
+    .product-card-featured .card-body {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 28px 32px;
+      background: linear-gradient(to top, rgba(30,20,10,0.65) 0%, rgba(30,20,10,0) 100%);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: flex-start;
+    }
+    .product-card-featured .product-tag {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dark);
+      background: var(--beige);
+      padding: 4px 10px;
+      border-radius: 0px;
+    }
+    .product-card-featured .product-name {
+      font-size: clamp(18px, 2.5vw, 28px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--white);
+    }
+    .product-card-featured .product-price {
+      font-size: 18px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.85);
+    }
+    .product-card-featured .product-cta {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.75);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+      margin-top: 2px;
+    }
+
+    /* Standard card */
+    .product-card {
+      background: var(--white);
+      border-radius: 0px;
+      overflow: hidden;
+    }
+    .product-card img {
+      width: 100%;
+      aspect-ratio: 1/1.2;
+      object-fit: cover;
+      display: block;
+    }
+    .product-card .card-body {
+      padding: 14px 0px 18px;
+    }
+    .product-card .product-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .product-card .product-price {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--green-dark);
+      margin-bottom: 8px;
+    }
+    .product-card .product-cta {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-mid);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .product-card-featured img { aspect-ratio: 16/9; }
+      .product-card-featured .card-body { padding: 20px 20px 24px; }
+    }
+ </style>
+
+ <!-- TOP PICKS (capped at 5: 1 featured + 4 standard) -->
+ <section id="picks" class="products-section">
+   <div class="products-inner">
+     <div class="products-grid" data-repeat="picks">
+
+       <!-- Featured card -->
+       <div class="product-card-featured">
+         <img data-edit="image" src="https://images.pexels.com/photos/12721805/pexels-photo-12721805.jpeg" alt="Featured product" />
+         <div class="card-body">
+           <div class="product-tag" data-edit="tag">Bestseller</div>
+           <div class="product-name" data-edit="name">Glow Serum Intensive</div>
+           <div class="product-price" data-edit="price">R168</div>
+           <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+         </div>
+       </div>
+
+       <div class="product-card">
+         <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/224287965-300-400/6eab8571-092c-48e6-b823-0f83631f24b5.jpg?v=639071786543100000" alt="Product" />
+         <div class="card-body">
+           <div class="product-name" data-edit="name">Hydra Cream SPF 30</div>
+           <div class="product-price" data-edit="price">R145</div>
+           <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+         </div>
+       </div>
+
+       <div class="product-card">
+         <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/222997925-300-400/0bf8638f-766a-42d2-8730-4387bad7e037.jpg?v=639016445888330000" alt="Product" />
+         <div class="card-body">
+           <div class="product-name" data-edit="name">Cleansing Balm Rose</div>
+           <div class="product-price" data-edit="price">R138</div>
+           <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+         </div>
+       </div>
+
+       <div class="product-card">
+         <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/224288261-300-400/1c7682b1-3d98-4097-a0d8-1b582b273cdd.jpg?v=639071788151100000" alt="Product" />
+         <div class="card-body">
+           <div class="product-name" data-edit="name">Vitamin C Eye Gel</div>
+           <div class="product-price" data-edit="price">R152</div>
+           <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+         </div>
+       </div>
+
+       <div class="product-card">
+         <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/223115394-300-400/f596d1e6-ebde-4e06-a09e-417f8c24c2ad.jpg?v=639026814273530000" alt="Product" />
+         <div class="card-body">
+           <div class="product-name" data-edit="name">Retinol Night Repair</div>
+           <div class="product-price" data-edit="price">R174</div>
+           <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+         </div>
+       </div>
+
+     </div>
+   </div>
+ </section>

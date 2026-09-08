@@ -1,182 +1,487 @@
- /* ===== TOP PICKS / PRODUCTS SECTION ===== */
- <style>
-    .products-section {
-      padding: 80px 24px;
-      background: var(--white);
-    }
-    .products-section h2 {
-      font-size: clamp(24px, 3.5vw, 38px);
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      margin-bottom: 40px;
-      color: var(--text-dark);
-    }
-    .products-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-    }
+<style>
+  .products-section {
+    padding: 80px 24px;
+    background: var(--white);
+  }
 
-    /* 4-col grid */
+  .products-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* 4-column × 2-row grid */
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, auto);
+    gap: 16px;
+  }
+
+  /* =========================================
+     FEATURED PRODUCT
+     ========================================= */
+
+  .product-card-featured {
+    grid-column: 1 / 3;
+    grid-row: 1 / 3;
+    position: relative;
+    min-height: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--beige-mid);
+    cursor: pointer;
+  }
+
+  .product-card-featured img {
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+  }
+
+  .product-card-featured:hover img {
+    transform: scale(1.03);
+  }
+
+  .product-card-featured::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 55%,
+      rgba(0, 0, 0, 0.35) 100%
+    );
+    pointer-events: none;
+  }
+
+  .product-card-featured .card-body {
+    position: absolute;
+    z-index: 2;
+    left: 20px;
+    bottom: 20px;
+    width: calc(100% - 40px);
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: 12px;
+    box-sizing: border-box;
+  }
+
+  .product-card-featured .product-name {
+    font-size: clamp(18px, 2vw, 26px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--white);
+    line-height: 1.1;
+  }
+
+  .product-card-featured .product-price {
+    font-size: 15px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  /* =========================================
+     STANDARD PRODUCT CARDS
+     ========================================= */
+
+  .product-card {
+    position: relative;
+    background: var(--white);
+    border-radius: 14px;
+    overflow: visible;
+    cursor: pointer;
+  }
+
+  .product-card .product-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .product-card-image {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: 14px;
+    background: var(--beige-mid);
+  }
+
+  .product-card-image img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity .35s ease, transform .4s ease;
+  }
+
+  .product-card-image .primary-image { opacity: 1; }
+  .product-card-image .secondary-image { opacity: 0; }
+
+  .product-card:hover .primary-image {
+    opacity: 0;
+    transform: scale(1.03);
+  }
+
+  .product-card:hover .secondary-image {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+
+  .product-card .card-body {
+    padding: 12px 0 6px;
+    text-align: left;
+  }
+
+  .product-card .product-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 5px;
+    line-height: 1.3;
+  }
+
+  .product-card .product-price {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--green-dark);
+  }
+
+  /* =========================================
+     ADD TO CART BUTTON
+     ========================================= */
+
+  .product-add {
+    position: absolute;
+    z-index: 5;
+    top: 10px;
+    right: 10px;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: 7px;
+    background: var(--white);
+    color: var(--text-dark);
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+  }
+
+  .product-add:hover {
+    transform: translateY(-2px);
+    background: var(--green-dark);
+    color: var(--white);
+  }
+
+  .product-add:active { transform: scale(0.94); }
+
+  /* =========================================
+     SKELETON LOADERS
+     ========================================= */
+
+  .product-skeleton {
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--beige-mid, #f0ece6);
+    animation: skeleton-pulse 1.4s ease-in-out infinite;
+  }
+
+  .product-skeleton.featured {
+    grid-column: 1 / 3;
+    grid-row: 1 / 3;
+    min-height: 400px;
+  }
+
+  .product-skeleton.standard .skel-image {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: #e0d9d0;
+    border-radius: 14px;
+  }
+
+  .product-skeleton .skel-line {
+    height: 12px;
+    background: #e0d9d0;
+    border-radius: 6px;
+    margin-top: 10px;
+  }
+
+  .product-skeleton .skel-line.short { width: 50%; }
+  .product-skeleton .skel-line.long  { width: 80%; }
+
+  @keyframes skeleton-pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.5; }
+  }
+
+  /* =========================================
+     EMPTY STATE
+     ========================================= */
+
+  .products-empty {
+    grid-column: 1 / -1;
+    padding: 60px 24px;
+    text-align: center;
+    color: var(--text-dark, #333);
+    opacity: 0.5;
+    font-size: 14px;
+  }
+
+  /* =========================================
+     RESPONSIVE
+     ========================================= */
+
+  @media (max-width: 768px) {
+    .products-section { padding: 60px 20px; }
+
     .products-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: auto;
+      gap: 14px;
     }
 
-    /* Featured card — full image with overlay details bottom-left */
     .product-card-featured {
       grid-column: 1 / -1;
-      position: relative;
-      border-radius: 16px;
-      overflow: hidden;
-      background: var(--beige-mid);
+      grid-row: auto;
+      aspect-ratio: 1 / 1;
     }
-    .product-card-featured img {
-      width: 100%;
-      aspect-ratio: 16/7;
-      object-fit: cover;
-      display: block;
-      opacity: 0.9;
-    }
+
+    .product-card-featured img { min-height: 0; }
+
     .product-card-featured .card-body {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      padding: 28px 32px;
-      background: linear-gradient(to top, rgba(30,20,10,0.65) 0%, rgba(30,20,10,0) 100%);
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      align-items: flex-start;
-    }
-    .product-card-featured .product-tag {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text-dark);
-      background: var(--beige);
-      padding: 4px 10px;
-      border-radius: 50px;
-    }
-    .product-card-featured .product-name {
-      font-size: clamp(18px, 2.5vw, 28px);
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: var(--white);
-    }
-    .product-card-featured .product-price {
-      font-size: 18px;
-      font-weight: 600;
-      color: rgba(255,255,255,0.85);
-    }
-    .product-card-featured .product-cta {
-      font-size: 12px;
-      font-weight: 600;
-      color: rgba(255,255,255,0.75);
-      text-decoration: underline;
-      text-underline-offset: 3px;
-      cursor: pointer;
-      margin-top: 2px;
+      left: 14px;
+      bottom: 14px;
+      width: calc(100% - 28px);
+      padding: 16px;
     }
 
-    /* Standard card */
-    .product-card {
-      background: var(--white);
-      border-radius: 14px;
-      overflow: hidden;
-    }
-    .product-card img {
-      width: 100%;
-      aspect-ratio: 1/1.2;
-      object-fit: cover;
-      display: block;
-    }
-    .product-card .card-body {
-      padding: 14px 0px 18px;
-    }
-    .product-card .product-name {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-dark);
-      margin-bottom: 4px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .product-card .product-price {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--green-dark);
-      margin-bottom: 8px;
-    }
-    .product-card .product-cta {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-mid);
-      text-decoration: underline;
-      text-underline-offset: 2px;
-      cursor: pointer;
+    .product-card-featured .product-name { font-size: 20px; }
+    .product-card-image { aspect-ratio: 1 / 1; }
+
+    .product-add {
+      width: 32px;
+      height: 32px;
+      top: 8px;
+      right: 8px;
     }
 
-    @media (max-width: 768px) {
-      .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-      .product-card-featured img { aspect-ratio: 16/9; }
-      .product-card-featured .card-body { padding: 20px 20px 24px; }
+    .product-skeleton.featured {
+      grid-column: 1 / -1;
+      grid-row: auto;
+      min-height: 280px;
     }
- </style>
+  }
+</style>
 
- <!-- TOP PICKS (capped at 5: 1 featured + 4 standard) -->
- <section id="picks" class="products-section">
-   <div class="products-inner">
-     <div class="products-grid" data-repeat="picks">
 
-       <!-- Featured card -->
-       <div class="product-card-featured">
-         <img data-edit="image" src="https://images.pexels.com/photos/12721805/pexels-photo-12721805.jpeg" alt="Featured product" />
-         <div class="card-body">
-           <div class="product-tag" data-edit="tag">Bestseller</div>
-           <div class="product-name" data-edit="name">Glow Serum Intensive</div>
-           <div class="product-price" data-edit="price">R168</div>
-           <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
-         </div>
-       </div>
+<section id="picks" class="products-section">
+  <div class="products-inner">
+    <div class="products-grid" id="products-grid">
 
-       <div class="product-card">
-         <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/224287965-300-400/6eab8571-092c-48e6-b823-0f83631f24b5.jpg?v=639071786543100000" alt="Product" />
-         <div class="card-body">
-           <div class="product-name" data-edit="name">Hydra Cream SPF 30</div>
-           <div class="product-price" data-edit="price">R145</div>
-           <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
-         </div>
-       </div>
+      <!-- Skeleton loaders shown while products fetch -->
+      <div class="product-skeleton featured"></div>
+      <div class="product-skeleton standard">
+        <div class="skel-image"></div>
+        <div class="skel-line long"></div>
+        <div class="skel-line short"></div>
+      </div>
+      <div class="product-skeleton standard">
+        <div class="skel-image"></div>
+        <div class="skel-line long"></div>
+        <div class="skel-line short"></div>
+      </div>
+      <div class="product-skeleton standard">
+        <div class="skel-image"></div>
+        <div class="skel-line long"></div>
+        <div class="skel-line short"></div>
+      </div>
+      <div class="product-skeleton standard">
+        <div class="skel-image"></div>
+        <div class="skel-line long"></div>
+        <div class="skel-line short"></div>
+      </div>
 
-       <div class="product-card">
-         <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/222997925-300-400/0bf8638f-766a-42d2-8730-4387bad7e037.jpg?v=639016445888330000" alt="Product" />
-         <div class="card-body">
-           <div class="product-name" data-edit="name">Cleansing Balm Rose</div>
-           <div class="product-price" data-edit="price">R138</div>
-           <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
-         </div>
-       </div>
+    </div>
+  </div>
+</section>
 
-       <div class="product-card">
-         <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/224288261-300-400/1c7682b1-3d98-4097-a0d8-1b582b273cdd.jpg?v=639071788151100000" alt="Product" />
-         <div class="card-body">
-           <div class="product-name" data-edit="name">Vitamin C Eye Gel</div>
-           <div class="product-price" data-edit="price">R152</div>
-           <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
-         </div>
-       </div>
 
-       <div class="product-card">
-         <img data-edit="image" src="https://thefoschini.vtexassets.com/arquivos/ids/223115394-300-400/f596d1e6-ebde-4e06-a09e-417f8c24c2ad.jpg?v=639026814273530000" alt="Product" />
-         <div class="card-body">
-           <div class="product-name" data-edit="name">Retinol Night Repair</div>
-           <div class="product-price" data-edit="price">R174</div>
-           <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
-         </div>
-       </div>
+<script>
+(async () => {
+  const SITE_ID     = "{{SQUARRE_SITE_ID}}";
+  const SUPABASE_URL = "https://suwiamrsjmbvhceqxchp.supabase.co";
+  const ANON_KEY    = "{{SQUARRE_ANON_KEY}}";
 
-     </div>
-   </div>
- </section>
+  const grid = document.getElementById("products-grid");
+  if (!grid) return;
+
+  // ── Fetch active products ordered by sort_order ──────────────
+  let products = [];
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/products` +
+      `?site_id=eq.${SITE_ID}` +
+      `&is_active=eq.true` +
+      `&order=sort_order.asc,created_at.asc`,
+      {
+        headers: {
+          apikey: ANON_KEY,
+          Authorization: `Bearer ${ANON_KEY}`,
+        },
+      }
+    );
+    if (res.ok) products = await res.json();
+  } catch (err) {
+    console.error("Failed to fetch products:", err);
+  }
+
+  // ── Clear skeleton loaders ───────────────────────────────────
+  grid.innerHTML = "";
+
+  // ── Empty state ──────────────────────────────────────────────
+  if (!products.length) {
+    grid.innerHTML = `
+      <div class="products-empty">
+        <p>No products available yet.</p>
+      </div>`;
+    return;
+  }
+
+  // ── Helper: format price ─────────────────────────────────────
+  function formatPrice(price) {
+    return "R" + parseFloat(price || 0).toFixed(2);
+  }
+
+  // ── Helper: safe image src with fallback ─────────────────────
+  function img(src, fallback) {
+    return (src && src.trim()) ? src : (fallback || "");
+  }
+
+  // ── Helper: add-to-cart button click ─────────────────────────
+  function handleAddToCart(btn, product) {
+    window.dispatchEvent(
+      new CustomEvent("product:add-to-cart", { detail: product })
+    );
+    const original = btn.textContent;
+    btn.textContent = "✓";
+    btn.setAttribute("aria-label", "Added to cart");
+    setTimeout(() => {
+      btn.textContent = original;
+      btn.setAttribute("aria-label", "Add product to cart");
+    }, 900);
+  }
+
+  // ── Render featured card (first product) ─────────────────────
+  const featured = products[0];
+
+  const featuredEl = document.createElement("div");
+  featuredEl.className = "product-card-featured";
+  featuredEl.setAttribute("data-product-id", featured.id);
+  featuredEl.style.cursor = "pointer";
+  featuredEl.onclick = () => {
+    window.location.href = `/product.html?id=${featured.id}`;
+  };
+
+  featuredEl.innerHTML = `
+    <img
+      src="${img(featured.cover_image)}"
+      alt="${featured.name}"
+      onerror="this.style.display='none'"
+    />
+    <div class="card-body">
+      <div class="product-name">${featured.name}</div>
+      <div class="product-price">${formatPrice(featured.price)}</div>
+    </div>`;
+
+  grid.appendChild(featuredEl);
+
+  // ── Render remaining products (cards 2–5) ────────────────────
+  // Show up to 4 additional products after the featured one
+  const rest = products.slice(1, 5);
+
+  rest.forEach((product) => {
+    const primarySrc   = img(product.cover_image);
+    const secondarySrc = img(product.secondary_image, product.cover_image);
+
+    const card = document.createElement("div");
+    card.className = "product-card";
+    card.setAttribute("data-product-id", product.id);
+
+    card.innerHTML = `
+      <a class="product-link" href="/product.html?id=${product.id}">
+        <div class="product-card-image">
+          <img
+            class="primary-image"
+            src="${primarySrc}"
+            alt="${product.name}"
+            onerror="this.style.display='none'"
+          />
+          <img
+            class="secondary-image"
+            src="${secondarySrc}"
+            alt="${product.name} alternate view"
+            onerror="this.style.display='none'"
+          />
+          <button
+            type="button"
+            class="product-add"
+            aria-label="Add product to cart"
+          >+</button>
+        </div>
+        <div class="card-body">
+          <div class="product-name">${product.name}</div>
+          <div class="product-price">${formatPrice(product.price)}</div>
+        </div>
+      </a>`;
+
+    // Wire up add-to-cart — use JS not inline onclick so
+    // stopPropagation works correctly
+    const btn = card.querySelector(".product-add");
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      handleAddToCart(btn, {
+        id:    product.id,
+        name:  product.name,
+        price: product.price,
+        image: primarySrc,
+      });
+    });
+
+    grid.appendChild(card);
+  });
+
+  // ── If fewer than 5 products, fill remaining slots ───────────
+  // with placeholder cards so the grid layout doesn't break
+  const totalRendered = 1 + rest.length; // featured + rest
+  const placeholdersNeeded = Math.max(0, 5 - totalRendered);
+
+  for (let i = 0; i < placeholdersNeeded; i++) {
+    const ph = document.createElement("div");
+    ph.className = "product-card";
+    ph.style.background = "var(--beige-mid, #f0ece6)";
+    ph.style.borderRadius = "14px";
+    ph.style.aspectRatio = "1 / 1";
+    grid.appendChild(ph);
+  }
+
+})();
+</script>

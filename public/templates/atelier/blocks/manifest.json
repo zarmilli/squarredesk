@@ -1,7 +1,8 @@
 {
   "hero": ["default", "minimal"],
-  "products": ["default", "bold"],
+  "catalog": ["default", "bold"],
   "policy": ["default"],
-  "promo": ["default", "alt", "reverse"],
+  "products": ["default"],
+  "promo": ["default"],
   "testimonials": ["default"]
 }

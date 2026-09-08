@@ -24,9 +24,9 @@
       --beige:        #f5ede0;
       --beige-mid:    #ede0ce;
       --beige-deep:   #d9c4a8;
-      --green:        #e4667f;
+      --green:        #b8ccb0;
       --green-mid:    #9db894;
-      --green-dark:   #311e20;
+      --green-dark:   #6a8f61;
       --green-pale:   #e8f0e5;
       --bg:           #faf7f2;
       --bg-mid:       #f0e9dc;
@@ -53,7 +53,7 @@
       color: var(--white);
       text-align: center;
       padding: 9px 48px;
-      font-size: 16px;
+      font-size: 12px;
       font-weight: 500;
       letter-spacing: 0.05em;
       white-space: nowrap;
@@ -88,7 +88,7 @@
     nav .logo {
       font-size: 18px;
       font-weight: 700;
-      color: var(--white);
+      color: var(--text-dark);
       text-transform: uppercase;
       letter-spacing: 0.02em;
       text-decoration: none;
@@ -96,20 +96,20 @@
       z-index: 1001;
       transition: color 0.35s;
     }
-    nav.scrolled .logo { color: var(--green); }
+    nav.scrolled .logo { color: var(--green-dark); }
     nav .nav-links { display: flex; gap: 32px; }
     nav .nav-links a {
       font-size: 18px;
       text-transform: uppercase;
       font-weight: 500;
-      color: var(--white);
+      color: var(--text-mid);
       text-decoration: none;
       letter-spacing: 0.02em;
       transition: color 0.2s;
     }
     nav .nav-links a:hover { color: var(--green-dark); }
-    nav.scrolled .nav-links a { color: var(--green-dark); }
-    nav.scrolled .nav-links a:hover { color: var(--green); }
+    nav.scrolled .nav-links a { color: var(--text-mid); }
+    nav.scrolled .nav-links a:hover { color: var(--green-dark); }
 
     /* Burger */
     .burger {
@@ -128,7 +128,7 @@
     .burger span {
       display: block;
       width: 100%; height: 2px;
-      background: var(--green);
+      background: var(--text-dark);
       border-radius: 2px;
       transition: transform 0.3s ease, opacity 0.3s ease;
       transform-origin: center;
@@ -166,17 +166,16 @@
 
     /* ===== FOOTER ===== */
     footer {
-      background: var(--green-dark);
-      color: #6a0610;
+      background: var(--black);
+      color: rgba(255,255,255,0.45);
       text-align: center;
       padding: 48px 24px 36px;
     }
     footer .footer-logo {
       font-size: 18px;
       font-weight: 700;
-      color: var(--green);
+      color: var(--white);
       letter-spacing: 0.02em;
-      text-transform: uppercase;
       margin-bottom: 8px;
     }
     footer .footer-copy {
@@ -200,7 +199,7 @@
 
   <!-- NEWS BANNER -->
   <div class="news-banner">
-    <span data-edit="banner_text">OWN THE GLOW: Free shipping on orders over R300</span>
+    <span data-edit="banner_text">Free shipping on all orders over R175 — limited time offer.</span>
     <a href="#picks" data-edit="banner_link" data-edit-role="href">Shop now</a>
   </div>
 
@@ -219,6 +218,7 @@
   </nav>
 
   <!-- block:hero -->
+  <!-- block:catalog -->
   <!-- block:products -->
   <!-- block:promo -->
   <!-- block:testimonials -->
@@ -365,6 +365,5 @@
 
     })();
     </script>
-    <script src="store.js"></script>
 </body>
 </html>

@@ -197,9 +197,10 @@ function applyContent(
 ): string {
 
   let html = templateHtml
+  const productRepeatGroups = new Set(["products", "picks", "catalog", "inventory"])
 
   for (const [key, value] of Object.entries(content)) {
-    if (Array.isArray(value)) {
+    if (Array.isArray(value) && !productRepeatGroups.has(key)) {
       html = applyRepeatGroupHtml(html, key, value)
     }
   }

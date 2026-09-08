@@ -24,6 +24,7 @@ import TemplatePicker from "@/pages/template-picker";
 import Editor from "@/pages/editor";
 import Blog from "@/pages/blog";
 import Seo from "@/pages/seo";
+import Inventory from "@/pages/inventory";
 import SignIn from "@/pages/auth/sign-in";
 import SignUp from "@/pages/auth/sign-up";
 import NotFound from "@/pages/not-found";
@@ -127,6 +128,7 @@ function Router() {
       <Route path="/editor" element={<ProtectedRoute><Editor /></ProtectedRoute>} />
       <Route path="/blog" element={<ProtectedRoute><Blog /></ProtectedRoute>} />
       <Route path="/seo/:siteId" element={<ProtectedRoute><Layout title="SEO"><Seo /></Layout></ProtectedRoute>} />
+      <Route path="/inventory/:siteId" element={<ProtectedRoute><Layout title="Inventory"><Inventory /></Layout></ProtectedRoute>} />
       <Route path="/accountOpen" element={<ProtectedRoute><AccountOpen /></ProtectedRoute>} />
       <Route path="/auth/sign-in" element={<SignIn />} />
       <Route path="/auth/sign-up" element={<SignUp />} />

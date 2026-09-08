@@ -132,7 +132,7 @@ export default function Tables() {
               <table className="w-full">
                 <thead className="bg-transparent border-b border-stone-800">
                   <tr>
-                    {["WEBSITE", "LINK", "STATUS", "CREATED", "SEO", "Inventory/Blogs"].map((h) => (
+                    {["WEBSITE", "LINK", "STATUS", "CREATED", "SEO", "Inventory"].map((h) => (
                       <th
                         key={h}
                         className="px-6 py-3 text-left text-xs font-normal text-stone-500 uppercase tracking-wider"
@@ -201,13 +201,13 @@ export default function Tables() {
                           <EditButton onClick={() => navigate(`/seo/${site.id}`)} />
                         </td>
 
-                        {/* INVENTORY / BLOG */}
+                        {/* INVENTORY */}
                         <td className="px-6 py-4 whitespace-nowrap">
                           <EditButtonBlack
                             disabled={!site.has_inventory}
                             onClick={() => {
                               if (site.has_inventory) {
-                                navigate(`/blog?site=${site.id}`);
+                                navigate(`/inventory/${site.id}`);
                               }
                             }}
                           >
