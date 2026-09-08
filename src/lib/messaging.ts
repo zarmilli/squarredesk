@@ -1,12 +1,21 @@
-import { supabase } from "@/lib/supabase"
+// lib/messaging.ts — get a fresh client reference inside each function
+// instead of importing at module level
 
-// ── Get or create a conversation between two users ──────────────
+import { createClient } from "@supabase/supabase-js"
+
+function getClient() {
+  return createClient(
+    import.meta.env.VITE_SUPABASE_URL!,
+    import.meta.env.VITE_SUPABASE_ANON_KEY!
+  )
+}
+
 export async function getOrCreateConversation(
   currentUserId: string,
   otherUserId: string
 ): Promise<string> {
+  const supabase = getClient()
 
-  // Find conversations where current user is a participant
   const { data: myParticipations } = await supabase
     .from("conversation_participants")
     .select("conversation_id")
@@ -14,7 +23,6 @@ export async function getOrCreateConversation(
 
   const myConversationIds = (myParticipations ?? []).map(p => p.conversation_id)
 
-  // If current user has conversations, check if other user shares any
   if (myConversationIds.length > 0) {
     const { data: shared } = await supabase
       .from("conversation_participants")
@@ -27,13 +35,8 @@ export async function getOrCreateConversation(
     }
   }
 
-  // No existing conversation — use a service role edge function
-  // to create conversation + add both participants atomically
   const { data, error } = await supabase.functions.invoke("create-conversation", {
-    body: {
-      currentUserId,
-      otherUserId,
-    },
+    body: { currentUserId, otherUserId },
   })
 
   if (error || !data?.conversationId) {
@@ -44,26 +47,11 @@ export async function getOrCreateConversation(
   return data.conversationId
 }
 
-// ── Fetch all conversations for the current user ────────────────
-export async function getConversations(userId: string) {
-  const { data } = await supabase
-    .from("conversation_participants")
-    .select(`
-      conversation_id,
-      last_read_at,
-      conversations (
-        id,
-        updated_at
-      )
-    `)
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false })
 
-  return data ?? []
-}
 
-// ── Fetch messages for a conversation ──────────────────────────
 export async function getMessages(conversationId: string) {
+  const supabase = getClient()
+
   const { data } = await supabase
     .from("messages")
     .select(`
@@ -85,12 +73,13 @@ export async function getMessages(conversationId: string) {
   return data ?? []
 }
 
-// ── Send a message ──────────────────────────────────────────────
 export async function sendMessage(
   conversationId: string,
   senderId: string,
   content: string
 ) {
+  const supabase = getClient()
+
   const { data, error } = await supabase
     .from("messages")
     .insert({
@@ -105,11 +94,12 @@ export async function sendMessage(
   return data
 }
 
-// ── Mark conversation as read ───────────────────────────────────
 export async function markAsRead(
   conversationId: string,
   userId: string
 ) {
+  const supabase = getClient()
+
   await supabase
     .from("conversation_participants")
     .update({ last_read_at: new Date().toISOString() })
@@ -117,19 +107,21 @@ export async function markAsRead(
     .eq("user_id", userId)
 }
 
-// ── Soft delete a message ───────────────────────────────────────
 export async function deleteMessage(messageId: string) {
+  const supabase = getClient()
+
   await supabase
     .from("messages")
     .update({ deleted_at: new Date().toISOString() })
     .eq("id", messageId)
 }
 
-// ── Get unread count ────────────────────────────────────────────
 export async function getUnreadCount(
   conversationId: string,
   userId: string
 ): Promise<number> {
+  const supabase = getClient()
+
   const { data: participant } = await supabase
     .from("conversation_participants")
     .select("last_read_at")
