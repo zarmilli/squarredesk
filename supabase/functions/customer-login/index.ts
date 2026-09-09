@@ -17,51 +17,60 @@ const cors = {
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors })
 
-  const { site_id, email, password } = await req.json()
+  try {
+    const { site_id, email, password } = await req.json()
 
-  const { data: customer } = await supabase
-    .from("customers")
-    .select("id, email, first_name, last_name, password_hash")
-    .eq("site_id", site_id)
-    .eq("email", email)
-    .maybeSingle()
+    const { data: customer } = await supabase
+      .from("customers")
+      .select("id, email, first_name, last_name, password_hash")
+      .eq("site_id", site_id)
+      .eq("email", email)
+      .maybeSingle()
 
-  if (!customer) {
+    if (!customer) {
+      return new Response(
+        JSON.stringify({ error: "Invalid email or password" }),
+        { status: 401, headers: { ...cors, "Content-Type": "application/json" } }
+      )
+    }
+
+    const valid = await bcrypt.compare(password, customer.password_hash)
+
+    if (!valid) {
+      return new Response(
+        JSON.stringify({ error: "Invalid email or password" }),
+        { status: 401, headers: { ...cors, "Content-Type": "application/json" } }
+      )
+    }
+
+    // Invalidate old sessions for this customer
+    await supabase
+      .from("customer_sessions")
+      .delete()
+      .eq("customer_id", customer.id)
+
+    const token = crypto.randomUUID()
+    const expires_at = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+
+    await supabase.from("customer_sessions").insert({
+      customer_id: customer.id,
+      site_id,
+      token,
+      expires_at: expires_at.toISOString(),
+    })
+
+    const { password_hash, ...safeCustomer } = customer
+
     return new Response(
-      JSON.stringify({ error: "Invalid email or password" }),
-      { status: 401, headers: { ...cors, "Content-Type": "application/json" } }
+      JSON.stringify({ customer: safeCustomer, token, expires_at }),
+      { status: 200, headers: { ...cors, "Content-Type": "application/json" } }
+    )
+  } catch (error) {
+    console.error("customer-login error:", error)
+
+    return new Response(
+      JSON.stringify({ error: error instanceof Error ? error.message : "Server error" }),
+      { status: 500, headers: { ...cors, "Content-Type": "application/json" } }
     )
   }
-
-  const valid = await bcrypt.compare(password, customer.password_hash)
-
-  if (!valid) {
-    return new Response(
-      JSON.stringify({ error: "Invalid email or password" }),
-      { status: 401, headers: { ...cors, "Content-Type": "application/json" } }
-    )
-  }
-
-  // Invalidate old sessions for this customer
-  await supabase
-    .from("customer_sessions")
-    .delete()
-    .eq("customer_id", customer.id)
-
-  const token = crypto.randomUUID()
-  const expires_at = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-
-  await supabase.from("customer_sessions").insert({
-    customer_id: customer.id,
-    site_id,
-    token,
-    expires_at: expires_at.toISOString(),
-  })
-
-  const { password_hash, ...safeCustomer } = customer
-
-  return new Response(
-    JSON.stringify({ customer: safeCustomer, token, expires_at }),
-    { status: 200, headers: { ...cors, "Content-Type": "application/json" } }
-  )
 })
