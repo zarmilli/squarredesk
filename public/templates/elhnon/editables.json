@@ -66,6 +66,7 @@
     "hero_description": { "type": "longtext", "label": "Hero description" },
     "hero_cta":         { "type": "text",     "label": "Hero button text" },
     "hero_image":       { "type": "image",    "label": "Hero image (portrait)" },
+    "hero_image_mobile": { "type": "image",  "label": "Hero image (mobile)" },
 
     "picks_title": { "type": "text", "label": "Top Picks section title" },
 

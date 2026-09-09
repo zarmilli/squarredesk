@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title data-edit="meta_title">ELHNON ODNUFMON — Skincare</title>
+  <title data-edit="meta_title">Cart - ELHNON ODNUFMON</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" data-edit="seo_description" content="Meticulously crafted skincare solutions for your skin's health and beauty." />
   <link rel="icon" id="favicon" href="" />
-  <meta property="og:title"       id="og-title"       content="ELHNON ODNUFMON — SKINCARE THAT REFINES" />
+  <meta property="og:title"       id="og-title"       content="Cart - ELHNON ODNUFMON" />
   <meta property="og:description" id="og-description" content="Meticulously crafted skincare solutions for your skin's health and beauty." />
   <meta property="og:image"       id="og-image"       content="" />
   <meta property="og:type"        content="website" />
@@ -110,102 +110,22 @@
     nav .nav-links a:hover { color: var(--green-dark); }
     nav.scrolled .nav-links a { color: var(--green-dark); }
     nav.scrolled .nav-links a:hover { color: var(--green); }
-    .nav-account {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 150px;
-      color: var(--white);
-    }
-    .nav-account button {
-      border: 0;
-      background: none;
-      color: inherit;
-      font: inherit;
-      cursor: pointer;
-    }
-    .nav-login {
-      padding: 8px 14px;
-      border: 1px solid currentColor !important;
-      border-radius: 4px;
-      font-size: 12px !important;
-      font-weight: 600 !important;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
+    .nav-account { display: flex; align-items: center; gap: 12px; min-width: 150px; color: var(--white); }
+    .nav-account button { border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+    .nav-login { padding: 8px 14px; border: 1px solid currentColor !important; border-radius: 4px; font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0.04em; text-transform: uppercase; }
     .nav-greeting { font-size: 13px; font-weight: 500; }
-    .nav-cart {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 32px;
-      height: 32px;
-    }
+    .nav-cart { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; }
     .nav-cart svg { width: 19px; height: 19px; }
-    .nav-cart-count {
-      position: absolute;
-      top: -3px;
-      right: -4px;
-      min-width: 15px;
-      height: 15px;
-      padding: 0 4px;
-      border-radius: 8px;
-      background: var(--green);
-      color: var(--white);
-      font-size: 10px;
-      line-height: 15px;
-      text-align: center;
-    }
+    .nav-cart-count { position: absolute; top: -3px; right: -4px; min-width: 15px; height: 15px; padding: 0 4px; border-radius: 8px; background: var(--green); color: var(--white); font-size: 10px; line-height: 15px; text-align: center; }
     nav.scrolled .nav-account { color: var(--green-dark); }
-    .login-modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 1200;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      background: rgba(15, 14, 11, 0.55);
-    }
+    .login-modal { display: none; position: fixed; inset: 0; z-index: 1200; align-items: center; justify-content: center; padding: 24px; background: rgba(15, 14, 11, 0.55); }
     .login-modal.open { display: flex; }
-    .login-panel {
-      position: relative;
-      width: min(100%, 380px);
-      padding: 32px;
-      background: var(--white);
-      border-radius: 4px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-    }
+    .login-panel { position: relative; width: min(100%, 380px); padding: 32px; background: var(--white); border-radius: 4px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
     .login-panel h2 { margin-bottom: 20px; color: var(--green-dark); }
     .login-panel label { display: block; margin: 12px 0 6px; font-size: 12px; }
-    .login-panel input {
-      width: 100%;
-      padding: 11px;
-      border: 1px solid var(--beige-deep);
-      border-radius: 4px;
-      font: inherit;
-    }
-    .login-submit {
-      width: 100%;
-      margin-top: 20px;
-      padding: 12px;
-      border: 0;
-      border-radius: 4px;
-      background: var(--green-dark);
-      color: var(--white);
-      cursor: pointer;
-    }
-    .login-close {
-      position: absolute;
-      top: 12px;
-      right: 14px;
-      border: 0;
-      background: none;
-      color: var(--text-mid);
-      font-size: 24px;
-      cursor: pointer;
-    }
+    .login-panel input { width: 100%; padding: 11px; border: 1px solid var(--beige-deep); border-radius: 4px; font: inherit; }
+    .login-submit { width: 100%; margin-top: 20px; padding: 12px; border: 0; border-radius: 4px; background: var(--green-dark); color: var(--white); cursor: pointer; }
+    .login-close { position: absolute; top: 12px; right: 14px; border: 0; background: none; color: var(--text-mid); font-size: 24px; cursor: pointer; }
     .login-error { min-height: 18px; margin-top: 10px; color: #a23b3b; font-size: 12px; }
 
     /* Burger */
@@ -298,6 +218,145 @@
       font-weight: 500;
     }
     footer .footer-squarre a:hover { color: var(--white); }
+
+    .cart-page {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 150px 48px 100px;
+    }
+    .cart-layout {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 64px;
+      align-items: start;
+    }
+    .cart-items-panel { grid-column: span 3; }
+    .cart-summary {
+      grid-column: span 1;
+      position: sticky;
+      top: 140px;
+    }
+    .cart-title,
+    .summary-title {
+      margin-bottom: 28px;
+      color: var(--green-dark);
+      font-size: clamp(28px, 3vw, 44px);
+      font-weight: 500;
+      line-height: 1;
+      text-align: left;
+      text-transform: uppercase;
+    }
+    .summary-title {
+      font-size: 22px;
+      text-transform: lowercase;
+    }
+    .cart-item {
+      display: grid;
+      grid-template-columns: 96px minmax(120px, 1fr) auto auto 32px;
+      gap: 20px;
+      align-items: center;
+      padding: 20px 0;
+      border-top: 1px solid var(--beige-deep);
+    }
+    .cart-item:last-child { border-bottom: 1px solid var(--beige-deep); }
+    .cart-item-image {
+      width: 96px;
+      aspect-ratio: 1;
+      border-radius: 4px;
+      background: var(--beige-mid);
+      object-fit: cover;
+    }
+    .cart-item-name {
+      color: var(--text-dark);
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .cart-item-unit { margin-top: 5px; color: var(--text-mid); font-size: 12px; }
+    .quantity-control {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--beige-deep);
+      border-radius: 4px;
+    }
+    .quantity-control button {
+      width: 32px;
+      height: 32px;
+      border: 0;
+      background: transparent;
+      color: var(--text-dark);
+      font-size: 18px;
+      cursor: pointer;
+    }
+    .quantity-control button:hover { background: var(--beige-mid); }
+    .quantity-value { min-width: 28px; text-align: center; font-size: 13px; }
+    .cart-item-total {
+      min-width: 82px;
+      color: var(--green-dark);
+      font-size: 14px;
+      font-weight: 700;
+      text-align: right;
+    }
+    .cart-delete {
+      width: 32px;
+      height: 32px;
+      border: 0;
+      background: transparent;
+      color: var(--text-mid);
+      font-size: 22px;
+      cursor: pointer;
+    }
+    .cart-delete:hover { color: #a23b3b; }
+    .cart-empty,
+    .cart-loading {
+      padding: 36px 0;
+      border-top: 1px solid var(--beige-deep);
+      color: var(--text-mid);
+      font-size: 14px;
+    }
+    .summary-divider { border: 0; border-top: 1px solid var(--beige-deep); margin: 0 0 20px; }
+    .summary-row,
+    .summary-total {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      color: var(--text-mid);
+      font-size: 14px;
+    }
+    .summary-row { margin-bottom: 14px; }
+    .summary-total {
+      align-items: baseline;
+      margin: 20px 0 28px;
+      color: var(--green-dark);
+      font-size: 18px;
+      font-weight: 700;
+      text-transform: lowercase;
+    }
+    .summary-total strong { font-size: 22px; }
+    .checkout-button {
+      width: 100%;
+      padding: 14px 18px;
+      border: 0;
+      border-radius: 4px;
+      background: var(--green-dark);
+      color: var(--white);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .checkout-button:hover { background: var(--green); }
+    .checkout-note { margin-top: 12px; color: var(--text-mid); font-size: 11px; line-height: 1.5; }
+    @media (max-width: 768px) {
+      .cart-page { padding: 120px 20px 70px; }
+      .cart-layout { display: block; }
+      .cart-summary { position: static; margin-top: 56px; }
+      .cart-item { grid-template-columns: 72px minmax(0, 1fr) auto; gap: 12px; }
+      .cart-item-image { width: 72px; }
+      .cart-item-total { grid-column: 2; grid-row: 2; min-width: 0; text-align: left; }
+      .cart-item .quantity-control { grid-column: 2; grid-row: 3; width: fit-content; }
+      .cart-delete { grid-column: 3; grid-row: 1; }
+    }
   </style>
 </head>
 <body>
@@ -305,7 +364,7 @@
   <!-- NEWS BANNER -->
   <div class="news-banner">
     <span data-edit="banner_text">OWN THE GLOW: Free shipping on orders over R300</span>
-    <a href="#picks" data-edit="banner_link" data-edit-role="href">Shop now</a>
+    <a href="products.html" data-edit="banner_link" data-edit-role="href">Shop now</a>
   </div>
 
   <!-- NAVBAR -->
@@ -314,10 +373,7 @@
       <button class="nav-login" id="login-button" data-auth="logged-out" type="button">Login</button>
       <span class="nav-greeting" data-auth="logged-in">Hi, <span data-customer="name"></span></span>
       <button class="nav-cart" data-auth="logged-in" type="button" aria-label="Shopping cart">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-          <path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H6" />
-          <circle cx="10" cy="20" r="1" /><circle cx="18" cy="20" r="1" />
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H6" /><circle cx="10" cy="20" r="1" /><circle cx="18" cy="20" r="1" /></svg>
         <span class="nav-cart-count" id="cart-count">0</span>
       </button>
     </div>
@@ -326,8 +382,7 @@
       <span></span><span></span><span></span>
     </button>
     <div class="nav-links" id="navLinks">
-      <a href="#picks"    data-edit="nav_picks">Top Picks</a>
-      <a href="#catalog"  data-edit="nav_catalog">Shop All</a>
+      <a href="products.html" data-edit="nav_catalog">Shop All</a>
     </div>
   </nav>
 
@@ -336,26 +391,37 @@
       <button class="login-close" id="login-close" type="button" aria-label="Close login">&times;</button>
       <h2 id="login-title">Sign in</h2>
       <div class="register-fields" id="register-fields" hidden>
-        <label for="register-first-name">First name</label>
-        <input id="register-first-name" name="first_name" type="text" autocomplete="given-name" />
-        <label for="register-last-name">Last name</label>
-        <input id="register-last-name" name="last_name" type="text" autocomplete="family-name" />
+        <label for="register-first-name">First name</label><input id="register-first-name" name="first_name" type="text" autocomplete="given-name" />
+        <label for="register-last-name">Last name</label><input id="register-last-name" name="last_name" type="text" autocomplete="family-name" />
       </div>
-      <label for="login-email">Email</label>
-      <input id="login-email" name="email" type="email" autocomplete="email" required />
-      <label for="login-password">Password</label>
-      <input id="login-password" name="password" type="password" autocomplete="current-password" required />
+      <label for="login-email">Email</label><input id="login-email" name="email" type="email" autocomplete="email" required />
+      <label for="login-password">Password</label><input id="login-password" name="password" type="password" autocomplete="current-password" required />
       <p class="login-error" id="login-error" role="alert"></p>
       <button class="login-submit" id="login-submit" type="submit">Login</button>
       <button class="login-switch" id="login-switch" type="button">Create an account</button>
     </form>
   </div>
 
-  <!-- block:hero -->
-  <!-- block:products -->
-  <!-- block:promo -->
-  <!-- block:testimonials -->
-  <!-- block:policy -->
+  <main class="cart-page">
+    <div class="cart-layout">
+      <section class="cart-items-panel" aria-labelledby="cart-title">
+        <h1 class="cart-title" id="cart-title">Cart</h1>
+        <div id="cart-items" aria-live="polite">
+          <p class="cart-loading">Loading your cart...</p>
+        </div>
+      </section>
+      <aside class="cart-summary" aria-labelledby="summary-title">
+        <h2 class="summary-title" id="summary-title">Order summary</h2>
+        <hr class="summary-divider" />
+        <div class="summary-row"><span>Subtotal</span><strong id="cart-subtotal">R0.00</strong></div>
+        <div class="summary-row"><span>Delivery</span><strong>--</strong></div>
+        <hr class="summary-divider" />
+        <div class="summary-total"><span>Total</span><strong id="cart-total">R0.00</strong></div>
+        <button class="checkout-button" id="checkout-button" type="button">Checkout</button>
+        <p class="checkout-note">The next step is adding your shipping address.</p>
+      </aside>
+    </div>
+  </main>
 
   <!-- FOOTER -->
   <footer>
@@ -363,6 +429,99 @@
     <p class="footer-squarre">Want your own site? <a href="https://squarre.vercel.app" target="_blank">This site was made using Squarre</a></p>
     <div class="footer-logo" data-edit="site_name">Elhnon Odnufmon</div>
   </footer>
+
+  <script>
+  (async () => {
+    const SITE_ID = "{{SQUARRE_SITE_ID}}";
+    const SUPABASE_URL = "https://suwiamrsjmbvhceqxchp.supabase.co";
+    const ANON_KEY = "{{SQUARRE_ANON_KEY}}";
+    const grid = document.getElementById("products-grid");
+    if (!grid) return;
+
+    let products = [];
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/products` +
+        `?site_id=eq.${SITE_ID}` +
+        `&is_active=eq.true` +
+        `&order=sort_order.asc,created_at.asc`,
+        {
+          headers: {
+            apikey: ANON_KEY,
+            Authorization: `Bearer ${ANON_KEY}`,
+          },
+        }
+      );
+      if (res.ok) products = await res.json();
+    } catch (err) {
+      console.error("Failed to fetch products:", err);
+    }
+
+    grid.innerHTML = "";
+
+    if (!products.length) {
+      grid.innerHTML = `
+        <div class="products-empty">
+          <p>No products available yet.</p>
+        </div>`;
+      return;
+    }
+
+    function formatPrice(price) {
+      return "R" + parseFloat(price || 0).toFixed(2);
+    }
+
+    function img(src, fallback) {
+      return (src && src.trim()) ? src : (fallback || "");
+    }
+
+    function handleAddToCart(btn, product) {
+      window.dispatchEvent(
+        new CustomEvent("product:add-to-cart", { detail: product })
+      );
+      const original = btn.textContent;
+      btn.textContent = "✓";
+      btn.setAttribute("aria-label", "Added to cart");
+      setTimeout(() => {
+        btn.textContent = original;
+        btn.setAttribute("aria-label", "Add product to cart");
+      }, 900);
+    }
+
+    products.forEach((product) => {
+      const primarySrc = img(product.cover_image);
+      const secondarySrc = img(product.secondary_image, product.cover_image);
+      const card = document.createElement("div");
+      card.className = "product-card";
+      card.setAttribute("data-product-id", product.id);
+      card.innerHTML = `
+        <a class="product-link" href="/product.html?id=${product.id}">
+          <div class="product-card-image">
+            <img class="primary-image" src="${primarySrc}" alt="${product.name}" onerror="this.style.display='none'" />
+            <img class="secondary-image" src="${secondarySrc}" alt="${product.name} alternate view" onerror="this.style.display='none'" />
+            <button type="button" class="product-add" aria-label="Add product to cart">+</button>
+          </div>
+          <div class="card-body">
+            <div class="product-name">${product.name}</div>
+            <div class="product-price">${formatPrice(product.price)}</div>
+          </div>
+        </a>`;
+
+      const btn = card.querySelector(".product-add");
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        handleAddToCart(btn, {
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          image: primarySrc,
+        });
+      });
+      grid.appendChild(card);
+    });
+  })();
+  </script>
 
   <script>
     // Navbar scroll
@@ -617,6 +776,109 @@
         if (countEl) countEl.textContent = cart.length;
       }
 
+      function formatPrice(price) {
+        return "R" + Number(price || 0).toFixed(2);
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      function updateCartSummary(cartItems) {
+        const subtotal = cartItems.reduce((sum, item) => {
+          const product = item.products || {};
+          return sum + Number(product.price || 0) * Number(item.quantity || 0);
+        }, 0);
+        document.getElementById("cart-subtotal").textContent = formatPrice(subtotal);
+        document.getElementById("cart-total").textContent = formatPrice(subtotal);
+      }
+
+      async function updateCartQuantity(cartItemId, quantity) {
+        const nextQuantity = Math.max(1, Number(quantity));
+        const response = await fetch(
+          `${SUPABASE_URL}/rest/v1/cart_items?id=eq.${cartItemId}`,
+          {
+            method: "PATCH",
+            headers: {
+              apikey: ANON_KEY,
+              Authorization: `Bearer ${ANON_KEY}`,
+              "Content-Type": "application/json",
+              Prefer: "return=minimal",
+            },
+            body: JSON.stringify({ quantity: nextQuantity }),
+          }
+        );
+        if (!response.ok) throw new Error("Unable to update cart quantity");
+        await renderCart();
+        await updateCartCount();
+      }
+
+      async function renderCart() {
+        const container = document.getElementById("cart-items");
+        if (!container) return;
+
+        if (!session.get()) {
+          container.innerHTML = `<p class="cart-empty">Sign in to view your cart.</p>`;
+          updateCartSummary([]);
+          return;
+        }
+
+        container.innerHTML = `<p class="cart-loading">Loading your cart...</p>`;
+        const cartItems = await getCart();
+
+        if (!cartItems.length) {
+          container.innerHTML = `<p class="cart-empty">Your cart is empty.</p>`;
+          updateCartSummary([]);
+          return;
+        }
+
+        container.innerHTML = cartItems.map((item) => {
+          const product = item.products || {};
+          const quantity = Number(item.quantity || 1);
+          const unitPrice = Number(product.price || 0);
+          const image = product.cover_image || "";
+          return `
+            <article class="cart-item" data-cart-item-id="${escapeHtml(item.id)}">
+              <img class="cart-item-image" src="${escapeHtml(image)}" alt="${escapeHtml(product.name)}" />
+              <div>
+                <h3 class="cart-item-name">${escapeHtml(product.name || "Product")}</h3>
+                <p class="cart-item-unit">${formatPrice(unitPrice)} each</p>
+              </div>
+              <div class="quantity-control" aria-label="Quantity for ${escapeHtml(product.name)}">
+                <button type="button" data-quantity-action="decrease" aria-label="Decrease quantity">-</button>
+                <span class="quantity-value">${quantity}</span>
+                <button type="button" data-quantity-action="increase" aria-label="Increase quantity">+</button>
+              </div>
+              <strong class="cart-item-total">${formatPrice(unitPrice * quantity)}</strong>
+              <button class="cart-delete" type="button" data-cart-action="delete" aria-label="Remove ${escapeHtml(product.name)}">&times;</button>
+            </article>`;
+        }).join("");
+
+        updateCartSummary(cartItems);
+        container.querySelectorAll(".cart-item").forEach((itemElement) => {
+          const itemId = itemElement.dataset.cartItemId;
+          const quantityValue = itemElement.querySelector(".quantity-value");
+          const currentQuantity = () => Number(quantityValue.textContent);
+
+          itemElement.querySelector('[data-quantity-action="decrease"]').addEventListener("click", async () => {
+            if (currentQuantity() <= 1) return;
+            await updateCartQuantity(itemId, currentQuantity() - 1);
+          });
+          itemElement.querySelector('[data-quantity-action="increase"]').addEventListener("click", async () => {
+            await updateCartQuantity(itemId, currentQuantity() + 1);
+          });
+          itemElement.querySelector('[data-cart-action="delete"]').addEventListener("click", async () => {
+            await removeFromCart(itemId);
+            await updateCartCount();
+          });
+        });
+      }
+
       // ── Checkout ────────────────────────────────────────────────────
       async function checkout(shippingAddress) {
         const s = session.get();
@@ -710,6 +972,7 @@
             loginModal.style.display = "none";
             updateAuthUI();
             updateCartCount();
+            renderCart();
           } catch (error) {
             loginError.textContent = error.message || "Unable to sign in";
           }
@@ -718,8 +981,12 @@
           const product = event.detail;
           if (product?.id) addToCart(product.id);
         });
+        document.querySelector(".nav-cart")?.addEventListener("click", () => {
+          window.location.href = "cart.html";
+        });
         updateAuthUI();
         updateCartCount();
+        renderCart();
       });
     </script>
 </body>

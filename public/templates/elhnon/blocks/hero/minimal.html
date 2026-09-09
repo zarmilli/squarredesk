@@ -23,6 +23,7 @@
       object-fit: cover;
       display: block;
     }
+    .hero-image .hero-image-mobile { display: none; }
     .hero::before {
       content: '';
       position: absolute;
@@ -79,6 +80,10 @@
       .hero {
         height: 100vh;
       }
+      .hero-image .hero-image-desktop { display: none; }
+      .hero-image .hero-image-mobile {
+        display: block;
+      }
       .hero-text {
         max-width: 100%;
         padding: 36px 24px;
@@ -89,7 +94,8 @@
 
   <section id="hero" class="hero">
     <div class="hero-image">
-      <img data-edit="hero_image" src="https://images.pexels.com/photos/3685530/pexels-photo-3685530.jpeg" alt="Hero" />
+      <img class="hero-image-desktop" data-edit="hero_image" src="https://images.pexels.com/photos/3685530/pexels-photo-3685530.jpeg" alt="Hero" />
+      <img class="hero-image-mobile" data-edit="hero_image_mobile" src="https://images.pexels.com/photos/3685530/pexels-photo-3685530.jpeg" alt="Hero" />
     </div>
     <div class="hero-text">
       <h1 data-edit="hero_title">Skin That Feels Like You</h1>

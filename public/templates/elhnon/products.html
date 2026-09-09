@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title data-edit="meta_title">ELHNON ODNUFMON — The list of products</title>
+  <title data-edit="meta_title">Shop The Collection - ELHNON ODNUFMON</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" data-edit="seo_description" content="Meticulously crafted skincare solutions for your skin's health and beauty." />
   <link rel="icon" id="favicon" href="" />
-  <meta property="og:title"       id="og-title"       content="ELHNON ODNUFMON — SKINCARE THAT REFINES" />
+  <meta property="og:title"       id="og-title"       content="Shop The Collection - ELHNON ODNUFMON" />
   <meta property="og:description" id="og-description" content="Meticulously crafted skincare solutions for your skin's health and beauty." />
   <meta property="og:image"       id="og-image"       content="" />
   <meta property="og:type"        content="website" />
@@ -53,7 +53,7 @@
       color: var(--white);
       text-align: center;
       padding: 9px 48px;
-      font-size: 12px;
+      font-size: 16px;
       font-weight: 500;
       letter-spacing: 0.05em;
       white-space: nowrap;
@@ -110,6 +110,23 @@
     nav .nav-links a:hover { color: var(--green-dark); }
     nav.scrolled .nav-links a { color: var(--green-dark); }
     nav.scrolled .nav-links a:hover { color: var(--green); }
+    .nav-account { display: flex; align-items: center; gap: 12px; min-width: 150px; color: var(--white); }
+    .nav-account button { border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+    .nav-login { padding: 8px 14px; border: 1px solid currentColor !important; border-radius: 4px; font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0.04em; text-transform: uppercase; }
+    .nav-greeting { font-size: 13px; font-weight: 500; }
+    .nav-cart { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; }
+    .nav-cart svg { width: 19px; height: 19px; }
+    .nav-cart-count { position: absolute; top: -3px; right: -4px; min-width: 15px; height: 15px; padding: 0 4px; border-radius: 8px; background: var(--green); color: var(--white); font-size: 10px; line-height: 15px; text-align: center; }
+    nav.scrolled .nav-account { color: var(--green-dark); }
+    .login-modal { display: none; position: fixed; inset: 0; z-index: 1200; align-items: center; justify-content: center; padding: 24px; background: rgba(15, 14, 11, 0.55); }
+    .login-modal.open { display: flex; }
+    .login-panel { position: relative; width: min(100%, 380px); padding: 32px; background: var(--white); border-radius: 4px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+    .login-panel h2 { margin-bottom: 20px; color: var(--green-dark); }
+    .login-panel label { display: block; margin: 12px 0 6px; font-size: 12px; }
+    .login-panel input { width: 100%; padding: 11px; border: 1px solid var(--beige-deep); border-radius: 4px; font: inherit; }
+    .login-submit { width: 100%; margin-top: 20px; padding: 12px; border: 0; border-radius: 4px; background: var(--green-dark); color: var(--white); cursor: pointer; }
+    .login-close { position: absolute; top: 12px; right: 14px; border: 0; background: none; color: var(--text-mid); font-size: 24px; cursor: pointer; }
+    .login-error { min-height: 18px; margin-top: 10px; color: #a23b3b; font-size: 12px; }
 
     /* Burger */
     .burger {
@@ -141,6 +158,8 @@
       .news-banner { padding: 9px 16px; font-size: 11px; }
       nav { padding: 16px 20px; top: 34px; }
       nav.scrolled { padding: 12px 20px; top: 34px; }
+      .nav-account { min-width: auto; }
+      nav .logo { margin-left: 12px; margin-right: auto; }
       .burger { display: flex; }
       .nav-links {
         position: fixed;
@@ -172,12 +191,17 @@
       padding: 48px 24px 36px;
     }
     footer .footer-logo {
-      font-size: 18px;
+      font-size: 11vw;
       font-weight: 700;
-      color: var(--green);
+      line-height: 0.8;
+      background: linear-gradient(to bottom, var(--green) 20%, var(--green-dark) 85%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
       letter-spacing: 0.02em;
       text-transform: uppercase;
-      margin-bottom: 8px;
+      margin-top: 24px;
+      overflow-wrap: anywhere;
     }
     footer .footer-copy {
       font-size: 13px;
@@ -194,42 +218,298 @@
       font-weight: 500;
     }
     footer .footer-squarre a:hover { color: var(--white); }
+
+    .products-section {
+      padding: 120px 24px 80px;
+      background: var(--white);
+    }
+    .products-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    .product-card {
+      position: relative;
+      background: var(--white);
+      border-radius: 4px;
+      overflow: visible;
+      cursor: pointer;
+    }
+    .product-card .product-link {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+    }
+    .product-card-image {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      border-radius: 4px;
+      background: var(--beige-mid);
+    }
+    .product-card-image img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity .35s ease, transform .4s ease;
+    }
+    .product-card-image .primary-image { opacity: 1; }
+    .product-card-image .secondary-image { opacity: 0; }
+    .product-card:hover .primary-image {
+      opacity: 0;
+      transform: scale(1.03);
+    }
+    .product-card:hover .secondary-image {
+      opacity: 1;
+      transform: scale(1.03);
+    }
+    .product-card .card-body {
+      padding: 12px 0 6px;
+      text-align: left;
+    }
+    .product-card .product-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 5px;
+      line-height: 1.3;
+    }
+    .product-card .product-price {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--green-dark);
+    }
+    .product-add {
+      position: absolute;
+      z-index: 5;
+      top: 10px;
+      right: 10px;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border: 0;
+      border-radius: 4px;
+      background: var(--white);
+      color: var(--text-dark);
+      font-size: 20px;
+      font-weight: 400;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+      transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+    .product-add:hover {
+      transform: translateY(-2px);
+      background: var(--green-dark);
+      color: var(--white);
+    }
+    .product-add:active { transform: scale(0.94); }
+    .product-skeleton {
+      aspect-ratio: 1 / 1;
+      border-radius: 4px;
+      overflow: hidden;
+      background: var(--beige-mid, #f0ece6);
+      animation: skeleton-pulse 1.4s ease-in-out infinite;
+    }
+    .product-skeleton .skel-image {
+      width: 100%;
+      height: 100%;
+      background: #e0d9d0;
+    }
+    .products-empty {
+      grid-column: 1 / -1;
+      padding: 60px 24px;
+      text-align: center;
+      color: var(--text-dark, #333);
+      opacity: 0.5;
+      font-size: 14px;
+    }
+    @keyframes skeleton-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    @media (max-width: 768px) {
+      .products-section { padding: 100px 20px 60px; }
+      .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+      }
+      .product-add {
+        width: 32px;
+        height: 32px;
+        top: 8px;
+        right: 8px;
+      }
+    }
   </style>
 </head>
 <body>
 
   <!-- NEWS BANNER -->
   <div class="news-banner">
-    <span data-edit="banner_text">Free shipping on all orders over R175 — limited time offer.</span>
-    <a href="#picks" data-edit="banner_link" data-edit-role="href">Shop now</a>
+    <span data-edit="banner_text">OWN THE GLOW: Free shipping on orders over R300</span>
+    <a href="products.html" data-edit="banner_link" data-edit-role="href">Shop now</a>
   </div>
 
   <!-- NAVBAR -->
   <nav id="navbar">
+    <div class="nav-account">
+      <button class="nav-login" id="login-button" data-auth="logged-out" type="button">Login</button>
+      <span class="nav-greeting" data-auth="logged-in">Hi, <span data-customer="name"></span></span>
+      <button class="nav-cart" data-auth="logged-in" type="button" aria-label="Shopping cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H6" /><circle cx="10" cy="20" r="1" /><circle cx="18" cy="20" r="1" /></svg>
+        <span class="nav-cart-count" id="cart-count">0</span>
+      </button>
+    </div>
     <a href="#hero" class="logo" data-edit="site_name">Elhnon Odnufmon</a>
     <button class="burger" id="burger" aria-label="Toggle menu">
       <span></span><span></span><span></span>
     </button>
     <div class="nav-links" id="navLinks">
-      <a href="#picks"    data-edit="nav_picks">Top Picks</a>
-      <a href="#promo"    data-edit="nav_promo">Our Story</a>
-      <a href="#catalog"  data-edit="nav_catalog">Shop All</a>
-      <a href="#policy"   data-edit="nav_policy">Policy</a>
+      <a href="products.html" data-edit="nav_catalog">Shop All</a>
     </div>
   </nav>
 
-  <!-- block:hero -->
-  <!-- block:products -->
-  <!-- block:promo -->
-  <!-- block:testimonials -->
-  <!-- block:policy -->
+  <div class="login-modal" id="login-modal" role="dialog" aria-modal="true" aria-labelledby="login-title">
+    <form class="login-panel" id="login-form">
+      <button class="login-close" id="login-close" type="button" aria-label="Close login">&times;</button>
+      <h2 id="login-title">Sign in</h2>
+      <div class="register-fields" id="register-fields" hidden>
+        <label for="register-first-name">First name</label><input id="register-first-name" name="first_name" type="text" autocomplete="given-name" />
+        <label for="register-last-name">Last name</label><input id="register-last-name" name="last_name" type="text" autocomplete="family-name" />
+      </div>
+      <label for="login-email">Email</label><input id="login-email" name="email" type="email" autocomplete="email" required />
+      <label for="login-password">Password</label><input id="login-password" name="password" type="password" autocomplete="current-password" required />
+      <p class="login-error" id="login-error" role="alert"></p>
+      <button class="login-submit" id="login-submit" type="submit">Login</button>
+      <button class="login-switch" id="login-switch" type="button">Create an account</button>
+    </form>
+  </div>
+
+  <section id="products" class="products-section">
+    <div class="products-inner">
+      <div class="products-grid" id="products-grid">
+        <div class="product-skeleton"><div class="skel-image"></div></div>
+        <div class="product-skeleton"><div class="skel-image"></div></div>
+        <div class="product-skeleton"><div class="skel-image"></div></div>
+        <div class="product-skeleton"><div class="skel-image"></div></div>
+        <div class="product-skeleton"><div class="skel-image"></div></div>
+        <div class="product-skeleton"><div class="skel-image"></div></div>
+        <div class="product-skeleton"><div class="skel-image"></div></div>
+        <div class="product-skeleton"><div class="skel-image"></div></div>
+      </div>
+    </div>
+  </section>
 
   <!-- FOOTER -->
   <footer>
-    <div class="footer-logo" data-edit="site_name">Elhnon Odnufmon</div>
     <p class="footer-copy">© <span data-edit="copyright_year">2026</span> <span data-edit="site_name">Elhnon Odnufmon</span>. All rights reserved.</p>
     <p class="footer-squarre">Want your own site? <a href="https://squarre.vercel.app" target="_blank">This site was made using Squarre</a></p>
+    <div class="footer-logo" data-edit="site_name">Elhnon Odnufmon</div>
   </footer>
+
+  <script>
+  (async () => {
+    const SITE_ID = "{{SQUARRE_SITE_ID}}";
+    const SUPABASE_URL = "https://suwiamrsjmbvhceqxchp.supabase.co";
+    const ANON_KEY = "{{SQUARRE_ANON_KEY}}";
+    const grid = document.getElementById("products-grid");
+    if (!grid) return;
+
+    let products = [];
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/products` +
+        `?site_id=eq.${SITE_ID}` +
+        `&is_active=eq.true` +
+        `&order=sort_order.asc,created_at.asc`,
+        {
+          headers: {
+            apikey: ANON_KEY,
+            Authorization: `Bearer ${ANON_KEY}`,
+          },
+        }
+      );
+      if (res.ok) products = await res.json();
+    } catch (err) {
+      console.error("Failed to fetch products:", err);
+    }
+
+    grid.innerHTML = "";
+
+    if (!products.length) {
+      grid.innerHTML = `
+        <div class="products-empty">
+          <p>No products available yet.</p>
+        </div>`;
+      return;
+    }
+
+    function formatPrice(price) {
+      return "R" + parseFloat(price || 0).toFixed(2);
+    }
+
+    function img(src, fallback) {
+      return (src && src.trim()) ? src : (fallback || "");
+    }
+
+    function handleAddToCart(btn, product) {
+      window.dispatchEvent(
+        new CustomEvent("product:add-to-cart", { detail: product })
+      );
+      const original = btn.textContent;
+      btn.textContent = "✓";
+      btn.setAttribute("aria-label", "Added to cart");
+      setTimeout(() => {
+        btn.textContent = original;
+        btn.setAttribute("aria-label", "Add product to cart");
+      }, 900);
+    }
+
+    products.forEach((product) => {
+      const primarySrc = img(product.cover_image);
+      const secondarySrc = img(product.secondary_image, product.cover_image);
+      const card = document.createElement("div");
+      card.className = "product-card";
+      card.setAttribute("data-product-id", product.id);
+      card.innerHTML = `
+        <a class="product-link" href="/product.html?id=${product.id}">
+          <div class="product-card-image">
+            <img class="primary-image" src="${primarySrc}" alt="${product.name}" onerror="this.style.display='none'" />
+            <img class="secondary-image" src="${secondarySrc}" alt="${product.name} alternate view" onerror="this.style.display='none'" />
+            <button type="button" class="product-add" aria-label="Add product to cart">+</button>
+          </div>
+          <div class="card-body">
+            <div class="product-name">${product.name}</div>
+            <div class="product-price">${formatPrice(product.price)}</div>
+          </div>
+        </a>`;
+
+      const btn = card.querySelector(".product-add");
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        handleAddToCart(btn, {
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          image: primarySrc,
+        });
+      });
+      grid.appendChild(card);
+    });
+  })();
+  </script>
 
   <script>
     // Navbar scroll
@@ -365,6 +645,229 @@
 
     })();
     </script>
-    <script src="store.js"></script>
+    <script>
+      const SITE_ID = "{{SQUARRE_SITE_ID}}";
+      const SUPABASE_URL = "https://suwiamrsjmbvhceqxchp.supabase.co";
+      const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1d2lhbXJzam1idmhjZXF4Y2hwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ5NDM4MDEsImV4cCI6MjA4MDUxOTgwMX0.4V8Ec8pvDYZyM0WYO3ePMa7yrHTuvbVdoCK9eYhH6zk";
+      const FUNCTIONS_URL = `${SUPABASE_URL}/functions/v1`;
+
+      // ── Session management ──────────────────────────────────────────
+      const session = {
+        get() {
+          const raw = localStorage.getItem(`session_${SITE_ID}`);
+          if (!raw) return null;
+          const data = JSON.parse(raw);
+          if (new Date(data.expires_at) < new Date()) {
+            localStorage.removeItem(`session_${SITE_ID}`);
+            return null;
+          }
+          return data;
+        },
+        set(data) {
+          localStorage.setItem(`session_${SITE_ID}`, JSON.stringify(data));
+        },
+        clear() {
+          localStorage.removeItem(`session_${SITE_ID}`);
+        },
+      };
+
+      // ── Auth ────────────────────────────────────────────────────────
+      async function register(email, password, firstName, lastName) {
+        const res = await fetch(`${FUNCTIONS_URL}/customer-register`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            site_id: SITE_ID,
+            email,
+            password,
+            first_name: firstName,
+            last_name: lastName,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        session.set({ token: data.token, customer: data.customer, expires_at: data.expires_at });
+        return data.customer;
+      }
+
+      async function login(email, password) {
+        const res = await fetch(`${FUNCTIONS_URL}/customer-login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ site_id: SITE_ID, email, password }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        session.set({ token: data.token, customer: data.customer, expires_at: data.expires_at });
+        return data.customer;
+      }
+
+      function logout() {
+        session.clear();
+        updateAuthUI();
+      }
+
+      // ── Cart ────────────────────────────────────────────────────────
+      async function addToCart(productId, quantity = 1) {
+        const s = session.get();
+        if (!s) { showLoginModal(); return; }
+
+        await fetch(`${SUPABASE_URL}/rest/v1/cart_items`, {
+          method: "POST",
+          headers: {
+            apikey: ANON_KEY,
+            Authorization: `Bearer ${ANON_KEY}`,
+            "Content-Type": "application/json",
+            Prefer: "resolution=merge-duplicates",
+          },
+          body: JSON.stringify({
+            site_id: SITE_ID,
+            customer_id: s.customer.id,
+            product_id: productId,
+            quantity,
+          }),
+        });
+
+        updateCartCount();
+      }
+
+      async function getCart() {
+        const s = session.get();
+        if (!s) return [];
+
+        const res = await fetch(
+          `${SUPABASE_URL}/rest/v1/cart_items?select=*,products(*)&customer_id=eq.${s.customer.id}&site_id=eq.${SITE_ID}`,
+          {
+            headers: {
+              apikey: ANON_KEY,
+              Authorization: `Bearer ${ANON_KEY}`,
+            },
+          }
+        );
+        return res.json();
+      }
+
+      async function removeFromCart(cartItemId) {
+        await fetch(`${SUPABASE_URL}/rest/v1/cart_items?id=eq.${cartItemId}`, {
+          method: "DELETE",
+          headers: {
+            apikey: ANON_KEY,
+            Authorization: `Bearer ${ANON_KEY}`,
+          },
+        });
+        renderCart();
+      }
+
+      async function updateCartCount() {
+        const cart = await getCart();
+        const countEl = document.getElementById("cart-count");
+        if (countEl) countEl.textContent = cart.length;
+      }
+
+      // ── Checkout ────────────────────────────────────────────────────
+      async function checkout(shippingAddress) {
+        const s = session.get();
+        if (!s) { showLoginModal(); return; }
+
+        const res = await fetch(`${FUNCTIONS_URL}/customer-checkout`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            site_id: SITE_ID,
+            session_token: s.token,
+            shipping_address: shippingAddress,
+          }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+
+        // Redirect to PayFast
+        window.location.href = data.paymentUrl;
+      }
+
+      // ── UI helpers ──────────────────────────────────────────────────
+      function updateAuthUI() {
+        const s = session.get();
+        const loggedInEls = document.querySelectorAll("[data-auth='logged-in']");
+        const loggedOutEls = document.querySelectorAll("[data-auth='logged-out']");
+        const nameEls = document.querySelectorAll("[data-customer='name']");
+
+        loggedInEls.forEach(el => el.style.display = s ? "" : "none");
+        loggedOutEls.forEach(el => el.style.display = s ? "none" : "");
+        nameEls.forEach(el => el.textContent = s ? s.customer.first_name : "");
+      }
+
+      function showLoginModal() {
+        const modal = document.getElementById("login-modal");
+        if (modal) modal.style.display = "flex";
+      }
+
+      // ── Init ────────────────────────────────────────────────────────
+      document.addEventListener("DOMContentLoaded", () => {
+        const loginModal = document.getElementById("login-modal");
+        const loginForm = document.getElementById("login-form");
+        const loginButton = document.getElementById("login-button");
+        const loginClose = document.getElementById("login-close");
+        const loginError = document.getElementById("login-error");
+        const loginTitle = document.getElementById("login-title");
+        const loginSubmit = document.getElementById("login-submit");
+        const loginSwitch = document.getElementById("login-switch");
+        const registerFields = document.getElementById("register-fields");
+        let registerMode = false;
+
+        loginButton?.addEventListener("click", showLoginModal);
+        loginClose?.addEventListener("click", () => {
+          if (loginModal) loginModal.style.display = "none";
+        });
+        loginModal?.addEventListener("click", (event) => {
+          if (event.target === loginModal) loginModal.style.display = "none";
+        });
+        loginSwitch?.addEventListener("click", () => {
+          registerMode = !registerMode;
+          registerFields.hidden = !registerMode;
+          registerFields.querySelectorAll("input").forEach(input => {
+            input.required = registerMode;
+          });
+          loginTitle.textContent = registerMode ? "Create account" : "Sign in";
+          loginSubmit.textContent = registerMode ? "Create account" : "Login";
+          loginSwitch.textContent = registerMode ? "Already have an account? Sign in" : "Create an account";
+          loginForm.querySelector("#login-password").autocomplete = registerMode ? "new-password" : "current-password";
+          loginError.textContent = "";
+        });
+        loginForm?.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          loginError.textContent = "";
+          const formData = new FormData(loginForm);
+          try {
+            if (registerMode) {
+              await register(
+                formData.get("email"),
+                formData.get("password"),
+                formData.get("first_name"),
+                formData.get("last_name")
+              );
+            } else {
+              await login(formData.get("email"), formData.get("password"));
+            }
+            loginForm.reset();
+            registerMode = false;
+            registerFields.hidden = true;
+            registerFields.querySelectorAll("input").forEach(input => { input.required = false; });
+            loginModal.style.display = "none";
+            updateAuthUI();
+            updateCartCount();
+          } catch (error) {
+            loginError.textContent = error.message || "Unable to sign in";
+          }
+        });
+        document.addEventListener("product:add-to-cart", (event) => {
+          const product = event.detail;
+          if (product?.id) addToCart(product.id);
+        });
+        updateAuthUI();
+        updateCartCount();
+      });
+    </script>
 </body>
 </html>

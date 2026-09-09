@@ -35,6 +35,10 @@
       will-change: transform;
     }
 
+    .hero-image .hero-image-mobile {
+      display: none;
+    }
+
     .hero-text {
       position: relative;
       z-index: 2;
@@ -70,6 +74,17 @@
         top: -7.5%;
       }
 
+      .hero-image .hero-image-desktop {
+        display: none;
+      }
+
+      .hero-image .hero-image-mobile {
+        display: block;
+        height: 100%;
+        top: 0;
+        transform: none !important;
+      }
+
       .hero-text {
         padding: 36px 24px 28px;
       }
@@ -87,8 +102,15 @@
 
     <div class="hero-image">
       <img
+        class="hero-image-desktop"
         data-edit="hero_image"
         src="https://static.wixstatic.com/media/c837a6_317de77fbcbd4f9ab17695112874d1c6~mv2.png/v1/fill/w_1891,h_895,fp_0.54_0.39,q_90,usm_0.66_1.00_0.01,enc_auto/weavy-Gemini%203%20(Nano%20Banana%20Pro)-2026-01-14%20at%2016_44_52.png"
+        alt="Hero"
+      />
+      <img
+        class="hero-image-mobile"
+        data-edit="hero_image_mobile"
+        src="https://static.wixstatic.com/media/c837a6_496693e84b2c40c789ad9ebcebd9d194~mv2.png/v1/fill/w_579,h_580,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/04%20-%20weavy-Gemini%203%20(Nano%20Banana%20Pro)-2026-01-04%20at%2013_07.png"
         alt="Hero"
       />
     </div>
