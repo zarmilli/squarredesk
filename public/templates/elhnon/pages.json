@@ -1,5 +1,6 @@
 [
   { "label": "Home", "file": "index.html", "editables": "editables.json" },
   { "label": "Products", "file": "products.html", "editables": "editables.json" },
-  { "label": "Cart", "file": "cart.html", "editables": "editables.json" }
+  { "label": "Cart", "file": "cart.html", "editables": "editables.json" },
+  { "label": "Order Success", "file": "order-success/index.html", "editables": "editables.json" }
 ]
