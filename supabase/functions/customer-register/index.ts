@@ -1,7 +1,37 @@
 // supabase/functions/customer-register/index.ts
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
-import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.1/mod.ts"
+
+const encoder = new TextEncoder()
+
+const hashPassword = async (password: string) => {
+  const salt = crypto.getRandomValues(new Uint8Array(16))
+
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(password),
+    "PBKDF2",
+    false,
+    ["deriveBits"]
+  )
+
+  const derivedBits = await crypto.subtle.deriveBits(
+    {
+      name: "PBKDF2",
+      hash: "SHA-256",
+      iterations: 100000,
+      salt,
+    },
+    key,
+    256
+  )
+
+  const saltedPassword = Array.from(new Uint8Array(derivedBits))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("")
+
+  return `pbkdf2_sha256$100000$${btoa(String.fromCharCode(...salt))}$${saltedPassword}`
+}
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -42,7 +72,7 @@ serve(async (req) => {
       )
     }
 
-    const password_hash = await bcrypt.hash(password)
+    const password_hash = await hashPassword(password)
 
     const { data: customer, error } = await supabase
       .from("customers")

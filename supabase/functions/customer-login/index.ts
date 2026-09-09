@@ -1,7 +1,47 @@
 // supabase/functions/customer-login/index.ts
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
-import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.1/mod.ts"
+
+const encoder = new TextEncoder()
+
+const verifyPassword = async (password: string, storedHash: string) => {
+  if (!storedHash.startsWith("pbkdf2_sha256$")) {
+    return false
+  }
+
+  const [algorithm, iterationsString, saltBase64, expectedHash] = storedHash.split("$")
+
+  if (!algorithm || !iterationsString || !saltBase64 || !expectedHash) {
+    return false
+  }
+
+  const salt = Uint8Array.from(atob(saltBase64), (char) => char.charCodeAt(0))
+
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(password),
+    "PBKDF2",
+    false,
+    ["deriveBits"]
+  )
+
+  const derivedBits = await crypto.subtle.deriveBits(
+    {
+      name: "PBKDF2",
+      hash: "SHA-256",
+      iterations: Number(iterationsString),
+      salt,
+    },
+    key,
+    256
+  )
+
+  const hash = Array.from(new Uint8Array(derivedBits))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("")
+
+  return hash === expectedHash
+}
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -34,7 +74,7 @@ serve(async (req) => {
       )
     }
 
-    const valid = await bcrypt.compare(password, customer.password_hash)
+    const valid = await verifyPassword(password, customer.password_hash)
 
     if (!valid) {
       return new Response(
