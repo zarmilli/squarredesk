@@ -109,14 +109,19 @@ function getPageEditorContent(
   if (!isPageBasedContent(storedContent)) return storedContent ?? {};
 
   const pageContent = storedContent.pages?.[pageFile] ?? {};
+  const fallbackContent = storedContent.pages?.["index.html"] ?? {};
+  const mergedContent = {
+    ...fallbackContent,
+    ...pageContent,
+  };
   const result: ContentMap = {};
 
   Object.entries(editables).forEach(([fieldKey, field]) => {
     const section = field.section ?? "editor";
-    const sectionContent = getSectionContent(pageContent, section);
+    const sectionContent = getSectionContent(mergedContent, section);
     const value =
       section === "editor"
-        ? sectionContent[fieldKey] ?? pageContent.editor?.[fieldKey]
+        ? sectionContent[fieldKey] ?? mergedContent.editor?.[fieldKey]
         : sectionContent[fieldKey];
 
     if (value !== undefined) {
