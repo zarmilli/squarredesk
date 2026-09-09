@@ -358,7 +358,7 @@
   <!-- NEWS BANNER -->
   <div class="news-banner">
     <span data-edit="banner_text">OWN THE GLOW: Free shipping on orders over R300</span>
-    <a href="products.html" data-edit="banner_link" data-edit-role="href">Shop now</a>
+    <a href="/products.html" data-edit="banner_link" data-edit-role="href">Shop now</a>
   </div>
 
   <!-- NAVBAR -->
@@ -371,12 +371,12 @@
         <span class="nav-cart-count" id="cart-count">0</span>
       </button>
     </div>
-    <a href="#hero" class="logo" data-edit="site_name">Elhnon Odnufmon</a>
+    <a href="/index.html" class="logo" data-edit="site_name">Elhnon Odnufmon</a>
     <button class="burger" id="burger" aria-label="Toggle menu">
       <span></span><span></span><span></span>
     </button>
     <div class="nav-links" id="navLinks">
-      <a href="products.html" data-edit="nav_catalog">Shop All</a>
+      <a href="/products.html" data-edit="nav_catalog">Shop All</a>
     </div>
   </nav>
 
@@ -675,7 +675,11 @@
       async function register(email, password, firstName, lastName) {
         const res = await fetch(`${FUNCTIONS_URL}/customer-register`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            apikey: ANON_KEY,
+            Authorization: `Bearer ${ANON_KEY}`,
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
             site_id: SITE_ID,
             email,
@@ -693,7 +697,11 @@
       async function login(email, password) {
         const res = await fetch(`${FUNCTIONS_URL}/customer-login`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            apikey: ANON_KEY,
+            Authorization: `Bearer ${ANON_KEY}`,
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({ site_id: SITE_ID, email, password }),
         });
         const data = await res.json();
@@ -771,7 +779,11 @@
 
         const res = await fetch(`${FUNCTIONS_URL}/customer-checkout`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            apikey: ANON_KEY,
+            Authorization: `Bearer ${ANON_KEY}`,
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
             site_id: SITE_ID,
             session_token: s.token,

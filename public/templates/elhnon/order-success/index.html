@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Order Successful - ELHNON ODNUFMON</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" id="favicon" href="" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --beige: #f5ede0;
+      --beige-mid: #ede0ce;
+      --beige-deep: #d9c4a8;
+      --green: #e4667f;
+      --green-dark: #311e20;
+      --bg: #faf7f2;
+      --text-dark: #2a2218;
+      --text-mid: #6b5f4f;
+      --white: #ffffff;
+      --black: #0f0e0b;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-dark);
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .news-banner {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1100;
+      background: var(--green-dark);
+      color: var(--white);
+      text-align: center;
+      padding: 9px 48px;
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    nav {
+      position: fixed;
+      top: 36px; left: 0; right: 0;
+      z-index: 1000;
+      padding: 20px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: transparent;
+      transition: background 0.35s ease, box-shadow 0.35s ease, padding 0.35s ease;
+    }
+
+    nav.scrolled {
+      background: var(--white);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+      border-bottom: 1px solid var(--green-dark);
+      padding: 14px 48px;
+    }
+
+    nav .logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--green);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      position: relative;
+      z-index: 1001;
+      transition: color 0.35s;
+    }
+
+    nav.scrolled .logo { color: var(--green); }
+
+    nav .nav-links {
+      display: flex;
+      gap: 32px;
+    }
+
+    nav .nav-links a {
+      font-size: 18px;
+      text-transform: uppercase;
+      font-weight: 500;
+      color: var(--green-dark);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: color 0.2s;
+    }
+
+    .nav-account {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 150px;
+      color: var(--white);
+    }
+
+    .nav-account button {
+      border: 0;
+      background: none;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .nav-login {
+      padding: 8px 14px;
+      border: 1px solid currentColor !important;
+      border-radius: 4px;
+      font-size: 12px !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .nav-greeting {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .nav-cart {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+    }
+
+    .nav-cart svg {
+      width: 19px;
+      height: 19px;
+    }
+
+    .nav-cart-count {
+      position: absolute;
+      top: -3px;
+      right: -4px;
+      min-width: 15px;
+      height: 15px;
+      padding: 0 4px;
+      border-radius: 8px;
+      background: var(--green);
+      color: var(--white);
+      font-size: 10px;
+      line-height: 15px;
+      text-align: center;
+    }
+
+    nav.scrolled .nav-account { color: var(--green-dark); }
+
+    .page-shell {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 150px 24px 80px;
+    }
+
+    .success-card {
+      background: rgba(255,255,255,0.38);
+      border: 1px solid var(--beige-deep);
+      border-radius: 12px;
+      padding: 34px;
+      box-shadow: 0 12px 40px rgba(49, 30, 32, 0.06);
+    }
+
+    .success-title {
+      font-size: clamp(28px, 4vw, 46px);
+      font-weight: 600;
+      color: #7d0610;
+      line-height: 1.1;
+      margin-bottom: 18px;
+    }
+
+    .divider {
+      border: 0;
+      border-top: 1px solid var(--beige-deep);
+      margin: 22px 0;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px 30px;
+    }
+
+    .detail {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .detail-label {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+    }
+
+    .detail-value {
+      font-size: 15px;
+      color: var(--text-dark);
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+
+    .items-table th,
+    .items-table td {
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--beige-deep);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .items-table th {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+      font-weight: 600;
+    }
+
+    .items-table td {
+      font-size: 14px;
+      color: var(--text-dark);
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 20px;
+      margin-top: 22px;
+      font-size: 18px;
+      color: #7d0610;
+    }
+
+    .total-value {
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .shop-button {
+      display: inline-block;
+      margin-top: 26px;
+      padding: 14px 22px;
+      border-radius: 4px;
+      background: #7d0610;
+      color: var(--white);
+      text-decoration: none;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .shop-button:hover { background: var(--green); }
+
+    .muted {
+      color: var(--text-mid);
+      font-size: 14px;
+    }
+
+    footer {
+      background: var(--green-dark);
+      color: #6a0610;
+      text-align: center;
+      padding: 48px 24px 36px;
+    }
+
+    footer .footer-logo {
+      font-size: 11vw;
+      font-weight: 700;
+      line-height: 0.8;
+      background: linear-gradient(to bottom, var(--green) 20%, var(--green-dark) 85%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      margin-top: 24px;
+      overflow-wrap: anywhere;
+    }
+
+    footer .footer-copy {
+      font-size: 13px;
+      margin-bottom: 14px;
+      color: rgba(255,255,255,0.4);
+    }
+
+    footer .footer-squarre {
+      font-size: 13px;
+      color: rgba(255,255,255,0.3);
+    }
+
+    footer .footer-squarre a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: underline;
+      font-weight: 500;
+    }
+
+    @media (max-width: 700px) {
+      .news-banner { padding: 9px 16px; font-size: 11px; }
+      nav { padding: 16px 20px; top: 34px; }
+      nav.scrolled { padding: 12px 20px; top: 34px; }
+      .nav-account { min-width: auto; }
+      nav .logo { margin-left: 12px; margin-right: auto; }
+      .details-grid { grid-template-columns: 1fr; }
+      .success-card { padding: 20px; }
+      .items-table th:nth-child(2), .items-table td:nth-child(2) { display: none; }
+      .total-row { justify-content: space-between; }
+    }
+  </style>
+</head>
+<body>
+  <div class="news-banner">
+    <span>OWN THE GLOW: Free shipping on orders over R300</span>
+  </div>
+
+  <nav id="navbar">
+    <div class="nav-account">
+      <button class="nav-login" id="login-button" data-auth="logged-out" type="button">Login</button>
+      <span class="nav-greeting" data-auth="logged-in">Hi, <span data-customer="name"></span></span>
+      <button class="nav-cart" data-auth="logged-in" type="button" aria-label="Shopping cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H6" />
+          <circle cx="10" cy="20" r="1" /><circle cx="18" cy="20" r="1" />
+        </svg>
+        <span class="nav-cart-count" id="cart-count">0</span>
+      </button>
+    </div>
+    <a href="/" class="logo">Elhnon Odnufmon</a>
+    <div class="nav-links" id="navLinks">
+      <a href="/products.html">Shop All</a>
+    </div>
+  </nav>
+
+  <main class="page-shell">
+    <section class="success-card">
+      <h1 class="success-title">Payment Successful</h1>
+
+      <hr class="divider" />
+
+      <div class="details-grid">
+        <div class="detail">
+          <span class="detail-label">First name</span>
+          <span class="detail-value" id="customer-first-name">-</span>
+        </div>
+        <div class="detail">
+          <span class="detail-label">Last name</span>
+          <span class="detail-value" id="customer-last-name">-</span>
+        </div>
+        <div class="detail">
+          <span class="detail-label">Email address</span>
+          <span class="detail-value" id="customer-email">-</span>
+        </div>
+        <div class="detail">
+          <span class="detail-label">Cell number</span>
+          <span class="detail-value" id="customer-cell">-</span>
+        </div>
+        <div class="detail" style="grid-column: 1 / -1;">
+          <span class="detail-label">Delivery address</span>
+          <span class="detail-value" id="delivery-address">-</span>
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <div class="detail">
+        <span class="detail-label">Items ordered</span>
+      </div>
+      <table class="items-table" aria-label="Items ordered">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Line total</th>
+          </tr>
+        </thead>
+        <tbody id="items-body">
+          <tr>
+            <td colspan="4" class="muted">Loading your order...</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="total-row">
+        <span>Order total</span>
+        <span class="total-value" id="order-total">R0.00</span>
+      </div>
+
+      <a href="/products.html" class="shop-button">Shop more</a>
+    </section>
+  </main>
+
+  <footer>
+    <p class="footer-copy">© <span>2026</span> <span>Elhnon Odnufmon</span>. All rights reserved.</p>
+    <p class="footer-squarre">Want your own site? <a href="https://squarre.vercel.app" target="_blank">This site was made using Squarre</a></p>
+    <div class="footer-logo">Elhnon Odnufmon</div>
+  </footer>
+
+  <script>
+    const SITE_ID = "{{SQUARRE_SITE_ID}}";
+    const SUPABASE_URL = "https://suwiamrsjmbvhceqxchp.supabase.co";
+    const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1d2lhbXJzam1idmhjZXF4Y2hwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ5NDM4MDEsImV4cCI6MjA4MDUxOTgwMX0.4V8Ec8pvDYZyM0WYO3ePMa7yrHTuvbVdoCK9eYhH6zk";
+
+    function formatPrice(value) {
+      return "R" + Number(value || 0).toFixed(2);
+    }
+
+    function renderOrder(order, customer) {
+      document.getElementById("customer-first-name").textContent = customer?.first_name || "-";
+      document.getElementById("customer-last-name").textContent = customer?.last_name || "-";
+      document.getElementById("customer-email").textContent = customer?.email || "-";
+      document.getElementById("customer-cell").textContent = order?.cell_number || "-";
+      document.getElementById("delivery-address").textContent = order?.shipping_address || "-";
+
+      const items = Array.isArray(order?.items) ? order.items : [];
+      const body = document.getElementById("items-body");
+
+      if (!items.length) {
+        body.innerHTML = '<tr><td colspan="4" class="muted">No items found for this order.</td></tr>';
+        document.getElementById("order-total").textContent = formatPrice(order?.total || 0);
+        return;
+      }
+
+      body.innerHTML = items.map((item) => {
+        const price = Number(item.price || 0);
+        const quantity = Number(item.quantity || 0);
+        const lineTotal = price * quantity;
+        return `
+          <tr>
+            <td>${item.product_name || "Product"}</td>
+            <td>${quantity}</td>
+            <td>${formatPrice(price)}</td>
+            <td>${formatPrice(lineTotal)}</td>
+          </tr>
+        `;
+      }).join("");
+
+      document.getElementById("order-total").textContent = formatPrice(order?.total || 0);
+    }
+
+    async function loadOrder() {
+      const params = new URLSearchParams(window.location.search);
+      const orderId = params.get("order");
+
+      if (!orderId) {
+        document.getElementById("items-body").innerHTML = '<tr><td colspan="4" class="muted">No order reference was provided.</td></tr>';
+        return;
+      }
+
+      try {
+        const orderRes = await fetch(
+          `${SUPABASE_URL}/rest/v1/orders?id=eq.${orderId}&select=*`,
+          {
+            headers: {
+              apikey: ANON_KEY,
+              Authorization: `Bearer ${ANON_KEY}`,
+            },
+          }
+        );
+
+        if (!orderRes.ok) throw new Error("Failed to fetch order");
+
+        const orderRows = await orderRes.json();
+        const order = Array.isArray(orderRows) ? orderRows[0] : null;
+
+        if (!order) {
+          document.getElementById("items-body").innerHTML = '<tr><td colspan="4" class="muted">Order not found.</td></tr>';
+          return;
+        }
+
+        const customerRes = await fetch(
+          `${SUPABASE_URL}/rest/v1/customers?id=eq.${order.customer_id}&select=id,first_name,last_name,email`,
+          {
+            headers: {
+              apikey: ANON_KEY,
+              Authorization: `Bearer ${ANON_KEY}`,
+            },
+          }
+        );
+
+        if (!customerRes.ok) throw new Error("Failed to fetch customer details");
+
+        const customerRows = await customerRes.json();
+        const customer = Array.isArray(customerRows) ? customerRows[0] : null;
+
+        renderOrder(order, customer);
+      } catch (error) {
+        document.getElementById("items-body").innerHTML = '<tr><td colspan="4" class="muted">Unable to load your order details.</td></tr>';
+        console.error(error);
+      }
+    }
+
+    const navbar = document.getElementById("navbar");
+    window.addEventListener("scroll", () => {
+      navbar.classList.toggle("scrolled", window.scrollY > 60);
+    });
+
+    loadOrder();
+  </script>
+</body>
+</html>

@@ -88,7 +88,7 @@
     nav .logo {
       font-size: 18px;
       font-weight: 700;
-      color: var(--white);
+      color: var(--green);
       text-transform: uppercase;
       letter-spacing: 0.02em;
       text-decoration: none;
@@ -102,7 +102,7 @@
       font-size: 18px;
       text-transform: uppercase;
       font-weight: 500;
-      color: var(--white);
+      color: var(--green-dark);
       text-decoration: none;
       letter-spacing: 0.02em;
       transition: color 0.2s;
@@ -347,6 +347,63 @@
     }
     .checkout-button:hover { background: var(--green); }
     .checkout-note { margin-top: 12px; color: var(--text-mid); font-size: 11px; line-height: 1.5; }
+
+    .shipping-panel {
+      display: none;
+      grid-column: span 3;
+      background: rgba(255,255,255,0.4);
+      border: 1px solid var(--beige-deep);
+      border-radius: 12px;
+      padding: 28px;
+    }
+    .shipping-panel.visible { display: block; }
+    .shipping-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    .back-button {
+      border: 1px solid var(--beige-deep);
+      background: transparent;
+      color: var(--green-dark);
+      padding: 8px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+    .shipping-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      color: var(--text-dark);
+      font-size: 13px;
+    }
+    .field input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--beige-deep);
+      border-radius: 4px;
+      background: var(--white);
+      font: inherit;
+      color: var(--text-dark);
+    }
+    .field.full-width {
+      grid-column: 1 / -1;
+    }
     @media (max-width: 768px) {
       .cart-page { padding: 120px 20px 70px; }
       .cart-layout { display: block; }
@@ -364,7 +421,7 @@
   <!-- NEWS BANNER -->
   <div class="news-banner">
     <span data-edit="banner_text">OWN THE GLOW: Free shipping on orders over R300</span>
-    <a href="products.html" data-edit="banner_link" data-edit-role="href">Shop now</a>
+    <a href="/products.html" data-edit="banner_link" data-edit-role="href">Shop now</a>
   </div>
 
   <!-- NAVBAR -->
@@ -377,12 +434,12 @@
         <span class="nav-cart-count" id="cart-count">0</span>
       </button>
     </div>
-    <a href="#hero" class="logo" data-edit="site_name">Elhnon Odnufmon</a>
+    <a href="/index.html" class="logo" data-edit="site_name">Elhnon Odnufmon</a>
     <button class="burger" id="burger" aria-label="Toggle menu">
       <span></span><span></span><span></span>
     </button>
     <div class="nav-links" id="navLinks">
-      <a href="products.html" data-edit="nav_catalog">Shop All</a>
+      <a href="/products.html" data-edit="nav_catalog">Shop All</a>
     </div>
   </nav>
 
@@ -404,21 +461,64 @@
 
   <main class="cart-page">
     <div class="cart-layout">
-      <section class="cart-items-panel" aria-labelledby="cart-title">
+      <section class="cart-items-panel" id="cart-step" aria-labelledby="cart-title">
         <h1 class="cart-title" id="cart-title">Cart</h1>
         <div id="cart-items" aria-live="polite">
           <p class="cart-loading">Loading your cart...</p>
         </div>
       </section>
+
+      <section class="shipping-panel" id="shipping-step" aria-labelledby="delivery-title" hidden>
+        <div class="shipping-header">
+          <button class="back-button" id="back-to-cart" type="button">Back to cart</button>
+          <h1 class="cart-title" id="delivery-title">Delivery details</h1>
+        </div>
+
+        <form id="shipping-form" class="shipping-form">
+          <div class="field-grid">
+            <label class="field">
+              <span>Street number</span>
+              <input name="street_number" type="text" autocomplete="address-line1" required />
+            </label>
+            <label class="field">
+              <span>Street name</span>
+              <input name="street_name" type="text" autocomplete="address-line2" required />
+            </label>
+            <label class="field">
+              <span>Street extension</span>
+              <input name="street_extension" type="text" placeholder="e.g. Ave, Street, Circle" autocomplete="address-line3" />
+            </label>
+            <label class="field">
+              <span>Suburb</span>
+              <input name="suburb" type="text" autocomplete="address-level2" required />
+            </label>
+            <label class="field">
+              <span>City</span>
+              <input name="city" type="text" autocomplete="address-level1" required />
+            </label>
+            <label class="field">
+              <span>Postal code</span>
+              <input name="postal_code" type="text" autocomplete="postal-code" required />
+            </label>
+            <label class="field full-width">
+              <span>Delivery contact cell number</span>
+              <input name="cell_number" type="tel" autocomplete="tel" required />
+            </label>
+          </div>
+
+          <button class="checkout-button" id="submit-order-button" type="submit">Checkout</button>
+        </form>
+      </section>
+
       <aside class="cart-summary" aria-labelledby="summary-title">
         <h2 class="summary-title" id="summary-title">Order summary</h2>
         <hr class="summary-divider" />
         <div class="summary-row"><span>Subtotal</span><strong id="cart-subtotal">R0.00</strong></div>
-        <div class="summary-row"><span>Delivery</span><strong>--</strong></div>
+        <div class="summary-row"><span>Delivery</span><strong>Free</strong></div>
         <hr class="summary-divider" />
         <div class="summary-total"><span>Total</span><strong id="cart-total">R0.00</strong></div>
         <button class="checkout-button" id="checkout-button" type="button">Checkout</button>
-        <p class="checkout-note">The next step is adding your shipping address.</p>
+        <p class="checkout-note">Add your delivery address and contact number in the next step.</p>
       </aside>
     </div>
   </main>
@@ -687,7 +787,11 @@
       async function register(email, password, firstName, lastName) {
         const res = await fetch(`${FUNCTIONS_URL}/customer-register`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            apikey: ANON_KEY,
+            Authorization: `Bearer ${ANON_KEY}`,
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
             site_id: SITE_ID,
             email,
@@ -696,6 +800,7 @@
             last_name: lastName,
           }),
         });
+
         const data = await res.json();
         if (!res.ok) throw new Error(data.error);
         session.set({ token: data.token, customer: data.customer, expires_at: data.expires_at });
@@ -705,9 +810,14 @@
       async function login(email, password) {
         const res = await fetch(`${FUNCTIONS_URL}/customer-login`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            apikey: ANON_KEY,
+            Authorization: `Bearer ${ANON_KEY}`,
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({ site_id: SITE_ID, email, password }),
         });
+
         const data = await res.json();
         if (!res.ok) throw new Error(data.error);
         session.set({ token: data.token, customer: data.customer, expires_at: data.expires_at });
@@ -794,8 +904,12 @@
           const product = item.products || {};
           return sum + Number(product.price || 0) * Number(item.quantity || 0);
         }, 0);
-        document.getElementById("cart-subtotal").textContent = formatPrice(subtotal);
-        document.getElementById("cart-total").textContent = formatPrice(subtotal);
+
+        const subtotalEl = document.getElementById("cart-subtotal");
+        const totalEl = document.getElementById("cart-total");
+
+        if (subtotalEl) subtotalEl.textContent = formatPrice(subtotal);
+        if (totalEl) totalEl.textContent = formatPrice(subtotal);
       }
 
       async function updateCartQuantity(cartItemId, quantity) {
@@ -813,6 +927,7 @@
             body: JSON.stringify({ quantity: nextQuantity }),
           }
         );
+
         if (!response.ok) throw new Error("Unable to update cart quantity");
         await renderCart();
         await updateCartCount();
@@ -879,25 +994,59 @@
         });
       }
 
-      // ── Checkout ────────────────────────────────────────────────────
-      async function checkout(shippingAddress) {
+      function showDeliveryStep() {
+        const cartStep = document.getElementById("cart-step");
+        const shippingStep = document.getElementById("shipping-step");
+
+        if (cartStep) cartStep.style.display = "none";
+        if (shippingStep) {
+          shippingStep.hidden = false;
+          shippingStep.classList.add("visible");
+        }
+      }
+
+      function showCartStep() {
+        const cartStep = document.getElementById("cart-step");
+        const shippingStep = document.getElementById("shipping-step");
+
+        if (cartStep) cartStep.style.display = "block";
+        if (shippingStep) {
+          shippingStep.classList.remove("visible");
+          shippingStep.hidden = true;
+        }
+      }
+
+      async function checkout(deliveryDetails) {
         const s = session.get();
         if (!s) { showLoginModal(); return; }
 
+        const shippingAddress = [
+          deliveryDetails.street_number,
+          deliveryDetails.street_name,
+          deliveryDetails.street_extension,
+          deliveryDetails.suburb,
+          deliveryDetails.city,
+          deliveryDetails.postal_code,
+        ].filter(Boolean).join(", ");
+
         const res = await fetch(`${FUNCTIONS_URL}/customer-checkout`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            apikey: ANON_KEY,
+            Authorization: `Bearer ${ANON_KEY}`,
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
             site_id: SITE_ID,
             session_token: s.token,
             shipping_address: shippingAddress,
+            cell_number: deliveryDetails.cell_number,
           }),
         });
 
         const data = await res.json();
         if (!res.ok) throw new Error(data.error);
 
-        // Redirect to PayFast
         window.location.href = data.paymentUrl;
       }
 
@@ -929,6 +1078,9 @@
         const loginSubmit = document.getElementById("login-submit");
         const loginSwitch = document.getElementById("login-switch");
         const registerFields = document.getElementById("register-fields");
+        const checkoutButton = document.getElementById("checkout-button");
+        const backToCartButton = document.getElementById("back-to-cart");
+        const shippingForm = document.getElementById("shipping-form");
         let registerMode = false;
 
         loginButton?.addEventListener("click", showLoginModal);
@@ -982,8 +1134,45 @@
           if (product?.id) addToCart(product.id);
         });
         document.querySelector(".nav-cart")?.addEventListener("click", () => {
-          window.location.href = "cart.html";
+          window.location.href = "/cart.html";
         });
+
+        checkoutButton?.addEventListener("click", () => {
+          if (!session.get()) {
+            showLoginModal();
+            return;
+          }
+          showDeliveryStep();
+        });
+
+        backToCartButton?.addEventListener("click", showCartStep);
+
+        shippingForm?.addEventListener("submit", async (event) => {
+          event.preventDefault();
+
+          if (!session.get()) {
+            showLoginModal();
+            return;
+          }
+
+          const formData = new FormData(shippingForm);
+          const deliveryDetails = {
+            street_number: formData.get("street_number")?.toString().trim() || "",
+            street_name: formData.get("street_name")?.toString().trim() || "",
+            street_extension: formData.get("street_extension")?.toString().trim() || "",
+            suburb: formData.get("suburb")?.toString().trim() || "",
+            city: formData.get("city")?.toString().trim() || "",
+            postal_code: formData.get("postal_code")?.toString().trim() || "",
+            cell_number: formData.get("cell_number")?.toString().trim() || "",
+          };
+
+          try {
+            await checkout(deliveryDetails);
+          } catch (error) {
+            alert(error.message || "Unable to complete checkout");
+          }
+        });
+
         updateAuthUI();
         updateCartCount();
         renderCart();

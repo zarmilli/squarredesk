@@ -11,7 +11,7 @@ const supabase = createClient(
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 }
 
@@ -31,7 +31,7 @@ async function validateSession(token: string, site_id: string) {
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors })
 
-  const { site_id, session_token, shipping_address } = await req.json()
+  const { site_id, session_token, shipping_address, cell_number } = await req.json()
 
   // Validate customer session
   const customer_id = await validateSession(session_token, site_id)
@@ -90,6 +90,7 @@ serve(async (req) => {
       total,
       items,
       shipping_address,
+      cell_number,
     })
     .select("id")
     .single()

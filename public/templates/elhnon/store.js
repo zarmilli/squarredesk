@@ -27,28 +27,33 @@ const session = {
 async function register(email, password, firstName, lastName) {
   const res = await fetch(`${FUNCTIONS_URL}/customer-register`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      site_id: SITE_ID,
-      email,
-      password,
-      first_name: firstName,
-      last_name: lastName,
-    }),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error);
-  session.set({ token: data.token, customer: data.customer, expires_at: data.expires_at });
-  return data.customer;
-}
+      headers: {
+        apikey: ANON_KEY,
+        Authorization: `Bearer ${ANON_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        site_id: SITE_ID,
+        email,
+        password,
+        first_name: firstName,
+        last_name: lastName,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    session.set({ token: data.token, customer: data.customer, expires_at: data.expires_at });
+    return data.customer;
+  }
 
-async function login(email, password) {
-  const res = await fetch(`${FUNCTIONS_URL}/customer-login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ site_id: SITE_ID, email, password }),
-  });
-  const data = await res.json();
+  async function login(email, password) {
+    const res = await fetch(`${FUNCTIONS_URL}/customer-login`, {
+      method: "POST",
+      headers: {
+        apikey: ANON_KEY,
+        Authorization: `Bearer ${ANON_KEY}`,
+        "Content-Type": "application/json",
+      },
   if (!res.ok) throw new Error(data.error);
   session.set({ token: data.token, customer: data.customer, expires_at: data.expires_at });
   return data.customer;
@@ -123,13 +128,11 @@ async function checkout(shippingAddress) {
 
   const res = await fetch(`${FUNCTIONS_URL}/customer-checkout`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      site_id: SITE_ID,
-      session_token: s.token,
-      shipping_address: shippingAddress,
-    }),
-  });
+      headers: {
+        apikey: ANON_KEY,
+        Authorization: `Bearer ${ANON_KEY}`,
+        "Content-Type": "application/json",
+      },
 
   const data = await res.json();
   if (!res.ok) throw new Error(data.error);
