@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Kaviar Ahmed — Digital Designer</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+
+    /* =========================================================
+       RESET
+    ========================================================= */
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: #f7f7f5;
+      color: #171717;
+      font-family: "DM Sans", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+
+    /* =========================================================
+       SITE
+    ========================================================= */
+
+    .site {
+      width: 100%;
+      min-height: 100vh;
+
+      background:
+        #f0f0ee;
+
+      overflow: hidden;
+    }
+
+    .container {
+      width: min(1180px, calc(100% - 28px));
+      margin: 0 auto;
+    }
+
+
+    /* =========================================================
+       HERO PANEL
+    ========================================================= */
+
+    .hero {
+      position: relative;
+
+      min-height: 535px;
+
+      margin-top: 65px;
+
+      border: 1px solid rgba(0,0,0,0.05);
+
+      border-radius: 55px;
+
+      background:
+        radial-gradient(
+          circle at 50% 40%,
+          rgba(255,255,255,0.9),
+          rgba(247,247,246,0.96) 60%,
+          #f2f2f0 100%
+        );
+
+      overflow: hidden;
+
+      display: flex;
+      flex-direction: column;
+    }
+
+    /*
+      Subtle paper/noise-like texture.
+    */
+
+    .hero::before,
+    .contact::before {
+      content: "";
+
+      position: absolute;
+
+      inset: 0;
+
+      opacity: 0.28;
+
+      pointer-events: none;
+
+      background-image:
+        radial-gradient(
+          rgba(0,0,0,0.045) 0.7px,
+          transparent 0.7px
+        );
+
+      background-size: 5px 5px;
+
+      mix-blend-mode: multiply;
+    }
+
+
+    /* =========================================================
+       NAVIGATION
+    ========================================================= */
+
+    .nav {
+      position: relative;
+      z-index: 2;
+
+      height: 75px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0 38px;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .email {
+      font-size: 10px;
+      font-weight: 500;
+      color: #292929;
+    }
+
+    .nav-button {
+      border: 0;
+
+      background: #ffffff;
+
+      color: #161616;
+
+      padding: 7px 15px;
+
+      border-radius: 999px;
+
+      font-size: 9px;
+      font-weight: 600;
+
+      box-shadow:
+        0 1px 3px rgba(0,0,0,0.03);
+
+      cursor: pointer;
+
+      transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+    }
+
+    .nav-button:hover {
+      transform: translateY(-1px);
+      background: #eeeeec;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .social-links {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .social-links a {
+      font-size: 9px;
+      color: #383838;
+
+      transition: opacity 0.2s ease;
+    }
+
+    .social-links a:hover {
+      opacity: 0.5;
+    }
+
+
+    /* =========================================================
+       HERO CONTENT
+    ========================================================= */
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+
+      flex: 1;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      text-align: center;
+
+      padding: 40px 20px 80px;
+    }
+
+
+    /* Profile image */
+
+    .profile-wrap {
+      position: relative;
+
+      margin-bottom: 25px;
+    }
+
+    .profile {
+      width: 65px;
+      height: 65px;
+
+      border-radius: 50%;
+
+      overflow: hidden;
+
+      background:
+        linear-gradient(
+          145deg,
+          #d5d5d5,
+          #8f8f8f
+        );
+
+      border: 2px solid rgba(255,255,255,0.8);
+
+      box-shadow:
+        0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    .profile img {
+      width: 100%;
+      height: 100%;
+
+      object-fit: cover;
+
+      filter: grayscale(100%);
+    }
+
+    /*
+      Small name pill attached to profile.
+    */
+
+    .name-tag {
+      position: absolute;
+
+      right: -43px;
+      top: 20px;
+
+      white-space: nowrap;
+
+      padding: 5px 9px;
+
+      border-radius: 999px;
+
+      background: rgba(255,255,255,0.9);
+
+      font-size: 7px;
+      font-weight: 600;
+
+      box-shadow:
+        0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .hero-title {
+      max-width: 620px;
+
+      font-size: clamp(38px, 5.4vw, 65px);
+
+      line-height: 0.99;
+
+      letter-spacing: -0.065em;
+
+      font-weight: 600;
+    }
+
+    .hero-cta {
+      display: inline-flex;
+
+      align-items: center;
+      justify-content: center;
+
+      gap: 7px;
+
+      margin-top: 26px;
+
+      padding: 12px 21px;
+
+      border-radius: 999px;
+
+      background: #171717;
+
+      color: #ffffff;
+
+      font-size: 9px;
+      font-weight: 500;
+
+      transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+    }
+
+    .hero-cta:hover {
+      transform: translateY(-2px);
+      background: #303030;
+    }
+
+    .hero-cta span {
+      font-size: 10px;
+    }
+
+
+    /* =========================================================
+       CLIENT / BRAND STRIP
+    ========================================================= */
+
+    .clients {
+      min-height: 165px;
+
+      display: flex;
+
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 35px;
+
+      padding: 35px 48px;
+
+      border-bottom: 1px solid rgba(0,0,0,0.035);
+
+      background:
+        rgba(255,255,255,0.35);
+    }
+
+    .client {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      color: #262626;
+
+      font-weight: 700;
+
+      white-space: nowrap;
+
+      opacity: 0.85;
+    }
+
+    .client.national {
+      font-size: 10px;
+
+      line-height: 0.85;
+
+      text-align: left;
+    }
+
+    .client.mattered {
+      font-size: 15px;
+      letter-spacing: -0.06em;
+    }
+
+    .client.coca {
+      font-family: Georgia, serif;
+
+      font-style: italic;
+
+      font-size: 17px;
+
+      letter-spacing: -0.07em;
+    }
+
+    .client.adobe {
+      font-size: 15px;
+
+      letter-spacing: -0.05em;
+    }
+
+    .client.adobe::before {
+      content: "A";
+
+      display: inline-flex;
+
+      margin-right: 5px;
+
+      font-size: 19px;
+    }
+
+    .client.subway {
+      font-size: 13px;
+
+      letter-spacing: -0.08em;
+    }
+
+    .client.codecademy {
+      font-size: 13px;
+
+      font-family: monospace;
+
+      border: 1px solid #777;
+
+      padding: 2px 4px;
+    }
+
+
+    /* =========================================================
+       SERVICES SECTION
+    ========================================================= */
+
+    .services {
+      padding: 75px 55px 80px;
+    }
+
+    .services-header {
+      text-align: center;
+
+      margin-bottom: 68px;
+    }
+
+    .services-header h2 {
+      max-width: 540px;
+
+      margin: 0 auto;
+
+      font-size: clamp(28px, 4vw, 42px);
+
+      line-height: 1.05;
+
+      letter-spacing: -0.05em;
+
+      font-weight: 600;
+    }
+
+    .services-label {
+      display: inline-flex;
+
+      align-items: center;
+      justify-content: center;
+
+      margin-top: 25px;
+
+      padding: 6px 17px;
+
+      border-radius: 999px;
+
+      background: #ffffff;
+
+      font-size: 8px;
+      font-weight: 600;
+
+      box-shadow:
+        0 2px 8px rgba(0,0,0,0.03);
+    }
+
+
+    /* =========================================================
+       SERVICE GRID
+    ========================================================= */
+
+    .service-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(4, 1fr);
+
+      gap: 45px;
+    }
+
+    .service {
+      min-width: 0;
+    }
+
+    .service-icon {
+      width: 24px;
+      height: 24px;
+
+      margin-bottom: 21px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      color: #222;
+    }
+
+    /*
+      Minimal CSS icons.
+    */
+
+    .icon-ui {
+      position: relative;
+      width: 15px;
+      height: 13px;
+
+      border: 1.5px solid #292929;
+
+      transform: rotate(-8deg);
+    }
+
+    .icon-ui::after {
+      content: "";
+
+      position: absolute;
+
+      width: 5px;
+      height: 5px;
+
+      right: -4px;
+      bottom: -3px;
+
+      border-right: 1px solid #292929;
+      border-bottom: 1px solid #292929;
+    }
+
+    .icon-mobile {
+      display: flex;
+      gap: 3px;
+    }
+
+    .icon-mobile::before,
+    .icon-mobile::after {
+      content: "";
+
+      width: 6px;
+      height: 13px;
+
+      border: 1px solid #292929;
+
+      border-radius: 1px;
+    }
+
+    .icon-design {
+      position: relative;
+
+      width: 17px;
+      height: 14px;
+
+      border: 1px solid #292929;
+    }
+
+    .icon-design::before,
+    .icon-design::after {
+      content: "";
+
+      position: absolute;
+
+      background: #292929;
+    }
+
+    .icon-design::before {
+      width: 1px;
+      height: 17px;
+
+      left: 50%;
+      top: -2px;
+    }
+
+    .icon-design::after {
+      width: 17px;
+      height: 1px;
+
+      left: -1px;
+      top: 50%;
+    }
+
+    .icon-dev {
+      width: 18px;
+      height: 13px;
+
+      border: 1px solid #292929;
+
+      position: relative;
+    }
+
+    .icon-dev::before {
+      content: "</>";
+
+      position: absolute;
+
+      left: 2px;
+      top: 1px;
+
+      font-size: 6px;
+      font-weight: 700;
+    }
+
+    .service h3 {
+      font-size: 12px;
+
+      font-weight: 600;
+
+      letter-spacing: -0.02em;
+
+      margin-bottom: 12px;
+    }
+
+    .service p {
+      max-width: 190px;
+
+      font-size: 9px;
+
+      line-height: 1.45;
+
+      color: #686868;
+    }
+
+
+    /* =========================================================
+       CONTACT PANEL
+    ========================================================= */
+
+    .contact {
+      position: relative;
+
+      min-height: 390px;
+
+      margin: 0 0 0;
+
+      border-radius: 55px 55px 0 0;
+
+      background:
+        radial-gradient(
+          circle at 50% 30%,
+          #ffffff 0%,
+          #f7f7f6 58%,
+          #f0f0ee 100%
+        );
+
+      overflow: hidden;
+
+      display: flex;
+      flex-direction: column;
+    }
+
+    .contact-content {
+      position: relative;
+      z-index: 2;
+
+      flex: 1;
+
+      display: flex;
+      flex-direction: column;
+
+      align-items: center;
+      justify-content: center;
+
+      text-align: center;
+
+      padding: 50px 20px 75px;
+    }
+
+    .hand-icon {
+      width: 40px;
+      height: 40px;
+
+      margin-bottom: 23px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-size: 27px;
+
+      filter: grayscale(100%);
+    }
+
+    .contact h2 {
+      max-width: 580px;
+
+      font-size: clamp(36px, 5vw, 60px);
+
+      line-height: 1;
+
+      letter-spacing: -0.065em;
+
+      font-weight: 600;
+    }
+
+    .contact-buttons {
+      display: flex;
+
+      align-items: center;
+
+      gap: 8px;
+
+      margin-top: 25px;
+    }
+
+    .contact-button {
+      display: inline-flex;
+
+      align-items: center;
+      justify-content: center;
+
+      padding: 11px 19px;
+
+      border-radius: 999px;
+
+      background: #171717;
+
+      color: white;
+
+      font-size: 9px;
+      font-weight: 500;
+
+      transition:
+        transform 0.2s ease,
+        opacity 0.2s ease;
+    }
+
+    .contact-button:hover {
+      transform: translateY(-2px);
+    }
+
+    .contact-button.light {
+      background: #ffffff;
+      color: #222;
+
+      box-shadow:
+        0 2px 8px rgba(0,0,0,0.04);
+    }
+
+
+    /* =========================================================
+       FOOTER
+    ========================================================= */
+
+    .footer {
+      position: relative;
+      z-index: 2;
+
+      height: 65px;
+
+      padding: 0 38px;
+
+      display: flex;
+
+      align-items: center;
+      justify-content: space-between;
+
+      font-size: 8px;
+
+      color: #444;
+    }
+
+    .footer-social {
+      display: flex;
+
+      gap: 15px;
+    }
+
+
+    /* =========================================================
+       TABLET
+    ========================================================= */
+
+    @media (max-width: 900px) {
+
+      .container {
+        width: min(100% - 44px, 1180px);
+      }
+
+      .hero {
+        margin-top: 35px;
+        border-radius: 40px;
+      }
+
+      .clients {
+        gap: 20px;
+        padding-left: 28px;
+        padding-right: 28px;
+      }
+
+      .client {
+        transform: scale(0.9);
+      }
+
+      .services {
+        padding-left: 35px;
+        padding-right: 35px;
+      }
+
+      .service-grid {
+        gap: 28px;
+      }
+
+      .contact {
+        border-radius: 40px 40px 0 0;
+      }
+
+    }
+
+
+    /* =========================================================
+       MOBILE
+    ========================================================= */
+
+    @media (max-width: 650px) {
+
+      .container {
+        width: calc(100% - 24px);
+      }
+
+
+      /* -----------------------------------------
+         HERO
+      ----------------------------------------- */
+
+      .hero {
+        min-height: 520px;
+
+        margin-top: 12px;
+
+        border-radius: 28px;
+      }
+
+      .nav {
+        height: 64px;
+
+        padding: 0 18px;
+      }
+
+      .email {
+        max-width: 105px;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        white-space: nowrap;
+
+        font-size: 8px;
+      }
+
+      .nav-left {
+        gap: 7px;
+      }
+
+      .nav-button {
+        padding: 6px 11px;
+
+        font-size: 8px;
+      }
+
+      .nav-right {
+        gap: 0;
+      }
+
+      .social-links {
+        display: none;
+      }
+
+      .hero-content {
+        padding: 35px 15px 60px;
+      }
+
+      .profile {
+        width: 58px;
+        height: 58px;
+      }
+
+      .profile-wrap {
+        margin-bottom: 22px;
+      }
+
+      .name-tag {
+        right: -38px;
+
+        font-size: 6px;
+      }
+
+      .hero-title {
+        max-width: 340px;
+
+        font-size: clamp(38px, 11vw, 50px);
+
+        line-height: 1;
+      }
+
+      .hero-cta {
+        margin-top: 22px;
+
+        padding: 10px 18px;
+      }
+
+
+      /* -----------------------------------------
+         CLIENTS
+      ----------------------------------------- */
+
+      .clients {
+        min-height: auto;
+
+        padding: 35px 22px;
+
+        display: grid;
+
+        grid-template-columns:
+          repeat(3, 1fr);
+
+        gap: 28px 15px;
+      }
+
+      .client {
+        transform: none;
+
+        font-size: 10px;
+      }
+
+      .client.mattered {
+        font-size: 12px;
+      }
+
+      .client.coca {
+        font-size: 14px;
+      }
+
+      .client.adobe {
+        font-size: 12px;
+      }
+
+      .client.subway {
+        font-size: 11px;
+      }
+
+      .client.codecademy {
+        font-size: 9px;
+      }
+
+
+      /* -----------------------------------------
+         SERVICES
+      ----------------------------------------- */
+
+      .services {
+        padding: 60px 22px 65px;
+      }
+
+      .services-header {
+        margin-bottom: 45px;
+      }
+
+      .services-header h2 {
+        max-width: 330px;
+
+        font-size: 31px;
+      }
+
+      .service-grid {
+        display: flex;
+        flex-direction: column;
+
+        gap: 40px;
+      }
+
+      .service {
+        display: grid;
+
+        grid-template-columns: 35px 1fr;
+
+        column-gap: 13px;
+      }
+
+      .service-icon {
+        grid-row: span 2;
+
+        margin-bottom: 0;
+      }
+
+      .service h3 {
+        margin-bottom: 7px;
+
+        font-size: 13px;
+      }
+
+      .service p {
+        max-width: 310px;
+
+        font-size: 10px;
+      }
+
+
+      /* -----------------------------------------
+         CONTACT
+      ----------------------------------------- */
+
+      .contact {
+        min-height: 430px;
+
+        border-radius: 28px 28px 0 0;
+      }
+
+      .contact-content {
+        padding: 45px 20px 60px;
+      }
+
+      .hand-icon {
+        margin-bottom: 18px;
+      }
+
+      .contact h2 {
+        max-width: 340px;
+
+        font-size: 42px;
+      }
+
+      .contact-buttons {
+        margin-top: 23px;
+      }
+
+      .contact-button {
+        padding: 10px 16px;
+
+        font-size: 8px;
+      }
+
+
+      /* -----------------------------------------
+         FOOTER
+      ----------------------------------------- */
+
+      .footer {
+        height: auto;
+
+        min-height: 70px;
+
+        padding: 20px 20px;
+
+        flex-direction: column;
+
+        justify-content: center;
+
+        gap: 12px;
+
+        font-size: 8px;
+      }
+
+    }
+
+
+    /* =========================================================
+       SMALL MOBILE
+    ========================================================= */
+
+    @media (max-width: 380px) {
+
+      .hero-title {
+        font-size: 36px;
+      }
+
+      .hero {
+        min-height: 485px;
+      }
+
+      .clients {
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+
+      .contact h2 {
+        font-size: 37px;
+      }
+
+    }
+
+  </style>
+</head>
+
+
+<body>
+
+
+  <main class="site">
+
+    <div class="container">
+
+
+      <!-- =====================================================
+           HERO
+      ====================================================== -->
+
+      <section class="hero">
+
+
+        <!-- NAVIGATION -->
+
+        <nav class="nav">
+
+          <div class="nav-left">
+
+            <span class="email">
+              kassyydesign@gmail.com
+            </span>
+
+            <button class="nav-button">
+              Copy
+            </button>
+
+            <a href="#" class="nav-button">
+              CV
+            </a>
+
+          </div>
+
+
+          <div class="nav-right">
+
+            <div class="social-links">
+
+              <a href="#">
+                LinkedIn
+              </a>
+
+              <a href="#">
+                Dribbble
+              </a>
+
+              <a href="#">
+                Instagram
+              </a>
+
+            </div>
+
+          </div>
+
+        </nav>
+
+
+        <!-- HERO CONTENT -->
+
+        <div class="hero-content">
+
+          <div class="profile-wrap">
+
+            <div class="profile">
+
+              <!-- Replace with your own portrait -->
+
+              <img
+                src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80"
+                alt="Profile"
+              >
+
+            </div>
+
+            <span class="name-tag">
+              Kaviar Ahmed ✦
+            </span>
+
+          </div>
+
+
+          <h1 class="hero-title">
+            Building digital<br>
+            products, brands, and<br>
+            experience.
+          </h1>
+
+
+          <a href="#contact" class="hero-cta">
+            Latest shots
+            <span>↗</span>
+          </a>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =====================================================
+           CLIENTS
+      ====================================================== -->
+
+      <section class="clients">
+
+        <div class="client national">
+          NATIONAL<br>
+          BANK
+        </div>
+
+        <div class="client mattered">
+          mattered↗
+        </div>
+
+        <div class="client coca">
+          Coca-Cola
+        </div>
+
+        <div class="client adobe">
+          Adobe
+        </div>
+
+        <div class="client subway">
+          SUBWAY
+        </div>
+
+        <div class="client codecademy">
+          code<span style="font-weight:400;">cademy</span>
+        </div>
+
+      </section>
+
+
+
+      <!-- =====================================================
+           SERVICES
+      ====================================================== -->
+
+      <section class="services" id="services">
+
+
+        <div class="services-header">
+
+          <h2>
+            Collaborate with brands and agencies
+            to create impactful results.
+          </h2>
+
+          <span class="services-label">
+            Services
+          </span>
+
+        </div>
+
+
+        <div class="service-grid">
+
+
+          <!-- UX/UI -->
+
+          <article class="service">
+
+            <div class="service-icon">
+
+              <span class="icon-ui"></span>
+
+            </div>
+
+            <h3>
+              UX &amp; UI
+            </h3>
+
+            <p>
+              Designing interfaces that are
+              intuitive, efficient, and enjoyable
+              to use.
+            </p>
+
+          </article>
+
+
+          <!-- MOBILE -->
+
+          <article class="service">
+
+            <div class="service-icon">
+
+              <span class="icon-mobile"></span>
+
+            </div>
+
+            <h3>
+              Web &amp; Mobile App
+            </h3>
+
+            <p>
+              Transforming ideas into
+              exceptional web and mobile
+              app experiences.
+            </p>
+
+          </article>
+
+
+          <!-- DESIGN -->
+
+          <article class="service">
+
+            <div class="service-icon">
+
+              <span class="icon-design"></span>
+
+            </div>
+
+            <h3>
+              Design &amp; Creative
+            </h3>
+
+            <p>
+              Crafting visually stunning
+              designs that connect with your
+              audience.
+            </p>
+
+          </article>
+
+
+          <!-- DEVELOPMENT -->
+
+          <article class="service">
+
+            <div class="service-icon">
+
+              <span class="icon-dev"></span>
+
+            </div>
+
+            <h3>
+              Development
+            </h3>
+
+            <p>
+              Bringing your vision to life with
+              the latest technology and
+              design trends.
+            </p>
+
+          </article>
+
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =====================================================
+           CONTACT
+      ====================================================== -->
+
+      <section class="contact" id="contact">
+
+
+        <div class="contact-content">
+
+          <div class="hand-icon">
+            ♡
+          </div>
+
+
+          <h2>
+            Tell me about your next
+            project
+          </h2>
+
+
+          <div class="contact-buttons">
+
+            <a
+              href="mailto:kassyydesign@gmail.com"
+              class="contact-button"
+            >
+              ✉ &nbsp; Email Me
+            </a>
+
+            <a
+              href="#"
+              class="contact-button light"
+            >
+              WhatsApp
+            </a>
+
+          </div>
+
+        </div>
+
+
+        <!-- FOOTER -->
+
+        <footer class="footer">
+
+          <span>
+            © 2024 All rights reserved.
+          </span>
+
+
+          <div class="footer-social">
+
+            <a href="#">
+              LinkedIn
+            </a>
+
+            <a href="#">
+              Dribbble
+            </a>
+
+            <a href="#">
+              Instagram
+            </a>
+
+          </div>
+
+        </footer>
+
+      </section>
+
+
+    </div>
+
+  </main>
+
+
+  <script>
+
+    /*
+      Copy email address
+    */
+
+    const copyButton = document.querySelector(".nav-button");
+
+    if (copyButton) {
+
+      copyButton.addEventListener("click", async () => {
+
+        try {
+
+          await navigator.clipboard.writeText(
+            "kassyydesign@gmail.com"
+          );
+
+          const originalText = copyButton.textContent;
+
+          copyButton.textContent = "Copied";
+
+          setTimeout(() => {
+            copyButton.textContent = originalText;
+          }, 1500);
+
+        } catch (error) {
+
+          console.log("Could not copy email.");
+
+        }
+
+      });
+
+    }
+
+  </script>
+
+</body>
+</html>

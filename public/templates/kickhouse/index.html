@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title data-edit="meta_title">KickHouse — Fresh Kicks, Every Drop</title>
+  <title data-edit="meta_title">Bequart — Home Networks</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
@@ -24,43 +24,19 @@
     html { scroll-behavior: smooth; }
 
     body {
-      background: var(--bg);
+      background: var(--black);
       color: var(--text-dark);
       font-family: 'Poppins', sans-serif;
-    }
-
-    /* ===== NEWS BANNER ===== */
-    .news-banner {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 1100;
-      background: var(--black);
-      color: var(--white);
-      text-align: center;
-      padding: 9px 48px;
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 0.04em;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .news-banner a {
-      color: var(--white);
-      text-decoration: underline;
-      text-underline-offset: 2px;
-      margin-left: 8px;
     }
 
     /* ===== NAVBAR ===== */
     nav {
       position: fixed;
-      top: 36px; left: 0; right: 0;
+      top: 0px; left: 0; right: 0;
       z-index: 1000;
       padding: 20px 48px;
       display: flex;
       justify-content: space-between;
-      border-bottom: #ffffff solid 1px;
       align-items: center;
       background: transparent;
       transition: background 0.35s ease, box-shadow 0.35s ease, padding 0.35s ease, top 0.35s ease;
@@ -69,12 +45,11 @@
       background: var(--white);
       box-shadow: 0 2px 20px rgba(0,0,0,0.07);
       padding: 14px 48px;
-      top: 36px;
     }
     nav .logo {
-      font-size: 20px;
-      font-weight: 400;
-      color: var(--white);
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--black);
       letter-spacing: -0.01em;
       text-decoration: none;
       position: relative;
@@ -85,9 +60,10 @@
     nav.scrolled .logo { color: var(--text-dark); }
     nav .nav-links { display: flex; gap: 32px; }
     nav .nav-links a {
-      font-size: 20px;
-      font-weight: 500;
-      color: rgba(255,255,255,0.85);
+      font-size: 16px;
+      font-weight: 400;
+      color: rgb(0, 0, 0);
+      text-transform: uppercase;
       text-decoration: none;
       letter-spacing: 0.02em;
       transition: color 0.2s;
@@ -113,7 +89,7 @@
     .burger span {
       display: block;
       width: 100%; height: 2px;
-      background: var(--white);
+      background: var(--black);
       border-radius: 2px;
       transition: transform 0.3s ease, opacity 0.3s ease, background 0.35s;
       transform-origin: center;
@@ -153,22 +129,54 @@
     /* ===== HERO ===== */
     .hero {
       min-height: 100vh;
-      background: var(--blue);
+      background: white;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
       padding: 160px 24px 80px;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+
+      background: repeating-linear-gradient(
+        to right,
+        transparent 0px,
+        transparent 39px,
+        rgb(233, 233, 233) 40px,
+        transparent 41px
+      );
+
+      mask-image: linear-gradient(
+        to top,
+        black 0%,
+        rgba(0, 0, 0.8) 30%
+        transparent 100%
+      );
+
+      -webkit-mask-image: linear-gradient(
+        to top,
+        black 0%,
+        rgba(0, 0, 0.8) 30%
+        transparent 100%
+      );
+
+      pointer-events: none;
     }
     .hero-content {
       max-width: 760px;
+      position: relative;
+      z-index: 1;
     }
     .hero-content h1 {
-      font-size: clamp(42px, 7vw, 88px);
-      font-weight: 500;
+      font-size: clamp(42px, 5vw, 88px);
+      font-weight: 400;
       line-height: 1.0;
       letter-spacing: -0.03em;
-      color: var(--white);
+      color: var(--black);
       margin-bottom: 24px;
       text-transform: uppercase;
     }
@@ -176,9 +184,151 @@
       font-size: clamp(15px, 1.8vw, 18px);
       font-weight: 300;
       line-height: 1.7;
-      color: rgba(255,255,255,0.75);
+      color: var(--text-dark);
       max-width: 520px;
       margin: 0 auto;
+    }
+
+    .intro {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      padding: 90px 48px;
+      align-items: start;
+      background-color: white;
+      background: repeating-linear-gradient(
+        to right,
+        transparent 0px,
+        transparent 39px,
+        rgb(20, 20, 20) 40px,
+        transparent 41px
+      );
+    }
+
+    .intro-title {
+      max-width: 580px;
+      font-size: clamp(42px, 4vw, 76px);
+      color: var(--white);
+      line-height: 0.98;
+      letter-spacing: -0.055em;
+      font-weight: 700;
+    }
+
+    .intro-right {
+      max-width: 530px;
+      padding-top: 4px;
+    }
+
+    .intro-description {
+      font-size: clamp(18px, 2vw, 25px);
+      line-height: 1.35;
+      letter-spacing: -0.025em;
+      color: var(--text-mid);
+      margin-bottom: 38px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 27px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .button-dark {
+      background: #111111;
+      color: white;
+    }
+
+    .button-dark:hover {
+      transform: translateY(-2px);
+    }
+
+    .button-light {
+      background: #e7e6e2;
+      color: #111111;
+    }
+
+    .button-light:hover {
+      background: #dcdad4;
+    }
+
+    /* =========================================
+       FEATURED PROJECT
+    ========================================= */
+
+    .featured {
+      position: relative;
+      min-height: 440px;
+      padding: 90px 48px;
+      border-radius: 22px;
+      overflow: hidden;
+      color: white;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .featured-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .featured::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(0,0,0,0.82) 0%,
+          rgba(0,0,0,0.55) 38%,
+          rgba(0,0,0,0.08) 78%
+        );
+    }
+
+    .featured-content {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 650px;
+      padding: 55px;
+    }
+
+    .eyebrow {
+      display: block;
+      color: #c8bd91;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      letter-spacing: 0.01em;
+    }
+
+    .featured-title {
+      font-size: clamp(34px, 4vw, 57px);
+      line-height: 1.02;
+      letter-spacing: -0.045em;
+      margin-bottom: 22px;
+    }
+
+    .featured-description {
+      max-width: 500px;
+      font-size: 15px;
+      line-height: 1.4;
+      color: rgba(255,255,255,0.8);
     }
 
     /* ===== SHARED PRODUCTS WRAPPER ===== */
@@ -584,15 +734,9 @@
 </head>
 <body>
 
-  <!-- NEWS BANNER -->
-  <div class="news-banner">
-    <span data-edit="banner_text">Free delivery on orders over R1,500 — this week only.</span>
-    <a href="https://wa.me/1234567890" data-edit="banner_link" data-edit-role="href">Order now</a>
-  </div>
-
   <!-- NAVBAR -->
   <nav id="navbar">
-    <a href="#hero" class="logo" data-edit="site_name">KickHouse</a>
+    <a href="#hero" class="logo" data-edit="site_name">bequart</a>
     <button class="burger" id="burger" aria-label="Toggle menu">
       <span></span><span></span><span></span>
     </button>
@@ -607,67 +751,59 @@
   <!-- HERO -->
   <section id="hero" class="hero">
     <div class="hero-content">
-      <h1 data-edit="hero_title">Step Into Something New</h1>
+      <h1 data-edit="hero_title">improve the quality and performance of your network</h1>
       <p data-edit="hero_description">Fresh drops, exclusive colourways, and iconic silhouettes — all in one place. Find your next pair.</p>
     </div>
   </section>
 
-  <!-- TOP PICKS (capped at 5: 1 featured + 4 standard) -->
-  <section id="picks" class="products-section">
-    <div class="products-inner">
-      <div class="products-grid" data-repeat="picks">
-
-        <!-- Featured card (spans all 4 cols) -->
-        <div class="product-card-featured">
-          <img data-edit="image" src="https://static.nike.com/a/images/t_web_pw_592_v2/f_auto/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/22d7923e-f631-48b4-a1d1-539fb4718598/AIR+FORCE+1+%2707+LV8.png" alt="Featured sneaker" />
-          <div class="card-body">
-            <div class="product-tag" data-edit="tag">New Drop</div>
-            <div class="product-name" data-edit="name">Air Phantom Pro Max</div>
-            <div class="product-price" data-edit="price">R3,240</div>
-            <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
-          </div>
+  <section class="intro">
+        <div>
+          <h1 class="intro-title">
+            A considered digital studio for brands with depth.
+          </h1>
         </div>
 
-        <!-- Standard card -->
-        <div class="product-card">
-          <img data-edit="image" src="https://static.nike.com/a/images/t_web_pw_592_v2/f_auto/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/b8ff2462-46de-4db6-a295-245d956196ca/NIKE+AIR+MAX+95+BIG+BUBBLE.png" alt="Sneaker" />
-          <div class="card-body">
-            <div class="product-name" data-edit="name">Cloud Runner V2</div>
-            <div class="product-price" data-edit="price">R3,130</div>
-            <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
+        <div class="intro-right">
+          <p class="intro-description">
+            We shape launch-ready websites, visual systems,
+            and content experiences for teams that care about
+            craft, clarity, and momentum.
+          </p>
+
+          <div class="buttons">
+            <a href="#work" class="button button-dark">
+              View work
+            </a>
+            <a href="#process" class="button button-light">
+              Our process
+            </a>
           </div>
         </div>
+      </section>
 
-        <div class="product-card">
-          <img data-edit="image" src="https://static.nike.com/a/images/t_web_pw_592_v2/f_auto/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/181b0bba-a63f-4a02-997f-dc412db1c284/AIR+MAX+TL+2.5.png" alt="Sneaker" />
-          <div class="card-body">
-            <div class="product-name" data-edit="name">Urban Drift Low</div>
-            <div class="product-price" data-edit="price">R3,110</div>
-            <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
-          </div>
+      <section class="featured" id="work">
+        <img
+          class="featured-image"
+          src="Lush Grass Texture.png"
+          alt="Athlete wearing performance clothing"
+        >
+
+        <div class="featured-content">
+          <span class="eyebrow">
+            Featured launch
+          </span>
+
+          <h2 class="featured-title">
+            A bold campaign site built around crisp messaging and warm visuals.
+          </h2>
+
+          <p class="featured-description">
+            Strategy, art direction, UI systems, responsive web design,
+            launch support, and content architecture in one integrated sprint.
+          </p>
         </div>
 
-        <div class="product-card">
-          <img data-edit="image" src="https://static.nike.com/a/images/t_web_pw_592_v2/f_auto/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/1b74eca1-79b1-4859-956d-13161527acec/JA+3.png" alt="Sneaker" />
-          <div class="card-body">
-            <div class="product-name" data-edit="name">Street Glide OG</div>
-            <div class="product-price" data-edit="price">R3,165</div>
-            <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
-          </div>
-        </div>
-
-        <div class="product-card">
-          <img data-edit="image" src="https://static.nike.com/a/images/t_web_pw_592_v2/f_auto/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/14a27a5c-33ef-4f9e-bff8-5f7111ddb8fd/NIKE+VOMERO+18.png" alt="Sneaker" />
-          <div class="card-body">
-            <div class="product-name" data-edit="name">Retro Blaze Mid</div>
-            <div class="product-price" data-edit="price">R3,155</div>
-            <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Order via WhatsApp</a>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
+      </section>
 
   <!-- PROMO -->
   <section id="promo" class="promo">

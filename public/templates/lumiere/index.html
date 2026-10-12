@@ -58,7 +58,7 @@
     /* ===== NAVBAR ===== */
     nav {
       position: fixed;
-      top: 36px; left: 0; right: 0;
+      top: 30px; left: 0; right: 0;
       z-index: 1000;
       padding: 20px 48px;
       display: flex;
@@ -77,8 +77,10 @@
       font-size: 18px;
       font-weight: 700;
       color: var(--text-dark);
+      mix-blend-mode: difference;
       letter-spacing: 0.02em;
       text-decoration: none;
+      text-transform: uppercase;
       position: relative;
       z-index: 1001;
       transition: color 0.35s;
@@ -156,11 +158,13 @@
     }
     .hero-text {
       width: 50vw;
+      position: absolute;
       display: flex;
+      bottom: 0;
+      z-index: 2;
       flex-direction: column;
       justify-content: center;
       padding: 120px 64px 80px 64px;
-      background: var(--beige);
     }
     .hero-text h1 {
       font-size: clamp(28px, 3.5vw, 56px);
@@ -196,6 +200,7 @@
     .hero-image {
       width: 50vw;
       flex-shrink: 0;
+      z-index: 0;
     }
     .hero-image img {
       width: 100%;
@@ -621,15 +626,18 @@
 
   <!-- HERO -->
   <section id="hero" class="hero">
-    <div class="hero-text">
-      <h1 data-edit="hero_title">Where Beauty Meets Artistry</h1>
-      <p data-edit="hero_description">Professional makeup services tailored to you — from bridal and editorial to everyday glam. Let's create something beautiful together.</p>
-      <a href="#services" class="btn-primary" data-edit="hero_cta_link" data-edit-role="href">
-        <span data-edit="hero_cta">View Services</span>
-      </a>
-    </div>
     <div class="hero-image">
-      <img data-edit="hero_image" src="https://images.pexels.com/photos/3912572/pexels-photo-3912572.jpeg" alt="Hero" />
+      <img data-edit="hero_image" src="c837a6_b8b2f56d121d4fffad7d86f60f576afd~mv2.avif" alt="Hero" />
+    </div>
+      <div class="hero-text">
+        <h1 data-edit="hero_title">Where Beauty Meets Artistry</h1>
+        <p data-edit="hero_description">Professional makeup services tailored to you — from bridal and editorial to everyday glam. Let's create something beautiful together.</p>
+        <a href="#services" class="btn-primary" data-edit="hero_cta_link" data-edit-role="href">
+          <span data-edit="hero_cta">View Services</span>
+        </a>
+      </div>
+    <div class="hero-image">
+      <img data-edit="hero_image" src="c837a6_7c446483ac04407ea456b05a07cb5365~mv2.avif" alt="Hero" />
     </div>
   </section>
 

@@ -622,7 +622,9 @@
       async function updateCartCount() {
         const cart = await getCart();
         const countEl = document.getElementById("cart-count");
-        if (countEl) countEl.textContent = cart.length;
+        if (countEl) {
+          countEl.textContent = cart.reduce((total, item) => total + Number(item.quantity || 0), 0);
+        }
       }
 
       // ── Checkout ────────────────────────────────────────────────────
@@ -682,6 +684,9 @@
         let registerMode = false;
 
         loginButton?.addEventListener("click", showLoginModal);
+        document.querySelector(".nav-cart")?.addEventListener("click", () => {
+          window.location.href = "/cart.html";
+        });
         loginClose?.addEventListener("click", () => {
           if (loginModal) loginModal.style.display = "none";
         });

@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BloomFi — Where Money Grows</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+  <style>
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: #9da9c4;
+      color: #18172b;
+      font-family: "DM Sans", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .site {
+      position: relative;
+      width: min(100%);
+      margin: 0 auto;
+      background: #f8f8f7;
+      border-radius: 2px;
+      overflow: hidden;
+      box-shadow:
+        0 35px 80px rgba(34, 38, 55, 0.12);
+    }
+
+    .site-container {
+      width: 100%;
+      max-width: 95dvw;
+      margin: 0 auto;
+    }
+
+    .navbar {
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-symbol {
+      width: 18px;
+      height: 18px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      font-weight: 700;
+    }
+
+    .brand-symbol::before,
+    .brand-symbol::after {
+      content: "";
+      position: absolute;
+      width: 4px;
+      height: 17px;
+      background: #25233f;
+      border-radius: 5px;
+    }
+
+    .brand-symbol::before {
+      transform: rotate(45deg);
+    }
+
+    .brand-symbol::after {
+      transform: rotate(-45deg);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 10px;
+      text-transform: uppercase;
+      color: #29283b;
+      transition: opacity 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      opacity: 0.5;
+    }
+
+    .launch-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-transform: uppercase;
+      padding: 10px 21px;
+      border-radius: 999px;
+      background: #29263f;
+      color: white;
+      font-size: 10px;
+      font-weight: 500;
+      transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+    }
+
+    .launch-button:hover {
+      transform: translateY(-2px);
+      background: #1d1b30;
+    }
+
+    .hero {
+      position: relative;
+      min-height: 90dvh;
+      border-radius: 20px;
+      overflow: hidden;
+      background:
+        linear-gradient(
+          180deg,
+          #f3f1ff 0%,
+          #ebe8fb 45%,
+          #d7d3ec 100%
+        );
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      width: 620px;
+      height: 420px;
+      left: 50%;
+      bottom: -220px;
+      transform: translateX(-50%);
+      background:
+        radial-gradient(
+          ellipse,
+          rgba(152, 121, 215, 0.45) 0%,
+          rgba(152, 121, 215, 0) 70%
+        );
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 3;
+      text-align: center;
+      padding-top: 66px;
+      margin: 0 auto;
+      max-width: 550px;
+    }
+
+    .hero-symbol {
+      width: 22px;
+      height: 22px;
+      margin: 0 auto 17px;
+      position: relative;
+    }
+
+    .hero-symbol::before,
+    .hero-symbol::after {
+      content: "";
+      position: absolute;
+      width: 5px;
+      height: 21px;
+      left: 50%;
+      top: 50%;
+      border-radius: 4px;
+      background: #2d2a49;
+    }
+
+    .hero-symbol::before {
+      transform:
+        translate(-50%, -50%)
+        rotate(45deg);
+    }
+
+    .hero-symbol::after {
+      transform:
+        translate(-50%, -50%)
+        rotate(-45deg);
+    }
+
+    .hero h1 {
+      font-size: clamp(42px, 6.5vw, 81px);
+      line-height: 0.98;
+      letter-spacing: -0.06em;
+      font-weight: 500;
+      margin-bottom: 18px;
+    }
+
+    .hero-subtitle {
+      max-width: 440px;
+      margin: 0 auto 20px;
+      font-size: 13px;
+      line-height: 1.35;
+      color: #4b485e;
+    }
+
+    .hero-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #050509;
+      color: white;
+      border-radius: 999px;
+      padding: 11px 24px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+
+    .what-section {
+      padding: 70px 0 62px;
+    }
+
+    .what-intro {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 80px;
+      align-items: start;
+      margin-bottom: 45px;
+    }
+
+    .what-intro h2 {
+      font-size: clamp(42px, 6.5vw, 61px);
+      font-weight: 500;
+      letter-spacing: -0.05em;
+      line-height: 1;
+    }
+
+    .what-copy {
+      font-size: 19px;
+      line-height: 1.35;
+      color: #4a4855;
+    }
+
+    .small-button {
+      display: inline-flex;
+      margin-top: 19px;
+      padding: 9px 20px;
+      border-radius: 999px;
+      background: #2b2743;
+      color: white;
+      font-size: 9px;
+      font-weight: 500;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1.8fr 0.9fr 0.9fr;
+      gap: 10px;
+    }
+
+    .feature-card {
+      position: relative;
+      min-height: 255px;
+      border-radius: 15px;
+      overflow: hidden;
+      padding: 18px 16px;
+      background: #302b4d;
+      color: white;
+    }
+
+    .feature-card h3 {
+      position: relative;
+      z-index: 2;
+      max-width: 180px;
+      font-size: clamp(12px, 2.5vw, 30px);
+      line-height: 1.05;
+      font-weight: 500;
+      letter-spacing: -0.035em;
+    }
+
+    .feature-card p {
+      position: absolute;
+      z-index: 3;
+      left: 16px;
+      right: 16px;
+      bottom: 17px;
+      max-width: 240px;
+      font-size: 14px;
+      line-height: 1.35;
+      color: rgba(255,255,255,0.82);
+    }
+
+    .feature-card.feature-image {
+      background:
+        linear-gradient(
+          180deg,
+          #d0c9ee 0%,
+          #b6acd8 100%
+        );
+      color: #292540;
+    }
+
+    .feature-image::before {
+      content: "";
+      position: absolute;
+      width: 105px;
+      height: 105px;
+      right: 12px;
+      bottom: -18px;
+      border-radius: 50%;
+      background:
+        radial-gradient(
+          circle at 35% 30%,
+          #d7d4f3 0%,
+          #8e82c3 45%,
+          #55447e 100%
+        );
+
+      box-shadow:
+        inset 7px 7px 15px rgba(255,255,255,0.4),
+        inset -7px -7px 14px rgba(40,27,65,0.3);
+    }
+
+    .feature-image::after {
+      content: "";
+      position: absolute;
+      width: 38px;
+      height: 95px;
+      right: 82px;
+      bottom: 12px;
+      border-radius: 50% 50% 0 0;
+      background:
+        radial-gradient(
+          circle at 50% 12%,
+          #6b248d 0 18%,
+          #74389a 19% 35%,
+          transparent 36%
+        );
+      transform: rotate(14deg);
+      opacity: 0.95;
+    }
+
+    .feature-image p {
+      color: #403d51;
+    }
+
+
+    .partners {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 25px;
+      padding: 48px 0 55px;
+      color: #aaa9ae;
+    }
+
+    .partner-intro {
+      max-width: 180px;
+      font-size: 8px;
+      line-height: 1.35;
+    }
+
+    .partner-logos {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 22px;
+      flex: 1;
+    }
+
+    .partner-logo {
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+      opacity: 0.72;
+    }
+
+    .use-cases {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 35px;
+      padding-bottom: 60px;
+    }
+
+    .use-copy {
+      padding-top: 4px;
+    }
+
+    .section-label {
+      font-size: 8px;
+      margin-bottom: 7px;
+      color: #77747c;
+    }
+
+    .use-copy h2 {
+      font-size: clamp(35px, 4vw, 48px);
+      line-height: 0.95;
+      font-weight: 500;
+      letter-spacing: -0.06em;
+      margin-bottom: 22px;
+    }
+
+    .use-copy p {
+      max-width: 270px;
+      font-size: 10px;
+      line-height: 1.4;
+      color: #5e5b65;
+    }
+
+    .business-card {
+      min-height: 430px;
+      position: relative;
+      border-radius: 18px;
+      overflow: hidden;
+      background:
+        linear-gradient(
+          180deg,
+          #ffffff 0%,
+          #fbfbfb 45%,
+          #f0eff4 100%
+        );
+      padding: 23px;
+    }
+
+    .business-card h3 {
+      font-size: 23px;
+      font-weight: 500;
+      letter-spacing: -0.04em;
+      margin-bottom: 13px;
+    }
+
+    .business-card p {
+      max-width: 420px;
+      font-size: 10px;
+      line-height: 1.4;
+      color: #55535d;
+    }
+
+    .learn-more {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 18px;
+      font-size: 9px;
+      font-weight: 500;
+    }
+
+    .learn-more span {
+      font-size: 13px;
+    }
+
+    .building {
+      position: absolute;
+      left: 50%;
+      bottom: -2px;
+      width: 65%;
+      height: 190px;
+      transform: translateX(-50%);
+    }
+
+    .building-roof {
+      position: absolute;
+      left: 4%;
+      right: 4%;
+      top: 10px;
+      height: 70px;
+      background:
+        linear-gradient(
+          160deg,
+          #b7a9e9 0%,
+          #765cb9 55%,
+          #574194 100%
+        );
+      clip-path: polygon(
+        50% 0%,
+        100% 60%,
+        96% 70%,
+        4% 70%,
+        0% 60%
+      );
+      box-shadow:
+        0 8px 10px rgba(57,38,98,0.18);
+    }
+
+    .building-body {
+      position: absolute;
+      left: 13%;
+      right: 13%;
+      bottom: 0;
+      height: 115px;
+      background:
+        linear-gradient(
+          90deg,
+          #b8ade4,
+          #e2ddf3 50%,
+          #9b8ad0
+        );
+      box-shadow:
+        inset 0 5px 8px rgba(255,255,255,0.5),
+        0 7px 20px rgba(57,38,98,0.18);
+    }
+
+    .columns {
+      position: absolute;
+      left: 10%;
+      right: 10%;
+      bottom: 0;
+      height: 112px;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 8%;
+    }
+
+    .column {
+      width: 15px;
+      height: 100%;
+      background:
+        linear-gradient(
+          90deg,
+          #7969b1,
+          #d5cef0 48%,
+          #7562a9
+        );
+      border-radius: 3px 3px 0 0;
+      box-shadow:
+        2px 0 4px rgba(45,31,80,0.15);
+    }
+
+    .steps {
+      position: absolute;
+      left: 3%;
+      right: 3%;
+      bottom: -8px;
+      height: 25px;
+      background:
+        linear-gradient(
+          180deg,
+          #c9c2e5,
+          #8d7abd
+        );
+
+      clip-path: polygon(
+        5% 0,
+        95% 0,
+        100% 100%,
+        0 100%
+      );
+    }
+
+    .building-ground {
+      position: absolute;
+      left: -15%;
+      right: -15%;
+      bottom: -50px;
+      height: 80px;
+      background:
+        radial-gradient(
+          ellipse,
+          rgba(106,82,153,0.6) 0%,
+          rgba(106,82,153,0) 70%
+        );
+    }
+
+    @media (max-width: 900px) {
+
+      .outer-page {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
+      .site-container {
+        width: calc(100% - 34px);
+      }
+
+      .nav-links {
+        gap: 18px;
+      }
+
+      .what-intro {
+        gap: 40px;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1.5fr 1fr 1fr;
+      }
+
+      .use-cases {
+        gap: 25px;
+      }
+    }
+
+    @media (max-width: 650px) {
+
+      body {
+        background: #9da9c4;
+      }
+
+      .outer-page {
+        padding: 72px 12px 30px;
+      }
+
+      .outer-info {
+        top: 18px;
+        left: 14px;
+        right: 14px;
+
+        font-size: 10px;
+      }
+
+      .site {
+        border-radius: 1px;
+      }
+
+      .site-container {
+        width: calc(100% - 26px);
+      }
+
+      .navbar {
+        height: 61px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .brand {
+        font-size: 11px;
+      }
+
+      .brand-symbol {
+        width: 15px;
+        height: 15px;
+      }
+
+      .launch-button {
+        padding: 8px 15px;
+        font-size: 9px;
+      }
+
+      .hero {
+        min-height: 430px;
+        border-radius: 15px;
+      }
+
+      .hero-content {
+        padding: 45px 18px 0;
+      }
+
+      .hero h1 {
+        font-size: 43px;
+      }
+
+      .hero-subtitle {
+        font-size: 11px;
+        max-width: 310px;
+      }
+
+      .hero-button {
+        padding: 9px 19px;
+        font-size: 9px;
+      }
+
+      .hero-art {
+        height: 210px;
+      }
+
+      .coin {
+        width: 88px;
+        height: 88px;
+
+        border-width: 5px;
+      }
+
+      .coin::before {
+        inset: 11px;
+      }
+
+      .coin::after {
+        font-size: 22px;
+      }
+
+      .coin-left {
+        left: 10%;
+        bottom: 22px;
+      }
+
+      .coin-right {
+        right: 11%;
+        bottom: 16px;
+
+        width: 77px;
+        height: 77px;
+      }
+
+      .flowers {
+        height: 190px;
+        bottom: -65px;
+      }
+
+
+      .what-section {
+        padding: 45px 0 40px;
+      }
+
+      .what-intro {
+        display: flex;
+        flex-direction: column;
+
+        gap: 24px;
+
+        margin-bottom: 30px;
+      }
+
+      .what-intro h2 {
+        font-size: 35px;
+      }
+
+      .what-copy {
+        max-width: 100%;
+        font-size: 13px;
+      }
+
+      .small-button {
+        margin-top: 14px;
+      }
+
+      .feature-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+      }
+
+      .feature-card {
+        min-height: 150px;
+      }
+
+      .feature-card.feature-image {
+        min-height: 200px;
+      }
+
+      .partners {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 38px 0 45px;
+        gap: 25px;
+      }
+
+      .partner-intro {
+        max-width: 210px;
+      }
+
+      .partner-logos {
+        justify-content: flex-start;
+        gap: 17px;
+      }
+
+      .partner-logo {
+        font-size: 9px;
+      }
+
+      .use-cases {
+        display: flex;
+        flex-direction: column;
+
+        gap: 28px;
+
+        padding-bottom: 35px;
+      }
+
+
+      .use-copy {
+        order: 1;
+      }
+
+      .business-card {
+        order: 2;
+
+        min-height: 390px;
+      }
+
+      .use-copy h2 {
+        font-size: 39px;
+      }
+
+      .use-copy p {
+        max-width: 330px;
+      }
+
+      .business-card {
+        padding: 20px;
+        border-radius: 15px;
+      }
+
+      .business-card h3 {
+        font-size: 22px;
+      }
+
+      .business-card p {
+        font-size: 10px;
+        max-width: 300px;
+      }
+
+      .building {
+        width: 82%;
+        height: 175px;
+      }
+
+    }
+
+    @media (max-width: 390px) {
+
+      .hero h1 {
+        font-size: 38px;
+      }
+
+      .hero {
+        min-height: 405px;
+      }
+
+      .what-intro h2 {
+        font-size: 32px;
+      }
+
+      .business-card {
+        min-height: 350px;
+      }
+
+      .building {
+        height: 145px;
+      }
+
+    }
+
+  </style>
+</head>
+
+
+<body>
+    <main class="site">
+
+      <div class="site-container">
+
+
+        <!-- =================================================
+             NAVIGATION
+        ================================================== -->
+
+        <nav class="navbar">
+
+          <a href="#" class="brand">
+
+            <span class="brand-symbol"></span>
+
+            <span>BloomFi</span>
+
+          </a>
+
+
+          <ul class="nav-links">
+
+            <li>
+              <a href="#bloom">USD Bloom</a>
+            </li>
+
+            <li>
+              <a href="#business">Business</a>
+            </li>
+
+            <li>
+              <a href="#">Treasury</a>
+            </li>
+
+            <li>
+              <a href="#">Developers</a>
+            </li>
+
+            <li>
+              <a href="#">Join us</a>
+            </li>
+
+          </ul>
+
+
+          <a href="#" class="launch-button">
+            Launch BETA
+          </a>
+
+        </nav>
+
+
+        <!-- =================================================
+             HERO
+        ================================================== -->
+
+        <section class="hero">
+
+          <div class="hero-content">
+
+            <div class="hero-symbol"></div>
+
+            <h1>
+              Where Money Grows
+            </h1>
+
+            <p class="hero-subtitle">
+              A programmable, utility-driven stable token
+              designed for native value accrual and seamless
+              integration into DeFi.
+            </p>
+
+            <a href="#" class="hero-button">
+              Try it now
+            </a>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             WHAT IS USD BLOOM
+        ================================================== -->
+
+        <section class="what-section" id="bloom">
+
+          <div class="what-intro">
+
+            <div>
+
+              <h2>
+                What is USD Bloom?
+              </h2>
+
+              <a href="#" class="small-button">
+                Explore now
+              </a>
+
+            </div>
+
+
+            <div>
+
+              <p class="what-copy">
+                USD Bloom is a yield-bearing stablecoin
+                that helps your capital grow while staying
+                pegged to the U.S. dollar.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <!-- Feature cards -->
+
+          <div class="feature-grid">
+
+
+            <article class="feature-card feature-image">
+
+              <h3>
+                Capital that grows
+              </h3>
+
+              <p>
+                Earn passive income as your stablecoins
+                are deployed into high-performing DeFi
+                protocols.
+              </p>
+
+            </article>
+
+
+            <article class="feature-card">
+
+              <h3>
+                Always liquid,<br>
+                always stable
+              </h3>
+
+              <p>
+                Stay fully dollar-pegged with instant
+                access to your funds — no lockups or delays.
+              </p>
+
+            </article>
+
+
+            <article class="feature-card">
+
+              <h3>
+                100%<br>
+                hands-free
+              </h3>
+
+              <p>
+                No need to manage strategies manually.
+                USD Bloom works in the background for you.
+              </p>
+
+            </article>
+
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             PARTNERS
+        ================================================== -->
+
+        <section class="partners">
+
+          <p class="partner-intro">
+            Backed by the best companies<br>
+            and visionary angels.
+          </p>
+
+
+          <div class="partner-logos">
+
+            <span class="partner-logo">
+              Fundamental Labs
+            </span>
+
+            <span class="partner-logo">
+              KUCOIN
+            </span>
+
+            <span class="partner-logo">
+              NGC
+            </span>
+
+            <span class="partner-logo">
+              NxGen
+            </span>
+
+            <span class="partner-logo">
+              Matter Labs
+            </span>
+
+            <span class="partner-logo">
+              DXT Tools
+            </span>
+
+            <span class="partner-logo">
+              NG RAVE
+            </span>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             USE CASES
+        ================================================== -->
+
+        <section class="use-cases" id="business">
+
+
+          <!-- Text -->
+
+          <div class="use-copy">
+
+            <div class="section-label">
+              USD Bloom in Action
+            </div>
+
+            <h2>
+              Use cases
+            </h2>
+
+            <p>
+              USD Bloom offers a variety of use cases for
+              developers, businesses and treasuries seeking
+              secure and profitable stablecoin integrations.
+            </p>
+
+          </div>
+
+
+          <!-- Business card -->
+
+          <article class="business-card">
+
+            <h3>
+              Business
+            </h3>
+
+            <p>
+              Boost user engagement by offering USD Bloom,
+              a secure fiat-backed stablecoin with high yields,
+              allowing your customers to earn effortlessly
+              on your platform.
+            </p>
+
+            <a href="#" class="learn-more">
+              <span>→</span>
+              Learn more
+            </a>
+
+
+            <!-- Architectural illustration -->
+
+            <div class="building">
+
+              <div class="building-ground"></div>
+
+              <div class="building-roof"></div>
+
+              <div class="building-body"></div>
+
+              <div class="columns">
+
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+
+              </div>
+
+              <div class="steps"></div>
+
+            </div>
+
+          </article>
+
+
+        </section>
+
+      </div>
+
+    </main>
+
+  </div>
+
+
+</body>
+</html>
