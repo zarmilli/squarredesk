@@ -647,9 +647,10 @@
   <script>
     (async () => {
       const SITE_ID = "{{SQUARRE_SITE_ID}}";
+      const SUPABASE_URL = "https://suwiamrsjmbvhceqxchp.supabase.co";
+      const ANON_KEY = "{{SQUARRE_ANON_KEY}}";
       if (!SITE_ID || SITE_ID === "{{SQUARRE_SITE_ID}}") return;
 
-      // ── Device ────────────────────────────────────────────────────
       const ua = navigator.userAgent;
       const device =
         /Mobi|Android/i.test(ua) && !/Tablet|iPad/i.test(ua) ? "mobile"
@@ -657,71 +658,61 @@
         : /Win|Mac|Linux|CrOS/i.test(navigator.platform) ? "desktop"
         : "unknown";
 
-      // ── Visitor hash ──────────────────────────────────────────────
       let hash = localStorage.getItem("visitor_hash");
       if (!hash) {
         hash = crypto.randomUUID();
         localStorage.setItem("visitor_hash", hash);
       }
 
-      // ── Location ──────────────────────────────────────────────────
       let city = null, province = null, country = null;
       try {
         const geoRes = await fetch("https://ipapi.co/json/");
         if (geoRes.ok) {
           const geo = await geoRes.json();
-          city     = geo.city          ?? null;
-          province = geo.region        ?? null;
-          country  = geo.country_name  ?? null;
+          city = geo.city ?? null;
+          province = geo.region ?? null;
+          country = geo.country_name ?? null;
         }
       } catch {}
 
-      // ── Record visit — capture row id for later updates ───────────
       let visitId = null;
       const startTime = Date.now();
 
       try {
-        const res = await fetch(
-          "https://suwiamrsjmbvhceqxchp.supabase.co/rest/v1/site_visits",
-          {
-            method: "POST",
-            headers: {
-              apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1d2lhbXJzam1idmhjZXF4Y2hwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ5NDM4MDEsImV4cCI6MjA4MDUxOTgwMX0.4V8Ec8pvDYZyM0WYO3ePMa7yrHTuvbVdoCK9eYhH6zk",
-              Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1d2lhbXJzam1idmhjZXF4Y2hwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ5NDM4MDEsImV4cCI6MjA4MDUxOTgwMX0.4V8Ec8pvDYZyM0WYO3ePMa7yrHTuvbVdoCK9eYhH6zk",
-              "Content-Type": "application/json",
-              Prefer: "return=representation,resolution=ignore-duplicates",
-            },
-            body: JSON.stringify({
-              site_id: SITE_ID,
-              visitor_hash: hash,
-              device,
-              city,
-              province,
-              country,
-            }),
-          }
-        );
-
-        if (res.ok) {
-          const rows = await res.json();
-          if (rows?.length > 0) visitId = rows[0].id;
-        }
+        const res = await fetch(`${SUPABASE_URL}/functions/v1/track-visit`, {
+          method: "POST",
+          headers: { apikey: ANON_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "visit",
+            site_id: SITE_ID,
+            visitor_hash: hash,
+            device,
+            city,
+            province,
+            country,
+          }),
+        });
+        if (!res.ok) throw new Error(`Visit tracking failed: ${res.status}`);
+        const visit = await res.json();
+        visitId = visit.id ?? null;
       } catch {}
 
-      // ── Engagement tracking ───────────────────────────────────────
+      const updateVisit = (updates) => {
+        if (!visitId) return;
+        fetch(`${SUPABASE_URL}/functions/v1/track-visit`, {
+          method: "POST",
+          headers: { apikey: ANON_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "update", visit_id: visitId, ...updates }),
+          keepalive: true,
+        }).catch(() => {});
+      };
+
       let engaged = false;
 
       const markEngaged = () => {
         if (engaged || !visitId) return;
         engaged = true;
-
-        navigator.sendBeacon(
-          `https://suwiamrsjmbvhceqxchp.supabase.co/rest/v1/site_visits?id=eq.${visitId}`,
-          new Blob(
-            [JSON.stringify({ engaged: true })],
-            { type: "application/json" }
-          )
-        );
+        updateVisit({ engaged: true });
       };
 
       window.addEventListener("scroll", () => {
@@ -731,7 +722,6 @@
 
       document.addEventListener("click", markEngaged, { once: true });
 
-      // ── Duration tracking ─────────────────────────────────────────
       let durationSent = false;
 
       const sendDuration = () => {
@@ -741,16 +731,10 @@
         const duration = Math.round((Date.now() - startTime) / 1000);
         if (duration < 1) return;
 
-        navigator.sendBeacon(
-          `https://suwiamrsjmbvhceqxchp.supabase.co/rest/v1/site_visits?id=eq.${visitId}`,
-          new Blob(
-            [JSON.stringify({ duration_seconds: duration })],
-            { type: "application/json" }
-          )
-        );
+        updateVisit({ duration_seconds: duration });
       };
 
-      window.addEventListener("visibilitychange", () => {
+      document.addEventListener("visibilitychange", () => {
         if (document.visibilityState === "hidden") sendDuration();
       });
       window.addEventListener("pagehide", sendDuration);
@@ -760,7 +744,7 @@
     <script>
       const SITE_ID = "{{SQUARRE_SITE_ID}}";
       const SUPABASE_URL = "https://suwiamrsjmbvhceqxchp.supabase.co";
-      const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1d2lhbXJzam1idmhjZXF4Y2hwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ5NDM4MDEsImV4cCI6MjA4MDUxOTgwMX0.4V8Ec8pvDYZyM0WYO3ePMa7yrHTuvbVdoCK9eYhH6zk";
+      const ANON_KEY = "{{SQUARRE_ANON_KEY}}";
       const FUNCTIONS_URL = `${SUPABASE_URL}/functions/v1`;
 
       // ── Session management ──────────────────────────────────────────
@@ -883,7 +867,9 @@
       async function updateCartCount() {
         const cart = await getCart();
         const countEl = document.getElementById("cart-count");
-        if (countEl) countEl.textContent = cart.length;
+        if (countEl) {
+          countEl.textContent = cart.reduce((total, item) => total + Number(item.quantity || 0), 0);
+        }
       }
 
       function formatPrice(price) {
@@ -1129,7 +1115,7 @@
             loginError.textContent = error.message || "Unable to sign in";
           }
         });
-        document.addEventListener("product:add-to-cart", (event) => {
+        window.addEventListener("product:add-to-cart", (event) => {
           const product = event.detail;
           if (product?.id) addToCart(product.id);
         });

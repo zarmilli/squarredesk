@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product | Elhnon Odnufmon</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --beige: #f5ede0;
+      --beige-mid: #ede0ce;
+      --beige-deep: #d9c4a8;
+      --green: #e4667f;
+      --green-mid: #9db894;
+      --green-dark: #311e20;
+      --green-pale: #e8f0e5;
+      --bg: #faf7f2;
+      --bg-mid: #f0e9dc;
+      --text-dark: #2a2218;
+      --text-mid: #6b5f4f;
+      --white: #ffffff;
+      --black: #0f0e0b;
+      --line: rgba(49, 30, 32, 0.12);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text-dark);
+      font-family: 'Poppins', sans-serif;
+    }
+
+    a { color: inherit; }
+    button, input { font: inherit; }
+
+    .news-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1100;
+      background: var(--green-dark);
+      color: var(--white);
+      text-align: center;
+      padding: 9px 48px;
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .news-banner a {
+      color: var(--white);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      margin-left: 8px;
+    }
+
+    nav {
+      position: fixed;
+      top: 36px;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 20px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: transparent;
+      transition: background 0.35s ease, box-shadow 0.35s ease, padding 0.35s ease;
+    }
+
+    nav.scrolled {
+      background: var(--white);
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+      border-bottom: 1px solid var(--green-dark);
+      padding: 14px 48px;
+    }
+
+    nav .logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--white);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      position: relative;
+      z-index: 1001;
+      transition: color 0.35s;
+    }
+
+    nav.scrolled .logo { color: var(--green); }
+
+    nav .nav-links {
+      display: flex;
+      gap: 32px;
+    }
+
+    nav .nav-links a {
+      font-size: 18px;
+      text-transform: uppercase;
+      font-weight: 500;
+      color: var(--white);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: color 0.2s;
+    }
+
+    nav .nav-links a:hover { color: var(--green-dark); }
+    nav.scrolled .nav-links a { color: var(--green-dark); }
+    nav.scrolled .nav-links a:hover { color: var(--green); }
+
+    .nav-account {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 150px;
+      color: var(--white);
+    }
+
+    .nav-account button {
+      border: 0;
+      background: none;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .nav-login {
+      padding: 8px 14px;
+      border: 1px solid currentColor !important;
+      border-radius: 4px;
+      font-size: 12px !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .nav-greeting { font-size: 13px; font-weight: 500; }
+
+    .nav-cart {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+    }
+
+    .nav-cart svg { width: 19px; height: 19px; }
+
+    .nav-cart-count {
+      position: absolute;
+      top: -3px;
+      right: -4px;
+      min-width: 15px;
+      height: 15px;
+      padding: 0 4px;
+      border-radius: 8px;
+      background: var(--green);
+      color: var(--white);
+      font-size: 10px;
+      line-height: 15px;
+      text-align: center;
+    }
+
+    nav.scrolled .nav-account { color: var(--green-dark); }
+
+    .burger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 36px;
+      height: 36px;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .burger span {
+      width: 100%;
+      height: 2px;
+      background: currentColor;
+      border-radius: 999px;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .burger.open span:nth-child(2) { opacity: 0; }
+    .burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .login-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1200;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(15, 14, 11, 0.55);
+    }
+
+    .login-modal.open { display: flex; }
+
+    .login-panel {
+      position: relative;
+      width: min(100%, 380px);
+      padding: 32px;
+      background: var(--white);
+      border-radius: 4px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    }
+
+    .login-panel h2 {
+      margin-bottom: 20px;
+      color: var(--green-dark);
+    }
+
+    .login-panel label {
+      display: block;
+      margin: 12px 0 6px;
+      font-size: 12px;
+    }
+
+    .login-panel input {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid var(--beige-deep);
+      border-radius: 4px;
+      font: inherit;
+    }
+
+    .login-submit {
+      width: 100%;
+      margin-top: 20px;
+      padding: 12px;
+      border: 0;
+      border-radius: 4px;
+      background: var(--green-dark);
+      color: var(--white);
+      cursor: pointer;
+    }
+
+    .login-close {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      border: 0;
+      background: none;
+      color: var(--text-mid);
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .login-error {
+      min-height: 18px;
+      margin-top: 10px;
+      color: #a23b3b;
+      font-size: 12px;
+    }
+
+    .product-page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 168px 24px 80px;
+    }
+
+    .product-layout {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 40px;
+      align-items: start;
+    }
+
+    .product-gallery {
+      position: relative;
+      background: var(--white);
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      box-shadow: 0 18px 40px rgba(17, 17, 17, 0.04);
+    }
+
+    .product-image-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1.15;
+      background: linear-gradient(135deg, var(--beige), var(--beige-mid));
+      overflow: hidden;
+    }
+
+    .product-image-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: opacity 0.3s ease;
+    }
+
+    .product-slider {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+      width: auto;
+      accent-color: var(--green-dark);
+      appearance: none;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 2;
+    }
+
+    .product-slider::-webkit-slider-thumb {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 3px solid var(--white);
+      background: var(--green-dark);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+    }
+
+    .product-slider::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border: 3px solid var(--white);
+      border-radius: 50%;
+      background: var(--green-dark);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+    }
+
+    .product-content {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 8px 8px 0;
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+    }
+
+    .product-name {
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.04;
+      letter-spacing: -0.04em;
+      font-weight: 700;
+      color: var(--green-dark);
+    }
+
+    .product-price {
+      font-size: clamp(1.3rem, 2vw, 1.8rem);
+      font-weight: 700;
+      color: var(--green-dark);
+    }
+
+    .product-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      align-items: center;
+      font-size: 0.9rem;
+      color: var(--text-mid);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 14px 0;
+    }
+
+    .meta-label {
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dark);
+      margin-right: 10px;
+    }
+
+    .product-description {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: var(--text-mid);
+      max-width: 58ch;
+    }
+
+    .product-cta {
+      position: sticky;
+      bottom: 16px;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      padding: 17px 20px;
+      border: 0;
+      border-radius: 14px;
+      background: var(--green-dark);
+      color: var(--white);
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      box-shadow: 0 12px 24px rgba(49, 30, 32, 0.2);
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .product-cta:hover { transform: translateY(-1px); }
+    .product-cta:active { transform: translateY(0); }
+
+    .product-cta span {
+      opacity: 0.9;
+      font-weight: 500;
+    }
+
+    .not-found {
+      padding: 220px 20px 80px;
+      text-align: center;
+      color: var(--text-mid);
+    }
+
+    .not-found h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      color: var(--green-dark);
+      margin-bottom: 10px;
+    }
+
+    footer {
+      background: var(--green-dark);
+      color: var(--white);
+      text-align: center;
+      padding: 28px 24px 30px;
+      font-size: 14px;
+    }
+
+    .footer-copy,
+    .footer-squarre {
+      opacity: 0.9;
+      margin-bottom: 8px;
+    }
+
+    .footer-squarre a { color: var(--white); }
+    .footer-logo {
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0.78;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        top: 36px;
+        padding: 18px 20px;
+      }
+
+      nav.scrolled {
+        padding: 12px 20px;
+      }
+
+      nav .nav-links {
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 20px;
+        right: 20px;
+        display: none;
+        flex-direction: column;
+        background: rgba(255, 255, 255, 0.96);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 18px 20px;
+      }
+
+      nav .nav-links.open { display: flex; }
+      nav .nav-links a {
+        color: var(--green-dark);
+        font-size: 15px;
+      }
+
+      .nav-account {
+        min-width: 0;
+      }
+
+      .nav-login {
+        display: none;
+      }
+
+      .burger {
+        display: flex;
+        color: var(--white);
+      }
+
+      nav.scrolled .burger { color: var(--green-dark); }
+
+      .product-page {
+        padding-top: 150px;
+      }
+
+      .product-layout {
+        grid-template-columns: 1fr;
+        gap: 26px;
+      }
+
+      .product-image-wrap {
+        aspect-ratio: 1 / 1.05;
+      }
+
+      .product-content {
+        padding: 0;
+      }
+
+      .product-cta {
+        position: sticky;
+        bottom: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="news-banner">
+    <span>OWN THE GLOW: Free shipping on orders over R300</span>
+    <a href="/products.html">Shop now</a>
+  </div>
+
+  <nav id="navbar">
+    <div class="nav-account">
+      <button class="nav-login" id="login-button" data-auth="logged-out" type="button">Login</button>
+      <span class="nav-greeting" data-auth="logged-in">Hi, <span data-customer="name"></span></span>
+      <button class="nav-cart" data-auth="logged-in" type="button" aria-label="Shopping cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H6" />
+          <circle cx="10" cy="20" r="1" /><circle cx="18" cy="20" r="1" />
+        </svg>
+        <span class="nav-cart-count" id="cart-count">0</span>
+      </button>
+    </div>
+    <a href="/index.html" class="logo">Elhnon Odnufmon</a>
+    <button class="burger" id="burger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="/products.html">Shop All</a>
+    </div>
+  </nav>
+
+  <div class="login-modal" id="login-modal" role="dialog" aria-modal="true" aria-labelledby="login-title">
+    <form class="login-panel" id="login-form">
+      <button class="login-close" id="login-close" type="button" aria-label="Close login">&times;</button>
+      <h2 id="login-title">Sign in</h2>
+      <div class="register-fields" id="register-fields" hidden>
+        <label for="register-first-name">First name</label>
+        <input id="register-first-name" name="first_name" type="text" autocomplete="given-name" />
+        <label for="register-last-name">Last name</label>
+        <input id="register-last-name" name="last_name" type="text" autocomplete="family-name" />
+      </div>
+      <label for="login-email">Email</label>
+      <input id="login-email" name="email" type="email" autocomplete="email" required />
+      <label for="login-password">Password</label>
+      <input id="login-password" name="password" type="password" autocomplete="current-password" required />
+      <p class="login-error" id="login-error" role="alert"></p>
+      <button class="login-submit" id="login-submit" type="submit">Login</button>
+      <button class="login-switch" id="login-switch" type="button">Create an account</button>
+    </form>
+  </div>
+
+  <main id="product-page" class="product-page"></main>
+
+  <footer>
+    <p class="footer-copy">© 2026 Elhnon Odnufmon. All rights reserved.</p>
+    <p class="footer-squarre">Want your own site? <a href="https://squarre.vercel.app" target="_blank">This site was made using Squarre</a></p>
+    <div class="footer-logo">Elhnon Odnufmon</div>
+  </footer>
+
+  <script>
+    const SITE_ID = "{{SQUARRE_SITE_ID}}";
+    const SUPABASE_URL = "https://suwiamrsjmbvhceqxchp.supabase.co";
+    const ANON_KEY = "{{SQUARRE_ANON_KEY}}";
+
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    const burger = document.getElementById('burger');
+    const navLinks = document.getElementById('navLinks');
+    burger.addEventListener('click', () => {
+      burger.classList.toggle('open');
+      navLinks.classList.toggle('open');
+    });
+    navLinks.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        burger.classList.remove('open');
+        navLinks.classList.remove('open');
+      });
+    });
+
+    const session = {
+      get() {
+        const raw = localStorage.getItem(`session_${SITE_ID}`);
+        if (!raw) return null;
+        const data = JSON.parse(raw);
+        if (new Date(data.expires_at) < new Date()) {
+          localStorage.removeItem(`session_${SITE_ID}`);
+          return null;
+        }
+        return data;
+      },
+      set(data) {
+        localStorage.setItem(`session_${SITE_ID}`, JSON.stringify(data));
+      },
+      clear() {
+        localStorage.removeItem(`session_${SITE_ID}`);
+      }
+    };
+
+    function updateAuthUI() {
+      const s = session.get();
+      const loggedInEls = document.querySelectorAll("[data-auth='logged-in']");
+      const loggedOutEls = document.querySelectorAll("[data-auth='logged-out']");
+      const nameEls = document.querySelectorAll("[data-customer='name']");
+
+      loggedInEls.forEach((el) => { el.style.display = s ? "" : "none"; });
+      loggedOutEls.forEach((el) => { el.style.display = s ? "none" : ""; });
+      nameEls.forEach((el) => { el.textContent = s ? s.customer.first_name : ""; });
+    }
+
+    async function getCart() {
+      const s = session.get();
+      if (!s) return [];
+
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/cart_items?select=*,products(*)&customer_id=eq.${s.customer.id}&site_id=eq.${SITE_ID}`,
+        {
+          headers: {
+            apikey: ANON_KEY,
+            Authorization: `Bearer ${ANON_KEY}`,
+          },
+        }
+      );
+      return res.ok ? res.json() : [];
+    }
+
+    async function updateCartCount() {
+      const cart = await getCart();
+      const countEl = document.getElementById('cart-count');
+      if (countEl) {
+        countEl.textContent = cart.reduce((total, item) => total + Number(item.quantity || 0), 0);
+      }
+    }
+
+    function showLoginModal() {
+      const modal = document.getElementById('login-modal');
+      if (modal) modal.classList.add('open');
+    }
+
+    async function addToCart(productId, quantity = 1) {
+      const s = session.get();
+      if (!s) {
+        showLoginModal();
+        return;
+      }
+
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/cart_items`, {
+        method: 'POST',
+        headers: {
+          apikey: ANON_KEY,
+          Authorization: `Bearer ${ANON_KEY}`,
+          'Content-Type': 'application/json',
+          Prefer: 'resolution=merge-duplicates',
+        },
+        body: JSON.stringify({
+          site_id: SITE_ID,
+          customer_id: s.customer.id,
+          product_id: productId,
+          quantity,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.text();
+        throw new Error(err || 'Unable to add to cart');
+      }
+
+      updateCartCount();
+    }
+
+    async function register(email, password, firstName, lastName) {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/customer-register`, {
+        method: 'POST',
+        headers: {
+          apikey: ANON_KEY,
+          Authorization: `Bearer ${ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ site_id: SITE_ID, email, password, first_name: firstName, last_name: lastName }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Registration failed');
+      session.set({ token: data.token, customer: data.customer, expires_at: data.expires_at });
+      return data.customer;
+    }
+
+    async function login(email, password) {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/customer-login`, {
+        method: 'POST',
+        headers: {
+          apikey: ANON_KEY,
+          Authorization: `Bearer ${ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ site_id: SITE_ID, email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Login failed');
+      session.set({ token: data.token, customer: data.customer, expires_at: data.expires_at });
+      return data.customer;
+    }
+
+    document.getElementById('login-button')?.addEventListener('click', () => showLoginModal());
+    document.getElementById('login-close')?.addEventListener('click', () => {
+      document.getElementById('login-modal').classList.remove('open');
+    });
+
+    const loginForm = document.getElementById('login-form');
+    const loginError = document.getElementById('login-error');
+    const registerFields = document.getElementById('register-fields');
+    const loginSubmit = document.getElementById('login-submit');
+    const loginSwitch = document.getElementById('login-switch');
+
+    let isRegisterMode = false;
+
+    function setAuthMode(registering) {
+      isRegisterMode = registering;
+      registerFields.hidden = !registering;
+      loginSubmit.textContent = registering ? 'Create account' : 'Login';
+      loginSwitch.textContent = registering ? 'Already have an account?' : 'Create an account';
+    }
+
+    loginSwitch?.addEventListener('click', () => {
+      setAuthMode(!isRegisterMode);
+    });
+
+    loginForm?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      loginError.textContent = '';
+
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      const firstName = document.getElementById('register-first-name')?.value.trim() || '';
+      const lastName = document.getElementById('register-last-name')?.value.trim() || '';
+
+      try {
+        if (isRegisterMode) {
+          await register(email, password, firstName, lastName);
+        } else {
+          await login(email, password);
+        }
+        document.getElementById('login-modal').classList.remove('open');
+        updateAuthUI();
+        updateCartCount();
+      } catch (error) {
+        loginError.textContent = error.message;
+      }
+    });
+
+    document.querySelector('.nav-cart')?.addEventListener('click', () => {
+      window.location.href = '/cart.html';
+    });
+
+    function formatPrice(value) {
+      return `R${Number(value || 0).toFixed(2)}`;
+    }
+
+    function getProductImages(product) {
+      const images = [product.cover_image, product.secondary_image].filter((image) => {
+        return typeof image === 'string' && image.trim() !== '';
+      });
+      return images.length ? images : ['https://placehold.co/1200x1200/f5ede0/311e20?text=Product'];
+    }
+
+    async function loadProduct() {
+      const page = document.getElementById('product-page');
+      if (!page) return;
+
+      const productId = new URLSearchParams(window.location.search).get('id');
+      if (!productId || !SITE_ID || SITE_ID === '{{SQUARRE_SITE_ID}}') {
+        page.innerHTML = `
+          <div class="not-found">
+            <h1>Product not found</h1>
+            <p>Please choose a valid product from the catalog.</p>
+          </div>
+        `;
+        return;
+      }
+
+      try {
+        const res = await fetch(
+          `${SUPABASE_URL}/rest/v1/products?id=eq.${productId}&site_id=eq.${SITE_ID}`,
+          {
+            headers: {
+              apikey: ANON_KEY,
+              Authorization: `Bearer ${ANON_KEY}`,
+            },
+          }
+        );
+
+        if (!res.ok) throw new Error('Product request failed');
+
+        const product = (await res.json())[0];
+        if (!product) {
+          page.innerHTML = `
+            <div class="not-found">
+              <h1>Product not found</h1>
+              <p>The selected item could not be loaded.</p>
+            </div>
+          `;
+          return;
+        }
+
+        const images = getProductImages(product);
+        let currentImageIndex = 0;
+
+        page.innerHTML = `
+          <div class="product-layout">
+            <div class="product-gallery">
+              <div class="product-image-wrap">
+                <img id="product-main-image" src="${images[0]}" alt="${product.name}" />
+              </div>
+              <input
+                id="product-slider"
+                class="product-slider"
+                type="range"
+                min="0"
+                max="${Math.max(images.length - 1, 0)}"
+                value="0"
+                aria-label="Choose product image"
+              />
+            </div>
+            <div class="product-content">
+              <div class="eyebrow">Skincare</div>
+              <h1 class="product-name">${product.name}</h1>
+              <div class="product-price">${formatPrice(product.price)}</div>
+
+              <div class="product-meta">
+                <div><span class="meta-label">SKU</span> ${product.sku || 'N/A'}</div>
+              </div>
+
+              <p class="product-description">${(product.description || '').replace(/\n/g, '<br />')}</p>
+
+              <button type="button" class="product-cta" data-product-id="${product.id}">
+                Add to cart — <span>${formatPrice(product.price)}</span>
+              </button>
+            </div>
+          </div>
+        `;
+
+        const mainImage = document.getElementById('product-main-image');
+        const slider = document.getElementById('product-slider');
+
+        function updateImage() {
+          if (!mainImage || !slider) return;
+          mainImage.src = images[Number(slider.value)];
+          mainImage.alt = `${product.name} ${Number(slider.value) + 1}`;
+        }
+
+        slider.addEventListener('input', (event) => {
+          currentImageIndex = Number(event.target.value);
+          updateImage();
+        });
+
+        const addButton = document.querySelector('.product-cta');
+        addButton?.addEventListener('click', async (event) => {
+          try {
+            const btn = event.currentTarget;
+            btn.disabled = true;
+            btn.textContent = 'Added to cart';
+            await addToCart(product.id);
+            setTimeout(() => {
+              btn.disabled = false;
+              btn.innerHTML = 'Add to cart — <span>' + formatPrice(product.price) + '</span>';
+            }, 1200);
+          } catch (error) {
+            console.error(error);
+            addButton.textContent = 'Unable to add';
+            setTimeout(() => {
+              addButton.innerHTML = 'Add to cart — <span>' + formatPrice(product.price) + '</span>';
+            }, 1200);
+          }
+        });
+
+        updateAuthUI();
+        updateCartCount();
+      } catch (error) {
+        console.error(error);
+        page.innerHTML = `
+          <div class="not-found">
+            <h1>Product unavailable</h1>
+            <p>We could not load this product right now.</p>
+          </div>
+        `;
+      }
+    }
+
+    loadProduct();
+  </script>
+</body>
+</html>
