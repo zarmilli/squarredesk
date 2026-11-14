@@ -19,6 +19,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
 type Profile = {
@@ -139,13 +144,24 @@ export default function HeaderRight({
             <Menu className="h-5 w-5" />
           </Button>
         )}
-        <Link to="/" aria-label="Go to dashboard" className="shrink-0">
-          <img
-            src="/images/logo.png"
-            alt="Squarredesk"
-            className="h-8 w-8 rounded-md object-contain"
-          />
-        </Link>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Link
+              to="/"
+              aria-label="Back to organisation dashboard"
+              className="shrink-0"
+            >
+              <img
+                src="/images/logo.png"
+                alt="Squarredesk"
+                className="h-8 w-8 rounded-md object-contain"
+              />
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">
+            Back to organisation dashboard
+          </TooltipContent>
+        </Tooltip>
         <div className="h-8 w-px shrink-0 bg-border" aria-hidden="true" />
         <p className="truncate text-sm font-medium">
           {businessName ? `${businessName}'s Workspace` : "Workspace"}
@@ -165,26 +181,36 @@ export default function HeaderRight({
           </Button>
         )}
 
-        <Button
-          type="button"
-          variant="outline"
-          size="icon"
-          aria-label="Notifications"
-          onClick={() => navigate("/notifications")}
-          className="h-9 w-9 rounded-full"
-        >
-          <Bell className="h-4 w-4" />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              aria-label="Notifications"
+              onClick={() => navigate("/notifications")}
+              className="h-9 w-9 rounded-full"
+            >
+              <Bell className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">Notifications</TooltipContent>
+        </Tooltip>
 
-        <Button
-          type="button"
-          variant="outline"
-          size="icon"
-          aria-label="Tasks"
-          className="h-9 w-9 rounded-full"
-        >
-          <CheckSquare className="h-4 w-4" />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              aria-label="Tasks"
+              className="h-9 w-9 rounded-full"
+            >
+              <CheckSquare className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">Tasks</TooltipContent>
+        </Tooltip>
 
         <Button
           type="button"

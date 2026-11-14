@@ -1,9 +1,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Search, Plus, ChevronDown } from "lucide-react";
 
 import { supabase } from "@/lib/supabase";
+import { useAppData } from "@/context/AppDataContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,13 +29,46 @@ type Site = {
 type SiteStatus = "published" | "draft";
 
 export default function Dashboard() {
-  const [sites, setSites] = useState<Site[]>([]);
+  const navigate = useNavigate();
+
+  const { user, profile, isLoading: isAppDataLoading, error: appDataError } = useAppData();
+
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilters, setStatusFilters] = useState<SiteStatus[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
-  const navigate = useNavigate();
+  // Redirect users who haven't completed onboarding
+  useEffect(() => {
+    if (!isAppDataLoading && user && profile?.onboarding_complete !== true) {
+      navigate("/onboarding", { replace: true });
+    }
+  }, [isAppDataLoading, user, profile?.onboarding_complete, navigate]);
+
+  // Fetch sites using TanStack Query
+  const {
+    data: sites = [],
+    isPending: isSitesLoading,
+    isError: isSitesError,
+    error: sitesError,
+    refetch: refetchSites,
+  } = useQuery<Site[]>({
+    queryKey: ["user-sites", user?.id],
+    enabled: !!user?.id && !isAppDataLoading && profile?.onboarding_complete === true,
+    queryFn: async () => {
+      if (!user?.id) throw new Error("User session not found.");
+
+      const { data, error } = await supabase
+        .from("user_sites")
+        .select("id, site_name, updated_at, is_published")
+        .eq("user_id", user.id)
+        .order("updated_at", { ascending: false });
+
+      if (error) throw error;
+
+      return (data ?? []) as Site[];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
   // Debounce search by 1.5 seconds
   useEffect(() => {
@@ -44,62 +79,6 @@ export default function Dashboard() {
     return () => window.clearTimeout(timeout);
   }, [searchInput]);
 
-  // Authentication and site loading
-  useEffect(() => {
-    let isMounted = true;
-
-    async function init() {
-      setIsLoading(true);
-
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!session) {
-        navigate("/#/auth/sign-in");
-        return;
-      }
-
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("onboarding_complete")
-        .eq("user_id", session.user.id)
-        .maybeSingle();
-
-      if (profileError) {
-        console.error("Profile loading error:", profileError);
-        if (isMounted) setIsLoading(false);
-        return;
-      }
-
-      if (!profile || profile.onboarding_complete !== true) {
-        navigate("/onboarding");
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from("user_sites")
-        .select("id, site_name, updated_at, is_published")
-        .eq("user_id", session.user.id)
-        .order("updated_at", { ascending: false });
-
-      if (error) {
-        console.error("Site loading error:", error);
-      }
-
-      if (isMounted) {
-        setSites(data ?? []);
-        setIsLoading(false);
-      }
-    }
-
-    init();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [navigate]);
-
   // Toggle published/draft filters
   function toggleStatus(status: SiteStatus) {
     setStatusFilters((current) =>
@@ -107,6 +86,11 @@ export default function Dashboard() {
         ? current.filter((item) => item !== status)
         : [...current, status]
     );
+  }
+
+  // Navigate to the selected site's overview
+  function openSite(siteId: string) {
+    navigate(`/overview?site=${encodeURIComponent(siteId)}`);
   }
 
   // Apply search and status filters together
@@ -137,6 +121,45 @@ export default function Dashboard() {
     });
   }
 
+  const isLoading = isAppDataLoading || isSitesLoading;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-full w-full px-6 pb-16 pt-20 sm:px-10 sm:pt-24 lg:px-16 lg:pt-28 xl:px-28">
+        <div className="mx-auto w-full max-w-6xl space-y-10">
+          <h1 className="text-2xl font-semibold tracking-tight">Sites</h1>
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {[1, 2, 3].map((item) => (
+              <div
+                key={item}
+                className="h-[220px] animate-pulse rounded-xl border bg-muted/30"
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (appDataError || isSitesError) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 px-6 text-center">
+        <p className="text-base font-medium">Unable to load your dashboard.</p>
+        <p className="text-sm text-muted-foreground">
+          {sitesError instanceof Error
+            ? sitesError.message
+            : "Something went wrong while retrieving your account data."}
+        </p>
+        <Button onClick={() => refetchSites()} variant="outline" size="sm">
+          Try again
+        </Button>
+      </div>
+    );
+  }
+
+  // The onboarding redirect is handled by the effect above.
+  if (!user || profile?.onboarding_complete !== true) return null;
+
   return (
     <div className="min-h-full w-full px-6 pb-16 pt-20 custom-scrollbar sm:px-10 sm:pt-24 lg:px-16 lg:pb-20 lg:pt-28 xl:px-28">
       <div className="mx-auto w-full max-w-6xl space-y-10">
@@ -148,6 +171,7 @@ export default function Dashboard() {
 
         {/* TOOLBAR */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+
           {/* SEARCH */}
           <div className="relative w-full sm:max-w-[360px]">
             <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
@@ -221,16 +245,7 @@ export default function Dashboard() {
         </div>
 
         {/* SITES GRID */}
-        {isLoading ? (
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {[1, 2, 3].map((item) => (
-              <div
-                key={item}
-                className="h-[220px] animate-pulse rounded-xl border bg-muted/30"
-              />
-            ))}
-          </div>
-        ) : filteredSites.length === 0 ? (
+        {filteredSites.length === 0 ? (
           <div className="flex min-h-[320px] flex-col items-center justify-center gap-2 text-center">
             {sites.length === 0 && (
               <img
@@ -239,16 +254,19 @@ export default function Dashboard() {
                 className="mb-3 h-36 w-36 object-contain"
               />
             )}
+
             <p className="text-base font-medium">
               {sites.length === 0
                 ? "You haven't created any sites yet."
-                : "No sites match your filters."}
+                : "Eii saarn! No sites match your filters."}
             </p>
+
             <p className="text-sm text-muted-foreground">
               {sites.length === 0
                 ? "Create your first site to get started."
                 : "Try changing your search or status filters."}
             </p>
+
             {sites.length === 0 && (
               <Button
                 onClick={() => navigate("/create-site")}
@@ -264,7 +282,17 @@ export default function Dashboard() {
             {filteredSites.map((site) => (
               <Card
                 key={site.id}
-                className="flex h-[220px] flex-col justify-between rounded-xl border bg-card p-6 shadow-none transition-all hover:border-foreground/20 hover:shadow-sm"
+                role="link"
+                tabIndex={0}
+                aria-label={`Open ${site.site_name} overview`}
+                onClick={() => openSite(site.id)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    openSite(site.id);
+                  }
+                }}
+                className="flex h-[220px] cursor-pointer flex-col justify-between rounded-xl border bg-card p-6 text-left shadow-none transition-all hover:border-foreground/20 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 {/* SITE DETAILS */}
                 <div>
