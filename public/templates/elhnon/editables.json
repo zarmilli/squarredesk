@@ -57,7 +57,7 @@
   },
 
   "editor": {
-    "site_name": { "type": "text", "label": "My example shop" },
+    "site_name": { "type": "text", "label": "Site name" },
 
     "banner_text": { "type": "text", "label": "News banner text" },
     "banner_link": { "type": "url",  "label": "News banner link" },

@@ -5,8 +5,8 @@ import App from "./App"
 import "./index.css";
 
 const rootElement = document.documentElement;
-rootElement.classList.add("dark");
-rootElement.style.colorScheme = "dark";
+rootElement.classList.remove("dark");
+rootElement.style.colorScheme = "light";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

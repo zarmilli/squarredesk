@@ -18,6 +18,7 @@ import {
   Wallet,
   BarChart3,
   MessagesSquare,
+  ListTodo,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -45,6 +46,11 @@ const navItems = [
     title: "Messages",
     href: "/messages",
     icon: MessagesSquare,
+  },
+  {
+    title: "Tasks",
+    href: "/tasks",
+    icon: ListTodo,
   },
   {
     title: "My Sites",
@@ -109,28 +115,23 @@ export function Sidebar({
       return;
     }
     onClose?.();
-    navigate("https://squarre.vercel.app/");
+    navigate("https://squarreonline.vercel.app/");
   };
 
   return (
     <aside className="w-60 bg-white lg:bg-transparent flex flex-col relative z-10 h-full border-r border-stone-200 lg:border-0">
-      {/* Brand Header */}
-      <div className="p-6 pb-0 relative z-10 flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-foreground">
-          Squarredesk
-        </h1>
-        {/* Close button for mobile */}
-        {onClose && (
+      {onClose && (
+        <div className="flex justify-end p-2 lg:hidden">
           <Button
             variant="ghost"
             size="sm"
             onClick={onClose}
-            className="lg:hidden p-1 text-stone-600 hover:text-stone-50 hover:bg-[#121212] border-0 shadow-none ring-0"
+            className="p-1 text-stone-600 hover:bg-[#121212] hover:text-stone-50"
           >
             <X className="h-5 w-5" />
           </Button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-2 relative z-10">

@@ -1,0 +1,6 @@
+{
+"editor": {
+    "nav_cta": { "type": "text", "label": "Navbar CTA text" },
+    "hero_image": { "type": "image", "label": "Hero section image" }
+    }
+}

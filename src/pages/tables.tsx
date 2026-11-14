@@ -103,7 +103,7 @@ export default function Tables() {
   }
 
   function LinkCell({ url }: { url: string | null }) {
-    if (!url) return <span className="text-stone-400">—</span>;
+    if (!url) return <span className="text-muted-foreground">—</span>;
     return (
       <a
         href={url}
@@ -121,52 +121,52 @@ export default function Tables() {
       <div className="space-y-6">
 
         {/* WEBSITES TABLE */}
-        <Card className="border-stone-800">
-          <CardHeader className="border-b border-stone-800">
-            <CardTitle className="text-lg font-semibold text-stone-300">
+        <Card className="border-border">
+          <CardHeader className="border-b border-border">
+            <CardTitle className="text-lg font-semibold text-foreground">
               My Websites
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-transparent border-b border-stone-800">
+                <thead className="border-b border-border">
                   <tr>
                     {["WEBSITE", "LINK", "STATUS", "CREATED", "SEO", "Inventory"].map((h) => (
                       <th
                         key={h}
-                        className="px-6 py-3 text-left text-xs font-normal text-stone-500 uppercase tracking-wider"
+                        className="px-6 py-3 text-left text-xs font-normal text-muted-foreground uppercase tracking-wider"
                       >
                         {h}
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="bg-[#121212] divide-y divide-stone-200">
+                <tbody className="divide-y divide-border">
                   {sites.length === 0 ? (
                     <tr>
                       <td
                         colSpan={6}
-                        className="px-6 py-12 text-center text-sm text-stone-400"
+                        className="px-6 py-12 text-center text-sm text-muted-foreground"
                       >
                         No websites yet.
                       </td>
                     </tr>
                   ) : (
                     sites.map((site) => (
-                      <tr key={site.id} className="hover:bg-transparent hover:bg-stone-800 transition-colors duration-200">
+                      <tr key={site.id} className="transition-colors duration-200 hover:bg-muted/50">
 
                         {/* WEBSITE */}
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-stone-800 text-white flex items-center justify-center text-sm font-semibold shrink-0">
+                            <div className="w-10 h-10 rounded-full bg-muted text-muted-foreground flex items-center justify-center text-sm font-semibold shrink-0">
                               {site.site_name?.charAt(0).toUpperCase() ?? "?"}
                             </div>
                             <div>
-                              <div className="text-sm font-medium text-stone-300">
+                              <div className="text-sm font-medium text-foreground">
                                 {site.site_name}
                               </div>
-                              <div className="text-sm text-stone-500">
+                              <div className="text-sm text-muted-foreground">
                                 Made from {site.template_name}
                               </div>
                             </div>
@@ -192,7 +192,7 @@ export default function Tables() {
                         </td>
 
                         {/* CREATED */}
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-stone-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                           {formatDate(site.created_at)}
                         </td>
 
@@ -229,9 +229,9 @@ export default function Tables() {
 
           {/* Blurred table */}
           <div className="pointer-events-none select-none">
-            <Card className="border-stone-800 bg-black/70 backdrop-blur-sm">
-              <CardHeader className="border-b border-stone-800">
-                <CardTitle className="text-lg font-semibold text-stone-300">
+            <Card className="border-border bg-card/70 backdrop-blur-sm">
+              <CardHeader className="border-b border-border">
+                <CardTitle className="text-lg font-semibold text-foreground">
                   Projects table
                 </CardTitle>
               </CardHeader>
@@ -243,14 +243,14 @@ export default function Tables() {
                         {["PROJECT", "BUDGET", "STATUS", "COMPLETION", "ACTION"].map((h) => (
                           <th
                             key={h}
-                            className="px-6 py-3 text-left text-xs font-normal text-stone-500 uppercase tracking-wider"
+                            className="px-6 py-3 text-left text-xs font-normal text-muted-foreground uppercase tracking-wider"
                           >
                             {h}
                           </th>
                         ))}
                       </tr>
                     </thead>
-                    <tbody className="bg-transparent divide-y divide-stone-200">
+                    <tbody className="divide-y divide-border">
                       {projectsData.map((project) => (
                         <tr key={project.id}>
                           <td className="px-6 py-4 whitespace-nowrap">
@@ -263,12 +263,12 @@ export default function Tables() {
                               >
                                 {project.icon.charAt(0).toUpperCase()}
                               </div>
-                              <span className="font-normal text-stone-300">
+                              <span className="font-normal text-foreground">
                                 {project.name}
                               </span>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-stone-300">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                             {project.budget}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
@@ -276,7 +276,7 @@ export default function Tables() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
-                              <span className="text-sm text-stone-600 mr-2">
+                              <span className="text-sm text-muted-foreground mr-2">
                                 {project.completion}%
                               </span>
                               <Progress value={project.completion} className="w-32 h-2" />

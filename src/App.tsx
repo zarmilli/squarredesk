@@ -4,12 +4,10 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Footer } from "@/components/layout/footer";
 import HeaderRight from "@/components/layout/header-right";
 import { ThemeConfigurator } from "@/components/theme-configurator";
-import { Menu } from "lucide-react";
 import { useState } from "react";
 import FullscreenPrompt from "@/components/FullscreenPrompt";
 
@@ -36,6 +34,7 @@ import Stats from "@/pages/stats";
 import Overview from "@/pages/overview";
 import AccountOpen from "@/pages/accountOpen";
 import Messages from "@/pages/messages";
+import TasksPage from "@/pages/tasks";
 
 import { AuthProvider } from "@/context/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -47,58 +46,72 @@ function Layout({
   children,
   title,
   description,
+  showSidebar = true,
+  showCard = true,
 }: {
   children: React.ReactNode;
   title?: string;
   description?: string;
+  showSidebar?: boolean;
+  showCard?: boolean;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [themeConfigOpen, setThemeConfigOpen] = useState(false);
 
+  const pageContent = (
+    <>
+      {title && (
+        <div className="pt-6 px-6 pb-4">
+          <h1 className="text-xl font-semibold text-foreground">{title}</h1>
+          {description && <p className="text-sm text-muted-foreground">{description}</p>}
+          <div className="border-b border-border mt-4" />
+        </div>
+      )}
+      {children}
+    </>
+  );
+
   return (
-    <div className="flex h-screen bg-background text-foreground">
-      {sidebarOpen && (
+    <div className="flex h-screen flex-col bg-background text-foreground">
+      <HeaderRight
+        onOpenSettings={() => setThemeConfigOpen(true)}
+        onOpenSidebar={showSidebar ? () => setSidebarOpen(true) : undefined}
+      />
+
+      {showSidebar && sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="fixed inset-x-0 bottom-0 top-16 z-30 bg-black/50 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      <div
-        className={`fixed lg:static inset-y-0 left-0 z-40 lg:z-10 transform ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0 transition-transform`}
-      >
-        <Sidebar onClose={() => setSidebarOpen(false)} />
-      </div>
-
-      <main className="flex-1 overflow-y-auto p-3 lg:p-6 flex flex-col">
-        <div className="flex items-center justify-between mb-4">
-          <div className="lg:hidden">
-            <Button variant="ghost" size="sm" onClick={() => setSidebarOpen(true)}>
-              <Menu className="h-6 w-6" />
-            </Button>
+      <div className="flex min-h-0 flex-1">
+        {showSidebar && (
+          <div
+            className={`fixed top-16 bottom-0 left-0 z-40 transform ${
+              sidebarOpen ? "translate-x-0" : "-translate-x-full"
+            } transition-transform lg:static lg:z-10 lg:translate-x-0`}
+          >
+            <Sidebar onClose={() => setSidebarOpen(false)} />
           </div>
+        )}
 
-          <div className="ml-auto">
-            <HeaderRight />
-          </div>
-        </div>
-
-        <Card className="flex-1 border border-border bg-card text-card-foreground">
-          {title && (
-            <div className="pt-6 px-6 pb-4">
-              <h1 className="text-xl font-semibold text-foreground">{title}</h1>
-              {description && <p className="text-sm text-muted-foreground">{description}</p>}
-              <div className="border-b border-border mt-4" />
-            </div>
+        <main
+          className={`flex min-w-0 flex-1 flex-col overflow-y-auto ${
+            showCard ? "p-3 lg:p-6" : "p-0"
+          }`}
+        >
+          {showCard ? (
+            <Card className="flex-1 border border-border bg-card text-card-foreground">
+              {pageContent}
+            </Card>
+          ) : (
+            <div className="flex-1">{pageContent}</div>
           )}
 
-          {children}
-        </Card>
-
-        <Footer />
-      </main>
+          <Footer />
+        </main>
+      </div>
 
       <ThemeConfigurator isOpen={themeConfigOpen} onClose={() => setThemeConfigOpen(false)} />
     </div>
@@ -109,9 +122,10 @@ function Router() {
   return (
     <Routes>
       {/* Dashboard routes */}
-      <Route path="/" element={<ProtectedRoute><Layout><Dashboard /></Layout></ProtectedRoute>} />
+      <Route path="/" element={<ProtectedRoute><Layout showSidebar={false} showCard={false}><Dashboard /></Layout></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><Layout title="Profile"><Profile /></Layout></ProtectedRoute>} />
       <Route path="/messages" element={<ProtectedRoute><Layout title="Messages"><Messages /></Layout></ProtectedRoute>} />
+      <Route path="/tasks" element={<ProtectedRoute><Layout title="Tasks"><TasksPage /></Layout></ProtectedRoute>} />
       <Route path="/tables" element={<ProtectedRoute><Layout title="My Sites"><Tables /></Layout></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><Layout title="Notifications"><Notifications /></Layout></ProtectedRoute>} />
       <Route path="/subscriptions" element={<ProtectedRoute><Layout title="Subscriptions"><Subscriptions /></Layout></ProtectedRoute>} />

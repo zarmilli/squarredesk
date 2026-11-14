@@ -1,17 +1,21 @@
-import { useEffect, useState } from "react";
+
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Search, Plus, ChevronDown } from "lucide-react";
 
 import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import GenerateButton from "@/components/ui/generateButton";
-import { Badge } from "@/components/base/badges/badges";
+import { Input } from "@/components/ui/input";
 import { BadgeWithDot } from "@/components/base/badges/badges";
-
-import peopleBackground from "/images/header.png";
-import squeakImage from "/images/squeakImage.png";
-import showcase from "/images/showcase.gif";
-import EditButton from "@/components/ui/EditButton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type Site = {
   id: string;
@@ -20,125 +24,262 @@ type Site = {
   is_published: boolean;
 };
 
+type SiteStatus = "published" | "draft";
+
 export default function Dashboard() {
   const [sites, setSites] = useState<Site[]>([]);
+  const [searchInput, setSearchInput] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [statusFilters, setStatusFilters] = useState<SiteStatus[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const navigate = useNavigate();
 
+  // Debounce search by 1.5 seconds
   useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      setDebouncedSearch(searchInput.trim().toLowerCase());
+    }, 1500);
+
+    return () => window.clearTimeout(timeout);
+  }, [searchInput]);
+
+  // Authentication and site loading
+  useEffect(() => {
+    let isMounted = true;
+
+    async function init() {
+      setIsLoading(true);
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        navigate("/#/auth/sign-in");
+        return;
+      }
+
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("onboarding_complete")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+
+      if (profileError) {
+        console.error("Profile loading error:", profileError);
+        if (isMounted) setIsLoading(false);
+        return;
+      }
+
+      if (!profile || profile.onboarding_complete !== true) {
+        navigate("/onboarding");
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("user_sites")
+        .select("id, site_name, updated_at, is_published")
+        .eq("user_id", session.user.id)
+        .order("updated_at", { ascending: false });
+
+      if (error) {
+        console.error("Site loading error:", error);
+      }
+
+      if (isMounted) {
+        setSites(data ?? []);
+        setIsLoading(false);
+      }
+    }
+
     init();
-  }, []);
 
-  async function init() {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
+    return () => {
+      isMounted = false;
+    };
+  }, [navigate]);
 
-    if (!session) {
-      navigate("/#/auth/sign-in");
-      return;
-    }
+  // Toggle published/draft filters
+  function toggleStatus(status: SiteStatus) {
+    setStatusFilters((current) =>
+      current.includes(status)
+        ? current.filter((item) => item !== status)
+        : [...current, status]
+    );
+  }
 
-    // ✅ ONBOARDING CHECK (FIXED)
-    const { data: profile, error } = await supabase
-      .from("profiles")
-      .select("onboarding_complete")
-      .eq("user_id", session.user.id)
-      .maybeSingle();
+  // Apply search and status filters together
+  const filteredSites = useMemo(() => {
+    return sites.filter((site) => {
+      const matchesSearch = site.site_name
+        .toLowerCase()
+        .includes(debouncedSearch);
 
-    if (error) {
-      console.error(error);
-    }
+      const siteStatus: SiteStatus = site.is_published
+        ? "published"
+        : "draft";
 
-    // Not onboarded → onboarding page
-    if (!profile || profile.onboarding_complete !== true) {
-      navigate("/onboarding");
-      return;
-    }
-    // ✅ END ONBOARDING CHECK
+      const matchesStatus =
+        statusFilters.length === 0 || statusFilters.includes(siteStatus);
 
-    const { data } = await supabase
-      .from("user_sites")
-      .select("id, site_name, updated_at, is_published")
-      .eq("user_id", session.user.id)
-      .order("updated_at", { ascending: false });
+      return matchesSearch && matchesStatus;
+    });
+  }, [sites, debouncedSearch, statusFilters]);
 
-    if (data) setSites(data);
+  function formatDate(dateString: string) {
+    if (!dateString) return "—";
+
+    return new Date(dateString).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
   }
 
   return (
-    <div className="h-full overflow-y-auto p-6 space-y-6 custom-scrollbar">
-      {/* HERO */}
-      <Card className="relative overflow-hidden rounded-md border border-white/10 bg-zinc-950">
-        <div className="relative h-72 overflow-hidden">
-          <div
-            className="absolute inset-0 scale-105 bg-cover bg-center blur-[0px]"
-            style={{ backgroundImage: `url(${peopleBackground})` }}
-          />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.86)_0%,rgba(0,0,0,0.5)_48%,rgba(0,0,0,0.22)_100%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.14),transparent_58%)]" />
+    <div className="min-h-full w-full px-6 pb-16 pt-20 custom-scrollbar sm:px-10 sm:pt-24 lg:px-16 lg:pb-20 lg:pt-28 xl:px-28">
+      <div className="mx-auto w-full max-w-6xl space-y-10">
 
-          <div className="absolute top-1/2 right-6 h-[78%] w-[34%] max-w-[320px] -translate-y-1/2 overflow-hidden rounded-[0.5rem] border border-white/15 shadow-2xl">
-            <img
-              src={showcase}
-              alt="Featured preview"
-              className="h-full w-full object-cover"
+        {/* PAGE TITLE */}
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Sites</h1>
+        </div>
+
+        {/* TOOLBAR */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          {/* SEARCH */}
+          <div className="relative w-full sm:max-w-[360px]">
+            <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Search for a site"
+              className="h-9 rounded-md pl-9 text-sm"
             />
           </div>
 
-          <div className="relative z-10 flex h-full items-center p-8">
-            <div className="max-w-lg">
-              <h2 className="mb-4 text-3xl font-bold text-white">
-                Create & Deploy A New Site
-              </h2>
+          <div className="flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="h-9 justify-between gap-2 rounded-md px-3 text-sm font-normal"
+                >
+                  Status
+                  {statusFilters.length > 0 && (
+                    <span className="text-xs text-muted-foreground">
+                      ({statusFilters.length})
+                    </span>
+                  )}
+                  <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                </Button>
+              </DropdownMenuTrigger>
 
-              <p className="mb-6 text-lg leading-relaxed text-stone-200">
-                Browse from our range of stunning templates and launch your next
-                website in minutes.
-              </p>
+              <DropdownMenuContent align="start" className="w-48">
+                <DropdownMenuLabel>Filter by status</DropdownMenuLabel>
+                <DropdownMenuSeparator />
 
-              <GenerateButton onClick={() => navigate("/create-site")}>
-                Generate New Site
-              </GenerateButton>
-            </div>
+                <DropdownMenuCheckboxItem
+                  checked={statusFilters.includes("published")}
+                  onCheckedChange={() => toggleStatus("published")}
+                >
+                  Published
+                </DropdownMenuCheckboxItem>
+
+                <DropdownMenuCheckboxItem
+                  checked={statusFilters.includes("draft")}
+                  onCheckedChange={() => toggleStatus("draft")}
+                >
+                  Draft
+                </DropdownMenuCheckboxItem>
+
+                {statusFilters.length > 0 && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-full justify-start px-2 font-normal"
+                      onClick={() => setStatusFilters([])}
+                    >
+                      Clear filters
+                    </Button>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Button
+              onClick={() => navigate("/create-site")}
+              className="h-9 gap-2 rounded-md bg-emerald-700 px-3 text-sm text-white hover:bg-emerald-800"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              New site
+            </Button>
           </div>
         </div>
-      </Card>
 
-      {/* SECTION TITLE */}
-      <h2 className="mt-8 mb-4 text-xl font-semibold tracking-tight">
-        My websites
-      </h2>
-
-      {/* SITES GRID */}
-      {sites.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-4 py-16">
-          <img src={squeakImage} className="w-32" alt="Squeak the parrot" />
-          <p className="text-lg font-medium">Squeak sees no websites yet</p>
-        </div>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-3">
-          {sites.map((site) => {
-            const date = site.updated_at
-              ? new Date(site.updated_at).toLocaleDateString("en-GB", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                })
-              : "—";
-
-            return (
+        {/* SITES GRID */}
+        {isLoading ? (
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {[1, 2, 3].map((item) => (
+              <div
+                key={item}
+                className="h-[220px] animate-pulse rounded-xl border bg-muted/30"
+              />
+            ))}
+          </div>
+        ) : filteredSites.length === 0 ? (
+          <div className="flex min-h-[320px] flex-col items-center justify-center gap-2 text-center">
+            {sites.length === 0 && (
+              <img
+                src="/images/squeakImage.png"
+                alt="Squeak mascot"
+                className="mb-3 h-36 w-36 object-contain"
+              />
+            )}
+            <p className="text-base font-medium">
+              {sites.length === 0
+                ? "You haven't created any sites yet."
+                : "No sites match your filters."}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {sites.length === 0
+                ? "Create your first site to get started."
+                : "Try changing your search or status filters."}
+            </p>
+            {sites.length === 0 && (
+              <Button
+                onClick={() => navigate("/create-site")}
+                className="mt-3 h-9 gap-2 rounded-md px-3 text-sm"
+              >
+                <Plus className="h-4 w-4" />
+                Create a site
+              </Button>
+            )}
+          </div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {filteredSites.map((site) => (
               <Card
                 key={site.id}
-                className="flex h-44 flex-col justify-between p-4 border border-white/10 transition-shadow hover:shadow-md"
+                className="flex h-[220px] flex-col justify-between rounded-xl border bg-card p-6 shadow-none transition-all hover:border-foreground/20 hover:shadow-sm"
               >
-                {/* Top */}
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="text-sm font-semibold">{site.site_name}</div>
-                    <div className="mt-1 text-xs text-muted-foreground">
-                      Last edited {date}
-                    </div>
-                  </div>
+                {/* SITE DETAILS */}
+                <div>
+                  <h3 className="text-base font-medium tracking-tight">
+                    {site.site_name}
+                  </h3>
+
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Last edited {formatDate(site.updated_at)}
+                  </p>
+                </div>
+
+                {/* CARD FOOTER */}
+                <div className="flex items-center justify-between">
+                  <div />
 
                   <BadgeWithDot
                     type="pill-color"
@@ -148,14 +289,11 @@ export default function Dashboard() {
                     {site.is_published ? "Published" : "Draft"}
                   </BadgeWithDot>
                 </div>
-
-                {/* Bottom */}
-                <EditButton onClick={() => navigate(`/editor?site=${site.id}`)} />
               </Card>
-            );
-          })}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

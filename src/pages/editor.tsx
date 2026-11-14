@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { Check, ChevronDown } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import BackButton from "@/components/ui/BackButton";
@@ -7,6 +8,11 @@ import SaveButton from "@/components/ui/SaveButton";
 import PublishButton from "@/components/ui/PublishButton";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import UploadFile from "@/components/ui/uploadfile";
 import { BadgeWithDot } from "@/components/base/badges/badges";
 import { useToast } from "@/hooks/use-toast";
@@ -236,6 +242,38 @@ async function applyBlocks(
   return html;
 }
 
+const IFRAME_SCROLLBAR_STYLES = `
+html {
+  scrollbar-color: oklch(0.708 0 0) transparent;
+  scrollbar-width: thin;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 8px;
+}
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background: transparent;
+}
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background: oklch(0.708 0 0);
+  border-radius: 4px;
+}
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.556 0 0);
+}
+`;
+
+function injectIframeScrollbarStyles(doc: Document) {
+  if (doc.getElementById("editor-iframe-scrollbar")) return;
+  const style = doc.createElement("style");
+  style.id = "editor-iframe-scrollbar";
+  style.textContent = IFRAME_SCROLLBAR_STYLES;
+  doc.head?.appendChild(style);
+}
+
 function BlockVariantCard({
   slot,
   variant,
@@ -254,10 +292,10 @@ function BlockVariantCard({
       type="button"
       onClick={onSelect}
       className={cn(
-        "w-full overflow-hidden rounded-lg border-2 text-left transition-all",
+        "w-full overflow-hidden rounded-lg border-2 bg-card text-left text-card-foreground transition-all",
         isSelected
-          ? "border-stone-900 shadow-md"
-          : "border-stone-200 hover:border-stone-400"
+          ? "border-primary shadow-md"
+          : "border-border hover:border-ring"
       )}
     >
       <img
@@ -265,11 +303,11 @@ function BlockVariantCard({
         alt={`${variant} variant`}
         className="w-full"
       />
-      <div className="flex items-center justify-between bg-[#121212] px-2 py-1.5">
-        <span className="text-xs font-medium capitalize text-stone-700">
+      <div className="flex items-center justify-between bg-card px-2 py-1.5">
+        <span className="text-xs font-medium capitalize">
           {variant}
         </span>
-        {isSelected && <span className="text-xs text-stone-400">Active</span>}
+        {isSelected && <span className="text-xs text-muted-foreground">Active</span>}
       </div>
     </button>
   );
@@ -303,6 +341,7 @@ export default function Editor() {
   const [blocks, setBlocks] = useState<Record<string, string>>({});
   const [availableBlocks, setAvailableBlocks] = useState<BlockSlot[]>([]);
   const [themesOpen, setThemesOpen] = useState(false);
+  const [pageMenuOpen, setPageMenuOpen] = useState(false);
   const [userId, setUserId] = useState("");
   const [dirty, setDirty] = useState(false);
   const [lastSaved, setLastSaved] = useState<string | null>(null);
@@ -414,6 +453,7 @@ export default function Editor() {
     doc.open();
     doc.write(assembledHtml);
     doc.close();
+    injectIframeScrollbarStyles(doc);
     captureRepeatTemplates(page.file);
     applyContent(pageContent, page.file);
   }
@@ -464,6 +504,7 @@ export default function Editor() {
     doc.open();
     doc.write(assembled);
     doc.close();
+    injectIframeScrollbarStyles(doc);
     captureRepeatTemplates(activePage.file);
     applyContent(content, activePage.file);
     scrollIframeToBlock(slot);
@@ -1014,9 +1055,9 @@ export default function Editor() {
   // ─── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="h-screen flex flex-col">
-      {/* TOP BAR */}
-      <div className="border-b bg-[--background] px-4 py-2 flex items-center justify-between shrink-0">
+    <div className="flex h-screen flex-col gap-2 bg-background p-2">
+      {/* TOP BAR — floating full-width card */}
+      <div className="flex w-full shrink-0 items-center justify-between rounded-lg border border-border/60 bg-card px-3 py-1.5 shadow-sm">
         <div className="flex gap-2">
           <BackButton onClick={handleBack} />
           <SaveButton onClick={() => persist(true)} />
@@ -1034,12 +1075,11 @@ export default function Editor() {
         </div>
       </div>
 
-      <div className="flex flex-1 overflow-hidden">
-        {/* EDITOR PANEL */}
-        <div className="flex w-[360px] shrink-0 flex-col border-r bg-[--card]">
-
+      <div className="flex min-h-0 flex-1 gap-2 overflow-hidden">
+        {/* EDITOR PANEL — floating card */}
+        <div className="flex w-[360px] shrink-0 flex-col overflow-hidden rounded-xl border border-border/60 bg-card shadow-sm">
           {/* Site name + page selector */}
-          <div className="space-y-3 border-b p-4">
+          <div className="space-y-3 border-b border-border/50 p-4">
             <div className="flex items-center justify-between gap-2">
               <h2 className="truncate text-sm font-semibold">{siteName}</h2>
               {availableBlocks.length > 0 && (
@@ -1052,40 +1092,75 @@ export default function Editor() {
             {/* Page dropdown — only shown when the template has multiple pages */}
             {pages.length > 1 && (
               <div className="space-y-1">
-                <p className="text-xs text-gray-500 font-medium">Editing page</p>
-                <select
-                  className="w-full border rounded-md px-3 py-2 text-sm bg-[--background] focus:outline-none focus:ring-2 focus:ring-ring"
-                  value={activePage?.file ?? ""}
-                  onChange={(e) => handlePageChange(e.target.value)}
-                >
-                  {pages.map((page) => (
-                    <option key={page.file} value={page.file}>
-                      {page.label}
-                    </option>
-                  ))}
-                </select>
+                <p className="text-xs font-medium text-muted-foreground">Editing page</p>
+                <Popover open={pageMenuOpen} onOpenChange={setPageMenuOpen}>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className="flex w-full items-center justify-between rounded-lg border border-border/60 bg-background px-3 py-2 text-left text-sm shadow-sm transition-colors hover:bg-accent/50 focus:outline-none focus:ring-2 focus:ring-ring"
+                    >
+                      <span className="truncate font-medium">
+                        {activePage?.label ?? "Select page"}
+                      </span>
+                      <ChevronDown
+                        className={cn(
+                          "size-4 shrink-0 text-muted-foreground transition-transform",
+                          pageMenuOpen && "rotate-180"
+                        )}
+                      />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    align="start"
+                    className="w-[var(--radix-popover-trigger-width)] rounded-lg border border-border/60 bg-card p-1.5 shadow-md"
+                  >
+                    <div className="space-y-1">
+                      {pages.map((page) => {
+                        const selected = activePage?.file === page.file;
+                        return (
+                          <button
+                            key={page.file}
+                            type="button"
+                            onClick={() => {
+                              setPageMenuOpen(false);
+                              void handlePageChange(page.file);
+                            }}
+                            className={cn(
+                              "flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition-colors",
+                              selected
+                                ? "bg-primary/15 text-foreground"
+                                : "text-foreground hover:bg-accent"
+                            )}
+                          >
+                            <span className="truncate font-medium">{page.label}</span>
+                            {selected && <Check className="size-4 shrink-0 text-primary" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
             )}
-
           </div>
 
           {/* Fields — section-filtered */}
-          <div className="editor-scrollbar flex-1 overflow-y-auto p-4 space-y-3">
+          <div className="editor-scrollbar flex-1 space-y-3 overflow-y-auto p-4">
             {editorFields.length === 0 ? (
-              <p className="text-xs text-gray-400 text-center pt-8">
+              <p className="pt-8 text-center text-xs text-muted-foreground">
                 All fields on this page are managed in SEO or Inventory settings.
               </p>
             ) : (
               editorFields.map(([key, field]) => (
-                <Card key={key} className="p-3 border-0 bg-transparent space-y-2">
+                <Card key={key} className="space-y-2 border-0 bg-transparent p-3">
                   {field.type === "repeat" ? (
                     <>
-                      <p className="text-sm font-semibold mb-3">{field.label}</p>
+                      <p className="mb-3 text-sm font-semibold">{field.label}</p>
                       {renderRepeatGroup(key, field)}
                     </>
                   ) : (
                     <>
-                      <p className="text-sm font-medium mb-2">{field.label}</p>
+                      <p className="mb-2 text-sm font-medium">{field.label}</p>
                       {renderScalarInput(
                         key,
                         field,
@@ -1098,21 +1173,27 @@ export default function Editor() {
                 </Card>
               ))
             )}
-        </div>
           </div>
+        </div>
 
-        {/* IFRAME PREVIEW */}
-        <iframe ref={iframeRef} className="flex-1 border-0" title="Site preview" />
+        {/* IFRAME PREVIEW — floating card */}
+        <div className="min-w-0 flex-1 overflow-hidden rounded-xl border border-border/60 bg-card shadow-sm">
+          <iframe
+            ref={iframeRef}
+            className="editor-scrollbar h-full w-full border-0 bg-white"
+            title="Site preview"
+          />
+        </div>
 
-        {/* THEMES PANEL */}
+        {/* THEMES PANEL — floating card */}
         <div
           className={cn(
-            "shrink-0 overflow-hidden border-l bg-[--card] transition-[width] duration-300 ease-in-out",
-            themesOpen ? "w-[320px]" : "w-0"
+            "shrink-0 overflow-hidden rounded-xl border border-border/60 bg-card shadow-sm transition-[width,opacity,margin] duration-300 ease-in-out",
+            themesOpen ? "mr-0 w-[320px] opacity-100" : "pointer-events-none mr-0 w-0 border-0 opacity-0 shadow-none"
           )}
         >
-          <div className="h-full w-[320px] overflow-y-auto editor-scrollbar">
-            <div className="sticky top-0 z-10 flex items-center justify-between border-b bg-[--card] px-4 py-3">
+          <div className="editor-scrollbar h-full w-[320px] overflow-y-auto">
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border/50 bg-card px-4 py-3">
               <h2 className="text-sm font-semibold">Themes</h2>
               <Button size="sm" variant="outline" onClick={() => setThemesOpen(false)}>
                 Back
@@ -1121,7 +1202,7 @@ export default function Editor() {
             <div className="space-y-6 p-4">
               {availableBlocks.map(({ slot, variants, current }) => (
                 <div key={slot}>
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-stone-400">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     {slot}
                   </p>
                   <div className="grid grid-cols-2 gap-2">
