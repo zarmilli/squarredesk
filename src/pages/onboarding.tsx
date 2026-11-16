@@ -80,6 +80,9 @@ export default function Onboarding() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingBusinesses, setIsLoadingBusinesses] = useState(false);
 
+  const [isCheckingMembership, setIsCheckingMembership] = useState(true);
+  const [membershipCheckError, setMembershipCheckError] = useState<string | null>(null);
+
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null);
 
@@ -109,69 +112,173 @@ export default function Onboarding() {
   });
 
   useEffect(() => {
-    if (isAppDataLoading || !user || !profile) return;
+    let isMounted = true;
 
-    if (profile.onboarding_complete === true) {
-      navigate("/", { replace: true });
+    async function initialiseOnboarding() {
+      if (isAppDataLoading || !user || !profile) return;
+
+      setIsCheckingMembership(true);
+      setMembershipCheckError(null);
+
+      try {
+        // Completed onboarding accounts can enter the application.
+        if (profile.onboarding_complete === true) {
+          navigate("/", { replace: true });
+          return;
+        }
+
+        // Find the user's latest staff membership.
+        const { data: request, error } = await supabase
+          .from("business_members")
+          .select("id, business_id, status, role")
+          .eq("user_id", user.id)
+          .eq("role", "staff")
+          .in("status", ["pending", "active"])
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (error) throw error;
+        if (!isMounted) return;
+
+        // No pending or active staff membership: continue normal onboarding.
+        if (!request) return;
+
+        // Pending request: restore the awaiting approval screen.
+        if (request.status === "pending") {
+          const { data: business, error: businessError } = await supabase
+            .from("businesses")
+            .select("id, company_name")
+            .eq("id", request.business_id)
+            .single();
+
+          if (businessError) throw businessError;
+          if (!isMounted) return;
+
+          setAccountType("employee");
+          setSelectedBusiness(business);
+          setScreen("pending");
+          return;
+        }
+
+        // Active request: complete employee onboarding.
+        if (request.status === "active") {
+          const { error: completionError } = await supabase
+            .from("profiles")
+            .update({
+              account_type: "employee",
+              onboarding_complete: true,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("user_id", user.id);
+
+          if (completionError) throw completionError;
+          if (!isMounted) return;
+
+          // Refresh the authenticated application data.
+          await refreshAppData();
+
+          if (!isMounted) return;
+
+          navigate("/", { replace: true });
+        }
+      } catch (error) {
+        console.error("ONBOARDING INITIALISATION ERROR:", error);
+
+        if (isMounted) {
+          setMembershipCheckError(
+            error instanceof Error
+              ? error.message
+              : "Unable to verify your organisation membership."
+          );
+        }
+      } finally {
+        if (isMounted) {
+          setIsCheckingMembership(false);
+        }
+      }
     }
-  }, [isAppDataLoading, user, profile, navigate]);
 
-  // --------------------------------------------------
-  // CHECK FOR AN EXISTING PENDING EMPLOYEE REQUEST
-  // --------------------------------------------------
+    initialiseOnboarding();
 
-useEffect(() => {
-  let isMounted = true;
+    return () => {
+      isMounted = false;
+    };
+  }, [
+    isAppDataLoading,
+    user,
+    profile,
+    navigate,
+    refreshAppData,
+  ]);
 
-  async function checkExistingRequest() {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
+  useEffect(() => {
+    if (!user?.id) return;
 
-    if (!session || !isMounted) return;
+    const channel = supabase
+      .channel(`onboarding-membership-${user.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "business_members",
+          filter: `user_id=eq.${user.id}`,
+        },
+        async (payload) => {
+          const updatedMembership = payload.new as {
+            user_id: string;
+            role: string;
+            status: string;
+          };
 
-    const { data: request, error } = await supabase
-      .from("business_members")
-      .select("id, business_id, status, role")
-      .eq("user_id", session.user.id)
-      .in("status", ["pending", "active"])
-      .eq("role", "staff")
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+          if (
+            updatedMembership.user_id !== user.id ||
+            updatedMembership.role !== "staff" ||
+            updatedMembership.status !== "active"
+          ) {
+            return;
+          }
 
-    if (error) {
-      console.error("MEMBERSHIP CHECK ERROR:", error);
-      return;
-    }
+          // Approval detected: complete employee onboarding.
+          const { error } = await supabase
+            .from("profiles")
+            .update({
+              account_type: "employee",
+              onboarding_complete: true,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("user_id", user.id);
 
-    if (!request || !isMounted) return;
+          if (error) {
+            console.error("EMPLOYEE ONBOARDING COMPLETION ERROR:", error);
 
-    if (request.status === "active") return;
+            toast({
+              title: "Approval received",
+              description:
+                "Your access was approved, but we couldn't finish setting up your account. Please refresh the page.",
+              variant: "destructive",
+            });
 
-    if (request.status === "pending") {
-      const { data: business } = await supabase
-        .from("businesses")
-        .select("id, company_name")
-        .eq("id", request.business_id)
-        .single();
+            return;
+          }
 
-      if (!isMounted) return;
+          await refreshAppData();
 
-      setAccountType("employee");
+          toast({
+            title: "Access approved!",
+            description: "Your organisation workspace is ready.",
+          });
 
-      if (business) setSelectedBusiness(business);
+          navigate("/", { replace: true });
+        }
+      )
+      .subscribe();
 
-      setScreen("pending");
-    }
-  }
-
-  checkExistingRequest();
-
-  return () => {
-    isMounted = false;
-  };
-}, [navigate]);
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, refreshAppData, navigate, toast]);
 
 
   // --------------------------------------------------
@@ -595,6 +702,40 @@ useEffect(() => {
   // --------------------------------------------------
   // ACCOUNT SELECTION SCREEN
   // --------------------------------------------------
+
+  if (isAppDataLoading || isCheckingMembership) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="text-center space-y-3">
+          <Loader2 className="h-7 w-7 animate-spin mx-auto text-stone-500" />
+          <p className="text-sm text-muted-foreground">
+            Checking your account...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (membershipCheckError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white px-6">
+        <div className="max-w-sm w-full text-center space-y-4">
+          <h1 className="text-xl font-semibold">
+            Unable to verify your access
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            We couldn't retrieve your organisation membership. Please try again.
+          </p>
+          <Button
+            className="w-full"
+            onClick={() => window.location.reload()}
+          >
+            Try again
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (screen === "selection") {
     const accountOptions = [
