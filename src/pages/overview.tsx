@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ArrowUpRight, MessageCircle } from "lucide-react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { ArrowUpRight } from "lucide-react";
 
-import { UserProfile1 } from "@/components/user-profile1";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,29 +10,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useAppData } from "@/context/AppDataContext";
-import { initialTasks } from "@/features/tasks/data/tasks";
-import { getOrCreateConversation } from "@/lib/messaging";
+import type { Task } from "@/features/tasks/data/schema";
+import {
+  businessTasksQueryKey,
+  fetchBusinessId,
+  fetchBusinessTasks,
+} from "@/features/tasks/data/queries";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
-
-type OverviewMember = {
-  user_id: string;
-  first_name: string | null;
-  last_name: string | null;
-  email: string;
-  avatar_url: string | null;
-  personal_bio: string | null;
-  business_location: string | null;
-  job_title: string | null;
-  role: string;
-};
 
 type OverviewSite = {
   id: string;
@@ -53,20 +47,12 @@ type PreviewPage = {
 
 type ContentMap = Record<string, any>;
 
-const latestTasks = initialTasks.slice(0, 5);
-
-function getName(member: OverviewMember) {
-  return [member.first_name, member.last_name].filter(Boolean).join(" ") || "Unnamed user";
-}
-
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
+function formatTaskDueDate(value: string) {
+  return new Date(`${value}T00:00:00`).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
 }
 
 function parseStoredContent(content: unknown): ContentMap {
@@ -233,103 +219,58 @@ function applyPreviewField(element: HTMLElement, value: any) {
 
 export default function Overview() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const selectedSiteId = searchParams.get("site");
   const { toast } = useToast();
-  const { user, membership, organisation } = useAppData();
+  const {
+    user,
+    membership,
+    organisation,
+    isLoading: isAppDataLoading,
+  } = useAppData();
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [members, setMembers] = useState<OverviewMember[]>([]);
-  const [membersLoading, setMembersLoading] = useState(true);
   const [site, setSite] = useState<OverviewSite | null>(null);
   const [siteLoading, setSiteLoading] = useState(true);
   const [previewError, setPreviewError] = useState<string | null>(null);
-  const [messagingUserId, setMessagingUserId] = useState<string | null>(null);
+
+  const currentBusinessId = membership?.business_id ?? organisation?.id ?? null;
+  const businessQuery = useQuery<string | null>({
+    queryKey: [
+      "tasks-business",
+      user?.id,
+      membership?.business_id,
+      organisation?.id,
+    ],
+    enabled: !!user?.id && !isAppDataLoading,
+    queryFn: async () => {
+      if (!user?.id) throw new Error("User session not found.");
+      return fetchBusinessId(user.id, currentBusinessId);
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+  const businessId = businessQuery.data ?? null;
+  const tasksQueryKey = businessTasksQueryKey(user?.id, businessId, site?.id ?? null);
+  const tasksQuery = useQuery<Task[]>({
+    queryKey: tasksQueryKey,
+    enabled: !!user?.id && !!businessId && !!site?.id && !isAppDataLoading,
+    queryFn: async () => {
+      if (!businessId || !site?.id) {
+        throw new Error("Business or site not found.");
+      }
+      return fetchBusinessTasks(businessId, site.id);
+    },
+  });
 
   useEffect(() => {
-    let active = true;
+    const error = businessQuery.error ?? tasksQuery.error;
+    if (!error) return;
 
-    async function loadMembers() {
-      if (!user) {
-        setMembers([]);
-        setMembersLoading(false);
-        return;
-      }
-
-      setMembersLoading(true);
-      try {
-        let businessId = membership?.business_id ?? organisation?.id;
-        if (!businessId) {
-          const { data: business, error: businessError } = await supabase
-            .from("businesses")
-            .select("id")
-            .eq("owner_user_id", user.id)
-            .maybeSingle();
-          if (businessError) throw businessError;
-          businessId = business?.id;
-        }
-
-        if (!businessId) {
-          if (active) setMembers([]);
-          return;
-        }
-
-        const { data: memberships, error: membershipsError } = await supabase
-          .from("business_members")
-          .select("user_id, role, job_title")
-          .eq("business_id", businessId)
-          .eq("status", "active")
-          .order("created_at", { ascending: false })
-          .limit(5);
-        if (membershipsError) throw membershipsError;
-
-        const memberIds = (memberships ?? []).map((row) => row.user_id);
-        if (memberIds.length === 0) {
-          if (active) setMembers([]);
-          return;
-        }
-
-        const { data: profiles, error: profilesError } = await supabase
-          .from("profiles")
-          .select(
-            "user_id, first_name, last_name, email, avatar_url, personal_bio, business_location"
-          )
-          .in("user_id", memberIds);
-        if (profilesError) throw profilesError;
-
-        const profilesById = new Map(
-          (profiles ?? []).map((profile) => [profile.user_id, profile])
-        );
-        const rows = (memberships ?? []).flatMap((member) => {
-          const profile = profilesById.get(member.user_id);
-          return profile
-            ? [
-                {
-                  ...profile,
-                  job_title: member.job_title,
-                  role: member.role,
-                } as OverviewMember,
-              ]
-            : [];
-        });
-        if (active) setMembers(rows);
-      } catch (error) {
-        console.error("Failed to load overview members:", error);
-        if (active) {
-          setMembers([]);
-          toast({
-            title: "Unable to load members",
-            description: "Please try again.",
-            variant: "destructive",
-          });
-        }
-      } finally {
-        if (active) setMembersLoading(false);
-      }
-    }
-
-    void loadMembers();
-    return () => {
-      active = false;
-    };
-  }, [user?.id, membership?.business_id, organisation?.id, toast]);
+    toast({
+      title: "Unable to load overview tasks",
+      description: error.message,
+      variant: "destructive",
+    });
+  }, [businessQuery.error, tasksQuery.error, toast]);
 
   useEffect(() => {
     let active = true;
@@ -341,16 +282,23 @@ export default function Overview() {
         return;
       }
 
+      setSite(null);
       setSiteLoading(true);
       setPreviewError(null);
       try {
-        const { data: siteRow, error: siteError } = await supabase
+        let siteQuery = supabase
           .from("user_sites")
           .select("id, site_name, template_id, content, blocks")
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle();
+          .eq("user_id", user.id);
+        if (selectedSiteId) {
+          siteQuery = siteQuery.eq("id", selectedSiteId);
+        } else {
+          siteQuery = siteQuery
+            .order("created_at", { ascending: false })
+            .limit(1);
+        }
+        const { data: siteRow, error: siteError } =
+          await siteQuery.maybeSingle();
         if (siteError) throw siteError;
         if (!siteRow) {
           if (active) setSite(null);
@@ -438,28 +386,20 @@ export default function Overview() {
     return () => {
       active = false;
     };
-  }, [user?.id, toast]);
+  }, [user?.id, selectedSiteId, toast]);
 
-  async function messageMember(member: OverviewMember) {
-    if (!user) return;
-    setMessagingUserId(member.user_id);
-    try {
-      const conversationId = await getOrCreateConversation(
-        user.id,
-        member.user_id
-      );
-      navigate(`/messages?conversation=${conversationId}`);
-    } catch (error) {
-      console.error("Failed to open member conversation:", error);
-      toast({
-        title: "Unable to open conversation",
-        description: "Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setMessagingUserId(null);
-    }
-  }
+  const tasksLoading =
+    isAppDataLoading ||
+    (businessQuery.isPending && businessQuery.fetchStatus !== "idle") ||
+    (!site && siteLoading) ||
+    (!!businessId && !!site?.id && tasksQuery.isPending);
+  const tasks = tasksQuery.data ?? [];
+  const tasksError = businessQuery.error ?? tasksQuery.error;
+  const emptyTasksMessage = !businessId
+    ? "No business workspace is available."
+    : !site
+      ? "No website is available for these tasks."
+      : "No tasks found for this website.";
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-5 p-4 sm:p-6 lg:grid lg:grid-cols-2 lg:overflow-hidden">
@@ -471,116 +411,64 @@ export default function Overview() {
               type="button"
               variant="ghost"
               size="sm"
-              onClick={() => navigate("/tasks")}
+              onClick={() =>
+                navigate(
+                  site ? `/tasks?site=${encodeURIComponent(site.id)}` : "/tasks"
+                )
+              }
               className="text-muted-foreground"
             >
               View all
             </Button>
           </CardHeader>
-          <CardContent className="divide-y divide-border p-0">
-            {latestTasks.map((task) => (
-              <div
-                key={task.id}
-                className="flex items-center justify-between gap-4 px-5 py-3"
-              >
-                <p className="min-w-0 truncate text-sm font-medium">
-                  {task.title}
-                </p>
-                <Badge
-                  variant="secondary"
-                  className="shrink-0 capitalize"
-                >
-                  {task.status}
-                </Badge>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        <Card className="border-border">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-border px-5 py-4">
-            <CardTitle className="text-base font-semibold">Members</CardTitle>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              disabled
-              className="text-muted-foreground"
-            >
-              View all
-            </Button>
-          </CardHeader>
-          <CardContent className="divide-y divide-border p-0">
-            {membersLoading ? (
-              <p className="px-5 py-6 text-sm text-muted-foreground">
-                Loading members…
-              </p>
-            ) : members.length === 0 ? (
-              <p className="px-5 py-6 text-sm text-muted-foreground">
-                No members found.
-              </p>
-            ) : (
-              members.map((member) => {
-                const name = getName(member);
-                return (
-                  <div
-                    key={member.user_id}
-                    className="flex items-center gap-3 px-5 py-3"
-                  >
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <button
-                          type="button"
-                          className="flex min-w-0 flex-1 items-center gap-3 rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                        >
-                          <Avatar className="h-10 w-10">
-                            <AvatarImage src={member.avatar_url ?? undefined} alt={name} />
-                            <AvatarFallback>{getInitials(name)}</AvatarFallback>
-                          </Avatar>
-                          <span className="min-w-0">
-                            <span className="block truncate text-sm font-medium">
-                              {name}
-                            </span>
-                            <span className="block truncate text-xs text-muted-foreground">
-                              {member.email}
-                            </span>
-                          </span>
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        align="start"
-                        side="left"
-                        className="w-80 p-0"
-                      >
-                        <UserProfile1
-                          user={{
-                            name,
-                            avatar: member.avatar_url ?? undefined,
-                            role: member.job_title ?? member.role,
-                            bio: member.personal_bio ?? undefined,
-                            location: member.business_location ?? undefined,
-                            email: member.email,
-                          }}
-                          className="py-0"
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      aria-label={`Message ${name}`}
-                      disabled={messagingUserId === member.user_id}
-                      onClick={() => void messageMember(member)}
-                      className="h-9 shrink-0 px-2.5"
-                    >
-                      <MessageCircle className="h-4 w-4" />
-                      <span>Message</span>
-                    </Button>
-                  </div>
-                );
-              })
-            )}
+          <CardContent className="overflow-x-auto p-0">
+            <Table className="min-w-[360px]">
+              <TableHeader>
+                <TableRow className="h-9">
+                  <TableHead>Title</TableHead>
+                  <TableHead className="w-32">Due date</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {tasksLoading ? (
+                  Array.from({ length: 5 }, (_, index) => (
+                    <TableRow key={index} className="h-10">
+                      <TableCell className="px-3 py-2">
+                        <Skeleton className="h-4 w-40" />
+                      </TableCell>
+                      <TableCell className="px-3 py-2">
+                        <Skeleton className="h-4 w-20" />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : tasksError ? (
+                  <TableRow>
+                    <TableCell colSpan={2} className="h-24 text-center">
+                      Unable to load tasks.
+                    </TableCell>
+                  </TableRow>
+                ) : tasks.length ? (
+                  tasks.slice(0, 7).map((task) => (
+                    <TableRow key={task.id} className="h-10">
+                      <TableCell className="px-3 py-2">
+                        <span className="block max-w-[360px] truncate text-sm font-medium">
+                          {task.title}
+                        </span>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap px-3 py-2 text-sm">
+                        {formatTaskDueDate(task.dueDate)}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={2} className="h-24 text-center">
+                      {emptyTasksMessage}
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       </div>
@@ -598,8 +486,16 @@ export default function Overview() {
             />
           )}
           {siteLoading && (
-            <div className="absolute inset-0 flex items-center justify-center text-sm text-muted-foreground">
-              Loading website preview…
+            <div
+              aria-label="Loading website preview"
+              role="status"
+              className="absolute inset-0 space-y-5 overflow-hidden p-6"
+            >
+              <Skeleton className="h-8 w-2/5 rounded-sm" />
+              <Skeleton className="h-4 w-4/5 rounded-sm" />
+              <Skeleton className="h-4 w-3/5 rounded-sm" />
+              <Skeleton className="mt-8 h-40 w-full rounded-lg" />
+              <Skeleton className="h-4 w-2/3 rounded-sm" />
             </div>
           )}
           {!siteLoading && !site && (
@@ -613,7 +509,13 @@ export default function Overview() {
             </div>
           )}
         </div>
-        {site && (
+        {siteLoading && (
+          <div className="shrink-0 space-y-3 border-t border-border px-5 py-4">
+            <Skeleton className="h-6 w-1/3" />
+            <Skeleton className="h-10 w-32" />
+          </div>
+        )}
+        {site && !siteLoading && (
           <div className="shrink-0 border-t border-border px-5 py-4">
             <p className="truncate text-base font-semibold">{site.site_name}</p>
             <Button

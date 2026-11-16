@@ -22,6 +22,7 @@ import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
 import Tables from "@/pages/tables";
 import Notifications from "@/pages/notifications";
+import Members from "@/pages/members";
 import Subscriptions from "@/pages/subscriptions";
 import Documentation from "@/pages/documentation";
 import CreateSite from "@/pages/create-site";
@@ -146,6 +147,8 @@ function Router() {
     <Routes>
       {/* Authenticated application */}
       <Route path="/" element={<ProtectedApp />}>
+        <Route path="onboarding" element={<Onboarding />} />
+
         <Route
           index
           element={
@@ -196,6 +199,15 @@ function Router() {
           element={
             <Layout title="Notifications">
               <Notifications />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="members"
+          element={
+            <Layout title="Members">
+              <Members />
             </Layout>
           }
         />
@@ -295,7 +307,6 @@ function Router() {
       {/* Public routes */}
       <Route path="/auth/sign-in" element={<SignIn />} />
       <Route path="/auth/sign-up" element={<SignUp />} />
-      <Route path="/onboarding" element={<Onboarding />} />
       <Route path="/auth/confirmation" element={<ConfirmEmail />} />
       <Route path="/payment/success" element={<PaymentSuccess />} />
       <Route path="/payment/cancelled" element={<PaymentCancelled />} />

@@ -9,11 +9,9 @@ export function Footer() {
         <div className="flex flex-col lg:flex-row items-center justify-between space-y-4 lg:space-y-0">
           <div className="text-center lg:text-left">
             <div className="text-sm text-stone-600">
-              © {currentYear}, made with{" "}
-              <Heart className="w-3 h-3 inline-block text-red-500 fill-current" />{" "}
-              by{" "}
+              © {currentYear}{" "}
               <a
-                href="https://squarre.vercel.app"
+                href="https://squarreonline.vercel.app"
                 className="font-semibold text-[#3f4328] hover:text-stone-300 transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"

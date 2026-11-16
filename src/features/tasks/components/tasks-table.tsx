@@ -26,15 +26,29 @@ type TasksTableProps = {
   onEdit: (task: Task) => void
   onDelete: (task: Task) => void
   onDeleteMany: (ids: string[]) => void
-  onUpdateMany: (ids: string[], update: Partial<Task>) => void
+  onUpdateMany: (
+    ids: string[],
+    update: Partial<Task>
+  ) => Promise<boolean>
 }
 
 const statusLabels: Record<TaskStatus, string> = {
-  backlog: 'Backlog',
+  backlogged: 'Backlogged',
   todo: 'Todo',
-  'in progress': 'In Progress',
+  in_progress: 'In Progress',
   done: 'Done',
   canceled: 'Canceled',
+}
+
+const statusColors: Record<TaskStatus, string> = {
+  backlogged:
+    'border-slate-300 bg-slate-100 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200',
+  todo: 'border-blue-200 bg-blue-100 text-blue-800 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-300',
+  in_progress:
+    'border-amber-200 bg-amber-100 text-amber-800 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-300',
+  done: 'border-emerald-200 bg-emerald-100 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-300',
+  canceled:
+    'border-rose-200 bg-rose-100 text-rose-800 dark:border-rose-800 dark:bg-rose-950 dark:text-rose-300',
 }
 
 const priorityLabels: Record<TaskPriority, string> = {
@@ -138,6 +152,7 @@ export function TasksTable({
       const matchesSearch =
         !query ||
         task.id.toLowerCase().includes(query) ||
+        `task-${task.taskNumber}`.includes(query) ||
         task.title.toLowerCase().includes(query)
       return (
         matchesSearch &&
@@ -165,9 +180,10 @@ export function TasksTable({
     )
   }
 
-  function applyBulkUpdate(update: Partial<Task>) {
-    onUpdateMany(selectedIds, update)
-    setSelectedIds([])
+  async function applyBulkUpdate(update: Partial<Task>) {
+    if (await onUpdateMany(selectedIds, update)) {
+      setSelectedIds([])
+    }
   }
 
   function deleteSelected() {
@@ -214,7 +230,7 @@ export function TasksTable({
             value=""
             onChange={(value) => {
               if (value) {
-                applyBulkUpdate({ status: value as TaskStatus })
+                void applyBulkUpdate({ status: value as TaskStatus })
               }
             }}
             options={[
@@ -237,8 +253,8 @@ export function TasksTable({
         </div>
       )}
 
-      <div className="overflow-hidden rounded-md border">
-        <Table>
+      <div className="overflow-x-auto rounded-md border">
+        <Table className="min-w-[900px]">
           <TableHeader>
             <TableRow className="h-9">
               <TableHead className="w-10">
@@ -251,7 +267,9 @@ export function TasksTable({
               <TableHead className="w-28">Task</TableHead>
               <TableHead>Title</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Assignee</TableHead>
               <TableHead>Priority</TableHead>
+              <TableHead>Due date</TableHead>
               <TableHead className="w-12" />
             </TableRow>
           </TableHeader>
@@ -269,23 +287,35 @@ export function TasksTable({
                     />
                   </TableCell>
                   <TableCell className="px-3 py-1 font-mono text-xs text-muted-foreground">
-                    {task.id}
+                    TASK-{task.taskNumber}
                   </TableCell>
                   <TableCell className="px-3 py-1">
                     <div className="flex min-w-0 items-center gap-2">
                       <Badge variant="outline" className="shrink-0 capitalize">
-                        {task.label}
+                        {task.createdByFirstName}
                       </Badge>
                       <span className="truncate font-medium">{task.title}</span>
                     </div>
                   </TableCell>
                   <TableCell className="px-3 py-1">
-                    <span className="whitespace-nowrap">
+                    <Badge
+                      variant="outline"
+                      className={`whitespace-nowrap ${statusColors[task.status]}`}
+                    >
                       {statusLabels[task.status]}
-                    </span>
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="px-3 py-1">
+                    {task.assigneeFirstName}
                   </TableCell>
                   <TableCell className="px-3 py-1">
                     {priorityLabels[task.priority]}
+                  </TableCell>
+                  <TableCell className="px-3 py-1">
+                    {new Date(`${task.dueDate}T00:00:00`).toLocaleDateString(
+                      'en-GB',
+                      { day: '2-digit', month: 'short', year: 'numeric' }
+                    )}
                   </TableCell>
                   <TableCell className="px-3 py-1">
                     <TaskActions
@@ -298,7 +328,7 @@ export function TasksTable({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center">
+                <TableCell colSpan={8} className="h-24 text-center">
                   No tasks match your filters.
                 </TableCell>
               </TableRow>

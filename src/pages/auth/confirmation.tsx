@@ -140,7 +140,7 @@ export default function ConfirmEmail() {
           </span>
         </div>
 
-        <Link to="/#/onboarding">
+        <Link to="/onboarding">
           <Button variant="outline" size="sm">
             Complete Profile
           </Button>

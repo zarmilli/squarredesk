@@ -18,6 +18,7 @@ import {
   BarChart3,
   MessagesSquare,
   ListTodo,
+  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -50,6 +51,11 @@ const navItems = [
     title: "Tasks",
     href: "/tasks",
     icon: ListTodo,
+  },
+  {
+    title: "Members",
+    href: "/members",
+    icon: Users,
   },
   {
     title: "My Sites",

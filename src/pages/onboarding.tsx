@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
+import { useAppData } from "@/context/AppDataContext";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -90,6 +91,12 @@ export default function Onboarding() {
   const [jobTitle, setJobTitle] = useState("");
 
   const [serviceInput, setServiceInput] = useState("");
+  const {
+    user,
+    profile,
+    isLoading: isAppDataLoading,
+    refreshAppData,
+  } = useAppData();
 
   const [form, setForm] = useState({
     companyName: "",
@@ -101,51 +108,71 @@ export default function Onboarding() {
     services: [] as string[],
   });
 
+  useEffect(() => {
+    if (isAppDataLoading || !user || !profile) return;
+
+    if (profile.onboarding_complete === true) {
+      navigate("/", { replace: true });
+    }
+  }, [isAppDataLoading, user, profile, navigate]);
+
   // --------------------------------------------------
   // CHECK FOR AN EXISTING PENDING EMPLOYEE REQUEST
   // --------------------------------------------------
 
-  useEffect(() => {
-    async function checkExistingRequest() {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+useEffect(() => {
+  let isMounted = true;
 
-      if (!session) return;
+  async function checkExistingRequest() {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
-      const { data: request } = await supabase
-        .from("business_members")
-        .select("id, business_id, status")
-        .eq("user_id", session.user.id)
-        .in("status", ["pending", "active"])
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+    if (!session || !isMounted) return;
 
-      if (!request) return;
+    const { data: request, error } = await supabase
+      .from("business_members")
+      .select("id, business_id, status, role")
+      .eq("user_id", session.user.id)
+      .in("status", ["pending", "active"])
+      .eq("role", "staff")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
-      if (request.status === "active") {
-        navigate("/");
-        return;
-      }
-
-      if (request.status === "pending") {
-        setAccountType("employee");
-
-        const { data: business } = await supabase
-          .from("businesses")
-          .select("id, company_name")
-          .eq("id", request.business_id)
-          .single();
-
-        if (business) setSelectedBusiness(business);
-
-        setScreen("pending");
-      }
+    if (error) {
+      console.error("MEMBERSHIP CHECK ERROR:", error);
+      return;
     }
 
-    checkExistingRequest();
-  }, [navigate]);
+    if (!request || !isMounted) return;
+
+    if (request.status === "active") return;
+
+    if (request.status === "pending") {
+      const { data: business } = await supabase
+        .from("businesses")
+        .select("id, company_name")
+        .eq("id", request.business_id)
+        .single();
+
+      if (!isMounted) return;
+
+      setAccountType("employee");
+
+      if (business) setSelectedBusiness(business);
+
+      setScreen("pending");
+    }
+  }
+
+  checkExistingRequest();
+
+  return () => {
+    isMounted = false;
+  };
+}, [navigate]);
+
 
   // --------------------------------------------------
   // LOAD REGISTERED BUSINESSES
@@ -379,12 +406,14 @@ export default function Onboarding() {
       // FINISH
       // ----------------------------------------------
 
+      await refreshAppData();
+
       toast({
         title: "Welcome aboard!",
         description: "Your profile has been set up successfully.",
       });
 
-      navigate("/");
+      navigate("/", { replace: true });
     } catch (error: any) {
       console.error("ONBOARDING ERROR:", error);
 

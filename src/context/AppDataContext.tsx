@@ -2,14 +2,15 @@
 import {
   createContext,
   useContext,
+  useCallback,
   useEffect,
   useMemo,
-  useState,
 } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Session, User } from "@supabase/supabase-js";
 
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/context/AuthContext";
 
 export interface Profile {
   user_id: string;
@@ -69,12 +70,9 @@ interface AppDataContextType {
   refreshAppData: () => Promise<void>;
 }
 
-const AppDataContext = createContext<AppDataContextType | undefined>(
-  undefined
-);
+const AppDataContext = createContext<AppDataContextType | undefined>(undefined);
 
 async function fetchAppData(user: User): Promise<AppData> {
-  // Fetch the user's profile
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select(`
@@ -98,7 +96,6 @@ async function fetchAppData(user: User): Promise<AppData> {
 
   if (profileError) throw profileError;
 
-  // Fetch the user's active business membership
   const { data: membership, error: membershipError } = await supabase
     .from("business_members")
     .select(`
@@ -112,11 +109,12 @@ async function fetchAppData(user: User): Promise<AppData> {
     `)
     .eq("user_id", user.id)
     .eq("status", "active")
+    .order("created_at", { ascending: false })
+    .limit(1)
     .maybeSingle();
 
   if (membershipError) throw membershipError;
 
-  // Fetch organisation details when the user belongs to a business
   let organisation: Organisation | null = null;
 
   if (membership?.business_id) {
@@ -154,74 +152,38 @@ export function AppDataProvider({
   children: React.ReactNode;
 }) {
   const queryClient = useQueryClient();
+  const { session, user, loading: authLoading } = useAuth();
 
-  const [session, setSession] = useState<Session | null>(null);
-  const [sessionLoading, setSessionLoading] = useState(true);
+  const queryKey = ["app-data", user?.id];
 
-  // Initialise session and listen for authentication changes
-  useEffect(() => {
-    let mounted = true;
-
-    async function initialiseSession() {
-      const { data, error } = await supabase.auth.getSession();
-
-      if (error) {
-        console.error("Session initialisation error:", error);
-      }
-
-      if (mounted) {
-        setSession(data.session);
-        setSessionLoading(false);
-      }
-    }
-
-    initialiseSession();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      if (mounted) {
-        setSession(newSession);
-        setSessionLoading(false);
-      }
-    });
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  const user = session?.user ?? null;
-
-  // Remove account-specific cached data when the user signs out
-  useEffect(() => {
-    if (!sessionLoading && !user) {
-      queryClient.removeQueries({
-        queryKey: ["app-data"],
-      });
-    }
-  }, [sessionLoading, user, queryClient]);
-
-  // Load shared application data once per authenticated user
   const {
     data: appData,
     isPending,
     error,
     refetch,
   } = useQuery({
-    queryKey: ["app-data", user?.id],
+    queryKey,
     queryFn: () => fetchAppData(user!),
-    enabled: !!user && !sessionLoading,
+    enabled: !!user && !authLoading,
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
     refetchOnWindowFocus: false,
     retry: 1,
   });
 
-  const refreshAppData = async () => {
-    await refetch();
-  };
+  useEffect(() => {
+    if (!authLoading && !user) {
+      queryClient.removeQueries({
+        queryKey: ["app-data"],
+      });
+    }
+  }, [authLoading, user, queryClient]);
+
+  const refreshAppData = useCallback(async () => {
+    if (!user) return;
+
+    await refetch({ throwOnError: true });
+  }, [user, refetch]);
 
   const value = useMemo<AppDataContextType>(
     () => ({
@@ -231,12 +193,20 @@ export function AppDataProvider({
       profile: appData?.profile,
       membership: appData?.membership ?? null,
       organisation: appData?.organisation ?? null,
-      isLoading: sessionLoading || (!!user && isPending),
+      isLoading: authLoading || (!!user && isPending),
       isAuthenticated: !!user,
       error: error as Error | null,
       refreshAppData,
     }),
-    [session, appData, user, sessionLoading, isPending, error]
+    [
+      session,
+      appData,
+      user,
+      authLoading,
+      isPending,
+      error,
+      refreshAppData,
+    ]
   );
 
   return (

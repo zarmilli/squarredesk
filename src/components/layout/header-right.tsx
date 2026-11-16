@@ -5,12 +5,18 @@ import {
   CheckSquare,
   CreditCard,
   Crown,
+  ClipboardList,
+  FolderKanban,
+  Info,
   LogOut,
   Menu,
+  ShoppingBag,
   Settings,
   Sparkles,
   User,
+  UserPlus,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -24,7 +30,36 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useNotifications } from "@/hooks/useNotifications";
 import { useToast } from "@/hooks/use-toast";
+
+const notificationCategoryStyles: Record<
+  string,
+  { icon: LucideIcon; className: string }
+> = {
+  tasks: { icon: ClipboardList, className: "bg-blue-100 text-blue-600" },
+  task: { icon: ClipboardList, className: "bg-blue-100 text-blue-600" },
+  orders: { icon: ShoppingBag, className: "bg-green-100 text-green-600" },
+  order: { icon: ShoppingBag, className: "bg-green-100 text-green-600" },
+  requests: { icon: UserPlus, className: "bg-amber-100 text-amber-600" },
+  request: { icon: UserPlus, className: "bg-amber-100 text-amber-600" },
+  projects: { icon: FolderKanban, className: "bg-purple-100 text-purple-600" },
+  project: { icon: FolderKanban, className: "bg-purple-100 text-purple-600" },
+  account: { icon: Info, className: "bg-stone-100 text-stone-600" },
+};
+
+const defaultNotificationCategoryStyle = {
+  icon: Bell,
+  className: "bg-stone-100 text-stone-600",
+};
+
+function formatMinutesAgo(createdAt: string) {
+  const timestamp = Date.parse(createdAt);
+  if (!Number.isFinite(timestamp)) return "Unknown time";
+
+  const minutes = Math.max(0, Math.floor((Date.now() - timestamp) / 60_000));
+  return `${minutes} min ago`;
+}
 
 type Profile = {
   first_name: string | null;
@@ -42,9 +77,17 @@ export default function HeaderRight({
 }) {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const {
+    notifications,
+    unreadCount,
+    isLoading: isLoadingNotifications,
+    isFetching: isFetchingNotifications,
+    error: notificationsError,
+  } = useNotifications();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [businessName, setBusinessName] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
 
   useEffect(() => {
     fetchProfile();
@@ -181,21 +224,104 @@ export default function HeaderRight({
           </Button>
         )}
 
-        <Tooltip>
-          <TooltipTrigger asChild>
+        <Popover open={notificationsOpen} onOpenChange={setNotificationsOpen}>
+          <PopoverTrigger asChild>
             <Button
               type="button"
-              variant="outline"
+              variant="ghost"
               size="icon"
-              aria-label="Notifications"
-              onClick={() => navigate("/notifications")}
-              className="h-9 w-9 rounded-full"
+              aria-label={`${unreadCount} unread notifications`}
+              className="relative h-9 w-9 rounded-full"
             >
               <Bell className="h-4 w-4" />
+              {unreadCount > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#BEF164] px-1 text-[10px] font-semibold text-stone-900">
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              )}
             </Button>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">Notifications</TooltipContent>
-        </Tooltip>
+          </PopoverTrigger>
+          <PopoverContent
+            align="end"
+            sideOffset={8}
+            className="w-80 overflow-hidden p-0"
+          >
+            <div className="flex items-center justify-between border-b border-border px-4 py-3">
+              <p className="text-sm font-medium">Notifications</p>
+              <Button
+                type="button"
+                variant="link"
+                size="sm"
+                onClick={() => {
+                  setNotificationsOpen(false);
+                  navigate("/notifications");
+                }}
+                className="h-auto p-0"
+              >
+                View all
+              </Button>
+            </div>
+            <div className="max-h-80 overflow-y-auto">
+              {notificationsError ? (
+                <div className="px-4 py-6 text-center">
+                  <p className="text-sm font-medium text-destructive">
+                    Unable to load notifications.
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {notificationsError instanceof Error
+                      ? notificationsError.message
+                      : "Please try again."}
+                  </p>
+                </div>
+              ) : isLoadingNotifications && isFetchingNotifications ? (
+                <p
+                  role="status"
+                  className="px-4 py-6 text-center text-sm text-muted-foreground"
+                >
+                  Loading notifications...
+                </p>
+              ) : notifications.length === 0 ? (
+                <p className="px-4 py-6 text-center text-sm text-muted-foreground">
+                  No notifications yet.
+                </p>
+              ) : (
+                notifications.slice(0, 5).map((notification) => {
+                  const categoryStyle =
+                    notificationCategoryStyles[
+                      notification.category.toLowerCase()
+                    ] ?? defaultNotificationCategoryStyle;
+                  const Icon = categoryStyle.icon;
+
+                  return (
+                    <div
+                      key={notification.id}
+                      className="flex items-start gap-3 border-b border-border px-4 py-3 last:border-b-0"
+                    >
+                      <span
+                        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${categoryStyle.className}`}
+                      >
+                        <Icon className="h-4 w-4" />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium">
+                          {notification.event_name}
+                        </p>
+                        <div className="mt-1 flex items-center justify-between gap-2">
+                          <span className="truncate text-xs text-muted-foreground">
+                            {notification.category}
+                          </span>
+                          <span className="shrink-0 text-xs text-muted-foreground">
+                            {formatMinutesAgo(notification.created_at)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </PopoverContent>
+        </Popover>
 
         <Tooltip>
           <TooltipTrigger asChild>

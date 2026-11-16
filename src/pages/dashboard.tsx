@@ -37,12 +37,13 @@ export default function Dashboard() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilters, setStatusFilters] = useState<SiteStatus[]>([]);
 
-  // Redirect users who haven't completed onboarding
   useEffect(() => {
-    if (!isAppDataLoading && user && profile?.onboarding_complete !== true) {
+    if (isAppDataLoading || !user || !profile) return;
+
+    if (profile.onboarding_complete !== true) {
       navigate("/onboarding", { replace: true });
     }
-  }, [isAppDataLoading, user, profile?.onboarding_complete, navigate]);
+  }, [isAppDataLoading, user, profile, navigate]);
 
   // Fetch sites using TanStack Query
   const {
@@ -158,7 +159,7 @@ export default function Dashboard() {
   }
 
   // The onboarding redirect is handled by the effect above.
-  if (!user || profile?.onboarding_complete !== true) return null;
+  if (!user || !profile || profile.onboarding_complete !== true) return null;
 
   return (
     <div className="min-h-full w-full px-6 pb-16 pt-20 custom-scrollbar sm:px-10 sm:pt-24 lg:px-16 lg:pb-20 lg:pt-28 xl:px-28">

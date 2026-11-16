@@ -1,10 +1,6 @@
 import { useState, type FormEvent } from 'react'
-import type { Task, TaskLabel, TaskPriority, TaskStatus } from '../data/schema'
-import {
-  taskLabels,
-  taskPriorities,
-  taskStatuses,
-} from '../data/schema'
+import type { TaskPriority, TaskStatus, TaskValues } from '../data/schema'
+import { taskPriorities, taskStatuses } from '../data/schema'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -19,7 +15,7 @@ import { Input } from '@/components/ui/input'
 type TasksImportDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onImport: (tasks: Task[]) => void
+  onImport: (tasks: TaskValues[]) => Promise<void>
 }
 
 function parseCsv(text: string): string[][] {
@@ -62,7 +58,7 @@ function parseCsv(text: string): string[][] {
   return rows
 }
 
-function readTasksCsv(text: string): Task[] {
+function readTasksCsv(text: string): TaskValues[] {
   const [headerRow, ...rows] = parseCsv(text)
   const headers = headerRow?.map((value, index) =>
     (index === 0 ? value.replace(/^\uFEFF/, '') : value).toLowerCase()
@@ -75,27 +71,34 @@ function readTasksCsv(text: string): Task[] {
   const column = (name: string) => headers.indexOf(name)
   const importedTasks = rows.map((row, index) => {
     const status = (row[column('status')] || 'todo').toLowerCase()
-    const label = (row[column('label')] || 'feature').toLowerCase()
     const priority = (row[column('priority')] || 'medium').toLowerCase()
     const title = row[column('title')]?.trim()
+    const dueDate = row[column('due_date')]?.trim()
+    const assigneeId = row[column('assignee_id')]?.trim()
 
     if (!title) throw new Error(`Row ${index + 2} is missing a title.`)
+    if (title.length > 200) {
+      throw new Error(`Row ${index + 2} title exceeds 200 characters.`)
+    }
     if (!taskStatuses.includes(status as TaskStatus)) {
       throw new Error(`Row ${index + 2} has an invalid status.`)
-    }
-    if (!taskLabels.includes(label as TaskLabel)) {
-      throw new Error(`Row ${index + 2} has an invalid label.`)
     }
     if (!taskPriorities.includes(priority as TaskPriority)) {
       throw new Error(`Row ${index + 2} has an invalid priority.`)
     }
+    if (!dueDate || !/^\d{4}-\d{2}-\d{2}$/.test(dueDate)) {
+      throw new Error(`Row ${index + 2} needs a due_date in YYYY-MM-DD format.`)
+    }
+    if (!assigneeId) {
+      throw new Error(`Row ${index + 2} is missing an assignee_id.`)
+    }
 
     return {
-      id: `TASK-${Date.now().toString().slice(-6)}-${index + 1}`,
       title,
       status: status as TaskStatus,
-      label: label as TaskLabel,
       priority: priority as TaskPriority,
+      assigneeId,
+      dueDate,
     }
   })
 
@@ -123,7 +126,7 @@ export function TasksImportDialog({
 
     try {
       const importedTasks = readTasksCsv(await file.text())
-      onImport(importedTasks)
+      await onImport(importedTasks)
       setFile(null)
       setError('')
       onOpenChange(false)
@@ -147,8 +150,8 @@ export function TasksImportDialog({
         <DialogHeader>
           <DialogTitle>Import tasks</DialogTitle>
           <DialogDescription>
-            Choose a CSV with a title column. Status, label, and priority are
-            optional and default to Todo, Feature, and Medium.
+            Include title, assignee_id, and due_date columns. Status and
+            priority are optional and default to Todo and Medium.
           </DialogDescription>
         </DialogHeader>
         <form id="tasks-import-form" onSubmit={handleSubmit} className="space-y-2">
