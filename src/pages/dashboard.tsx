@@ -31,7 +31,13 @@ type SiteStatus = "published" | "draft";
 export default function Dashboard() {
   const navigate = useNavigate();
 
-  const { user, profile, isLoading: isAppDataLoading, error: appDataError } = useAppData();
+  const {
+    user,
+    profile,
+    organisation,
+    isLoading: isAppDataLoading,
+    error: appDataError,
+  } = useAppData();
 
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -53,7 +59,7 @@ export default function Dashboard() {
     error: sitesError,
     refetch: refetchSites,
   } = useQuery<Site[]>({
-    queryKey: ["user-sites", user?.id],
+    queryKey: ["user-sites", user?.id, organisation?.id],
     enabled: !!user?.id && !isAppDataLoading && profile?.onboarding_complete === true,
     queryFn: async () => {
       if (!user?.id) throw new Error("User session not found.");
@@ -61,7 +67,6 @@ export default function Dashboard() {
       const { data, error } = await supabase
         .from("user_sites")
         .select("id, site_name, updated_at, is_published")
-        .eq("user_id", user.id)
         .order("updated_at", { ascending: false });
 
       if (error) throw error;
