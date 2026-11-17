@@ -798,7 +798,7 @@
       if (!page) return;
 
       const productId = new URLSearchParams(window.location.search).get('id');
-      if (!productId || !SITE_ID || SITE_ID === '{{SQUARRE_SITE_ID}}') {
+      if (!productId || !SITE_ID || SITE_ID.startsWith('{{')) {
         page.innerHTML = `
           <div class="not-found">
             <h1>Product not found</h1>

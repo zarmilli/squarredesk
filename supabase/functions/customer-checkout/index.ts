@@ -46,7 +46,7 @@ serve(async (req) => {
     // Fetch cart items with product details
     const { data: cartItems } = await supabase
       .from("cart_items")
-      .select("quantity, products(id, name, price, stock)")
+      .select("quantity, products(id, name, price)")
       .eq("customer_id", customer_id)
       .eq("site_id", site_id)
 
