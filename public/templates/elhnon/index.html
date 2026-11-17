@@ -360,7 +360,7 @@
   <!-- FOOTER -->
   <footer>
     <p class="footer-copy">© <span data-edit="copyright_year">2026</span> <span data-edit="site_name">Elhnon Odnufmon</span>. All rights reserved.</p>
-    <p class="footer-squarre">Want your own site? <a href="https://squarre.vercel.app" target="_blank">This site was made using Squarre</a></p>
+    <p class="footer-squarre">Want your own site? <a href="https://squarreonline.vercel.app" target="_blank">This site was made using Squarre</a></p>
     <div class="footer-logo" data-edit="site_name">Elhnon Odnufmon</div>
   </footer>
 
@@ -390,7 +390,7 @@
       const SITE_ID = "{{SQUARRE_SITE_ID}}";
       const SUPABASE_URL = "https://suwiamrsjmbvhceqxchp.supabase.co";
       const ANON_KEY = "{{SQUARRE_ANON_KEY}}";
-      if (!SITE_ID || SITE_ID === "{{SQUARRE_SITE_ID}}") return;
+      if (!SITE_ID || SITE_ID.startsWith("{{")) return;
 
       // ── Device ────────────────────────────────────────────────────
       const ua = navigator.userAgent;
