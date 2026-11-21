@@ -38,6 +38,7 @@ import Onboarding from "@/pages/onboarding";
 import Marketplace from "@/pages/Marketplace";
 import MarketplaceProduct from "@/pages/MarketplaceProduct";
 import Analytics from "@/pages/analytics";
+import Orders from "@/pages/orders";
 import Stats from "@/pages/stats";
 import Overview from "@/pages/overview";
 import AccountOpen from "@/pages/accountOpen";
@@ -262,6 +263,15 @@ function Router() {
           element={
             <Layout title="Site Analytics">
               <Analytics />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="orders"
+          element={
+            <Layout title="Orders">
+              <Orders />
             </Layout>
           }
         />

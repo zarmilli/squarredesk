@@ -43,18 +43,19 @@
       transition: background 0.35s ease, box-shadow 0.35s ease, padding 0.35s ease;
     }
     nav.scrolled {
-      background: var(--beige);
+      background: var(--white);
       box-shadow: 0 2px 20px rgba(0,0,0,0.07);
       padding: 14px 48px;
     }
     nav .logo {
       font-family: 'Poppins', sans-serif;
       font-size: 22px;
-      font-weight: 700;
+      font-weight: 400;
       color: var(--white);
       letter-spacing: 0.04em;
       transition: color 0.35s;
       text-decoration: none;
+      text-transform: uppercase;
     }
     nav.scrolled .logo { color: var(--text-dark); }
     nav .nav-links { display: flex; gap: 36px; }
@@ -172,10 +173,10 @@
       color: var(--white);
     }
     .hero-content h1 {
-      font-size: clamp(36px, 6vw, 64px);
-      font-weight: 500;
+      font-size: clamp(36px, 7.5vw, 80px);
+      font-weight: 400;
       line-height: 1.15;
-      letter-spacing: -0.02em;
+      text-transform: uppercase;
       margin-bottom: 20px;
     }
     .hero-content p {
@@ -195,90 +196,40 @@
       font-weight: 600;
       font-size: 15px;
       padding: 14px 30px;
-      border-radius: 50px;
+      border-radius: 8px;
       text-decoration: none;
       border: none;
       cursor: pointer;
       transition: background 0.2s, transform 0.15s;
     }
-    .btn-whatsapp:hover { background: #1ebe5a; transform: translateY(-2px); }
+    .btn-whatsapp:hover { background: #fff; color: var(--olive); transform: translateY(-2px); }
     .btn-whatsapp svg { width: 20px; height: 20px; fill: #fff; }
 
     /* ===== ABOUT ===== */
     .about {
-      background: var(--beige);
+      background: var(--white);
       padding: 100px 24px;
       text-align: center;
     }
     .about h2 {
-      font-size: clamp(36px, 6vw, 64px);
-      font-weight: 500;
+      font-size: 24px;
+      font-weight: 400;
       margin-bottom: 24px;
       color: var(--text-dark);
+      text-transform: uppercase;
     }
     .about p {
-      font-size: 17px;
+      font-size: 16px;
       line-height: 1.75;
       color: var(--text-mid);
       max-width: 660px;
       margin: auto;
     }
 
-    /* ===== FEATURED ===== */
-    .featured {
-      background: var(--olive);
-      padding: 90px 48px;
-    }
-    .featured-inner {
-      max-width: 1200px;
-      margin: auto;
-      display: flex;
-      align-items: center;
-      gap: 60px;
-    }
-    .featured-text { flex: 1; color: var(--white); }
-    .featured-text h2 {
-      font-size: clamp(26px, 3.5vw, 40px);
-      font-weight: 700;
-      margin-bottom: 20px;
-      line-height: 1.25;
-    }
-    .featured-text p {
-      font-size: 16px;
-      line-height: 1.75;
-      color: rgba(255,255,255,0.78);
-    }
-    .featured-images {
-      flex: 1.1;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: repeat(2, 1fr);
-      gap: 10px;
-      aspect-ratio: 3/2;
-    }
-    .featured-images img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 6px;
-    }
-    @media (max-width: 768px) {
-      .featured { padding: 64px 20px; }
-      .featured-inner { flex-direction: column; gap: 36px; }
-      .featured-images { width: 100%; }
-    }
-
     /* ===== PRODUCTS ===== */
     .products {
-      background: var(--beige);
+      background: var(--white);
       padding: 90px 48px;
-    }
-    .products h2 {
-      font-size: clamp(36px, 6vw, 64px);
-      font-weight: 500;
-      text-align: center;
-      margin-bottom: 56px;
-      color: var(--text-dark);
     }
     .products-grid {
       max-width: 1200px;
@@ -287,31 +238,36 @@
       grid-template-columns: repeat(4, 1fr);
       gap: 28px 20px;
     }
-    .product-card { background: transparent; }
+    .product-card { background: #f9f8f6; padding-bottom: 12px; }
     .product-card img {
       width: 100%;
       aspect-ratio: 2/2.5;
       object-fit: cover;
-      border-radius: 8px;
+      border-radius: 0px;
       display: block;
       margin-bottom: 14px;
     }
     .product-card .product-name {
       font-family: 'Poppins', sans-serif;
       font-size: 15px;
-      font-weight: 600;
+      font-weight: 400;
+      text-transform: uppercase;
+      padding: 0 12px;
       color: var(--text-dark);
       margin-bottom: 4px;
     }
     .product-card .product-price {
       font-size: 14px;
       color: var(--olive-light);
+      padding: 0 12px;
       font-weight: 500;
       margin-bottom: 8px;
     }
     .product-card .product-cta {
       font-size: 13px;
       color: var(--olive);
+      padding: 0 12px;
+      margin-bottom: 12px;
       font-weight: 500;
       text-decoration: underline;
       cursor: pointer;
@@ -477,9 +433,8 @@
     </button>
     <div class="nav-links" id="navLinks">
       <a href="#about" data-edit="nav_about">About</a>
-      <a href="#featured" data-edit="nav_featured">Featured</a>
-      <a href="#policy" data-edit="nav_policy">Policy</a>
       <a href="#products" data-edit="nav_products">Products</a>
+      <a href="#policy" data-edit="nav_policy">Policy</a>
     </div>
   </nav>
 
@@ -489,11 +444,11 @@
       class="hero-bg"
       data-edit="hero_background"
       data-edit-role="background"
-      style="background-image:url('https://images.pexels.com/photos/33429610/pexels-photo-33429610.jpeg');"
+      style="background-image:url('https://static.wixstatic.com/media/d01231e46af34161be7ad101d281a441.jpg/v1/fill/w_1691,h_924,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/d01231e46af34161be7ad101d281a441.jpg');"
     ></div>
     <div class="hero-overlay"></div>
     <div class="hero-content">
-      <h1 data-edit="hero_title">Crafted for the Way You Live</h1>
+      <h1 data-edit="hero_title">Luxury refined</h1>
       <p data-edit="hero_description">Timeless furniture, thoughtfully designed. Explore pieces that bring warmth and character to every corner of your home.</p>
       <a
         href="https://wa.me/1234567890"
@@ -513,51 +468,32 @@
     <p data-edit="about_description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
   </section>
 
-  <!-- FEATURED -->
-  <section id="featured" class="featured">
-    <div class="featured-inner">
-      <div class="featured-text">
-        <h2 data-edit="featured_title">Our Featured Collection</h2>
-        <p data-edit="featured_description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
-      </div>
-      <div class="featured-images">
-        <img data-edit="featured_img_1" src="https://images.pexels.com/photos/33429610/pexels-photo-33429610.jpeg" alt="Featured 1" />
-        <img data-edit="featured_img_2" src="https://images.pexels.com/photos/6758284/pexels-photo-6758284.jpeg" alt="Featured 2" />
-        <img data-edit="featured_img_3" src="https://images.pexels.com/photos/22696776/pexels-photo-22696776.jpeg" alt="Featured 3" />
-        <img data-edit="featured_img_4" src="https://images.pexels.com/photos/22696775/pexels-photo-22696775.jpeg" alt="Featured 4" />
-        <img data-edit="featured_img_5" src="https://images.pexels.com/photos/25685720/pexels-photo-25685720.jpeg" alt="Featured 5" />
-        <img data-edit="featured_img_6" src="https://images.pexels.com/photos/31213891/pexels-photo-31213891.jpeg" alt="Featured 6" />
-      </div>
-    </div>
-  </section>
-
   <!-- PRODUCTS -->
   <section id="products" class="products">
-    <h2 data-edit="products_title">Our Products</h2>
     <div class="products-grid" data-repeat="products">
       <div class="product-card">
-        <img data-edit="image" src="https://images.pexels.com/photos/12269762/pexels-photo-12269762.jpeg" alt="Product" />
-        <div class="product-name" data-edit="name">Elm Lounge Chair</div>
-        <div class="product-price" data-edit="price">3,200</div>
-        <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">WhatsApp Us</a>
+        <img data-edit="image" src="https://i.pinimg.com/1200x/bd/61/62/bd6162a454e2a97389d7aabc3be37255.jpg" alt="Product" />
+        <div class="product-name" data-edit="name">Elm Lounge Couch</div>
+        <div class="product-price" data-edit="price">53,200</div>
+        <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Learn More</a>
       </div>
       <div class="product-card">
-        <img data-edit="image" src="https://images.pexels.com/photos/32383826/pexels-photo-32383826.jpeg" alt="Product" />
-        <div class="product-name" data-edit="name">Elm Dining Chair</div>
-        <div class="product-price" data-edit="price">1,800</div>
-        <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">WhatsApp Us</a>
+        <img data-edit="image" src="https://i.pinimg.com/1200x/6c/df/9d/6cdf9dcdeb14aac8a3fbf8100ceefdce.jpg" alt="Product" />
+        <div class="product-name" data-edit="name">maison plush Couch</div>
+        <div class="product-price" data-edit="price">71,800</div>
+        <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Learn More</a>
       </div>
       <div class="product-card">
-        <img data-edit="image" src="https://images.pexels.com/photos/4207785/pexels-photo-4207785.jpeg" alt="Product" />
-        <div class="product-name" data-edit="name">Serene Picture Frame</div>
-        <div class="product-price" data-edit="price">1,200</div>
-        <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">WhatsApp Us</a>
+        <img data-edit="image" src="https://i.pinimg.com/1200x/eb/84/09/eb840964e9405b3ffaaa41bea7117751.jpg" alt="Product" />
+        <div class="product-name" data-edit="name">Maison plush couch</div>
+        <div class="product-price" data-edit="price">61,200</div>
+        <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Learn More</a>
       </div>
       <div class="product-card">
-        <img data-edit="image" src="https://images.pexels.com/photos/4207786/pexels-photo-4207786.jpeg" alt="Product" />
-        <div class="product-name" data-edit="name">Marble Bookshelf</div>
-        <div class="product-price" data-edit="price">5,600</div>
-        <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">WhatsApp Us</a>
+        <img data-edit="image" src="https://i.pinimg.com/1200x/c7/08/cb/c708cbe6c82b44ac3447be56d47b0fe0.jpg" alt="Product" />
+        <div class="product-name" data-edit="name">elm modular sofa</div>
+        <div class="product-price" data-edit="price">65,600</div>
+        <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Learn More</a>
       </div>
     </div>
   </section>

@@ -16,6 +16,7 @@ import {
   Moon,
   Sun,
   BarChart3,
+  ShoppingCart,
   MessagesSquare,
   ListTodo,
   Users,
@@ -48,14 +49,20 @@ const navItems = [
     icon: MessagesSquare,
   },
   {
-    title: "Tasks",
-    href: "/tasks",
-    icon: ListTodo,
+    title: "Organisation",
+    section: true,
   },
   {
     title: "Members",
     href: "/members",
     icon: Users,
+    nested: true,
+  },
+  {
+    title: "Tasks",
+    href: "/tasks",
+    icon: ListTodo,
+    nested: true,
   },
   {
     title: "My Sites",
@@ -64,8 +71,19 @@ const navItems = [
   },
   {
     title: "Analytics",
+    section: true,
+  },
+  {
+    title: "Site Analytics",
     href: "/analytics",
     icon: BarChart3,
+    nested: true,
+  },
+  {
+    title: "Orders",
+    href: "/orders",
+    icon: ShoppingCart,
+    nested: true,
   },
   {
     title: "Subscriptions",
@@ -133,6 +151,17 @@ export function Sidebar({
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-2 relative z-10">
         {navItems.map((item) => {
+          if ("section" in item) {
+            return (
+              <div
+                key={item.title}
+                className="px-3 pt-3 pb-1 text-sm font-semibold text-stone-500"
+              >
+                {item.title}
+              </div>
+            );
+          }
+
           const Icon = item.icon;
           const isActive = location.pathname === item.href;
           
@@ -140,7 +169,8 @@ export function Sidebar({
             <NavLink key={item.href} to={item.href}>
               <div
                 className={cn(
-                  "flex items-center text-sm font-normal rounded-lg cursor-pointer px-3 py-2 mb-1 transition-colors duration-200 border-0 shadow-none ring-0",
+                  "mb-1 flex cursor-pointer items-center rounded-lg border-0 py-2 text-sm font-normal shadow-none ring-0 transition-colors duration-200",
+                  item.nested ? "ml-7 px-3" : "px-3",
                   isActive
                     ? "bg-[#131313] text-stone-50 hover:bg-[#121212]"
                     : "text-stone-700 hover:bg-[#121212] hover:text-stone-50"
