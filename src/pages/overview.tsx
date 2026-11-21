@@ -19,7 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useAppData } from "@/context/AppDataContext";
+import { useUserSites } from "@/hooks/useUserSites";
 import type { Task } from "@/features/tasks/data/schema";
 import {
   businessTasksQueryKey,
@@ -227,11 +227,18 @@ export default function Overview() {
     membership,
     organisation,
     isLoading: isAppDataLoading,
-  } = useAppData();
+    error: appDataError,
+    sitesQuery,
+  } = useUserSites();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [site, setSite] = useState<OverviewSite | null>(null);
   const [siteLoading, setSiteLoading] = useState(true);
   const [previewError, setPreviewError] = useState<string | null>(null);
+  const sites = sitesQuery.data ?? [];
+  const selectedSite = selectedSiteId
+    ? sites.find((availableSite) => availableSite.id === selectedSiteId)
+    : sites[0];
+  const activeSiteId = selectedSite?.id ?? null;
 
   const currentBusinessId = membership?.business_id ?? organisation?.id ?? null;
   const businessQuery = useQuery<string | null>({
@@ -262,22 +269,57 @@ export default function Overview() {
   });
 
   useEffect(() => {
-    const error = businessQuery.error ?? tasksQuery.error;
+    const error =
+      appDataError ??
+      sitesQuery.error ??
+      businessQuery.error ??
+      tasksQuery.error;
     if (!error) return;
 
     toast({
-      title: "Unable to load overview tasks",
+      title:
+        appDataError || sitesQuery.error
+          ? "Unable to load overview"
+          : "Unable to load overview tasks",
       description: error.message,
       variant: "destructive",
     });
-  }, [businessQuery.error, tasksQuery.error, toast]);
+  }, [appDataError, businessQuery.error, sitesQuery.error, tasksQuery.error, toast]);
 
   useEffect(() => {
     let active = true;
 
     async function loadSitePreview() {
+      if (
+        isAppDataLoading ||
+        (sitesQuery.isPending && sitesQuery.fetchStatus !== "idle")
+      ) {
+        setSiteLoading(true);
+        return;
+      }
+
+      if (appDataError || sitesQuery.error) {
+        setSite(null);
+        setPreviewError(
+          appDataError?.message ??
+            sitesQuery.error?.message ??
+            "Unable to load available sites."
+        );
+        setSiteLoading(false);
+        return;
+      }
+
       if (!user) {
         setSite(null);
+        setSiteLoading(false);
+        return;
+      }
+
+      if (!activeSiteId) {
+        setSite(null);
+        setPreviewError(
+          selectedSiteId ? "The selected site could not be found." : null
+        );
         setSiteLoading(false);
         return;
       }
@@ -286,19 +328,11 @@ export default function Overview() {
       setSiteLoading(true);
       setPreviewError(null);
       try {
-        let siteQuery = supabase
+        const { data: siteRow, error: siteError } = await supabase
           .from("user_sites")
           .select("id, site_name, template_id, content, blocks")
-          .eq("user_id", user.id);
-        if (selectedSiteId) {
-          siteQuery = siteQuery.eq("id", selectedSiteId);
-        } else {
-          siteQuery = siteQuery
-            .order("created_at", { ascending: false })
-            .limit(1);
-        }
-        const { data: siteRow, error: siteError } =
-          await siteQuery.maybeSingle();
+          .eq("id", activeSiteId)
+          .maybeSingle();
         if (siteError) throw siteError;
         if (!siteRow) {
           if (active) setSite(null);
@@ -386,15 +420,27 @@ export default function Overview() {
     return () => {
       active = false;
     };
-  }, [user?.id, selectedSiteId, toast]);
+  }, [
+    activeSiteId,
+    appDataError,
+    isAppDataLoading,
+    selectedSiteId,
+    sitesQuery.error,
+    sitesQuery.fetchStatus,
+    sitesQuery.isPending,
+    user?.id,
+    toast,
+  ]);
 
   const tasksLoading =
     isAppDataLoading ||
+    (sitesQuery.isPending && sitesQuery.fetchStatus !== "idle") ||
     (businessQuery.isPending && businessQuery.fetchStatus !== "idle") ||
     (!site && siteLoading) ||
     (!!businessId && !!site?.id && tasksQuery.isPending);
   const tasks = tasksQuery.data ?? [];
-  const tasksError = businessQuery.error ?? tasksQuery.error;
+  const tasksError =
+    appDataError ?? sitesQuery.error ?? businessQuery.error ?? tasksQuery.error;
   const emptyTasksMessage = !businessId
     ? "No business workspace is available."
     : !site

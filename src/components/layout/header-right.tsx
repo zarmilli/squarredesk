@@ -10,9 +10,11 @@ import {
   Info,
   LogOut,
   Menu,
+  Moon,
   ShoppingBag,
   Settings,
   Sparkles,
+  Sun,
   User,
   UserPlus,
 } from "lucide-react";
@@ -30,6 +32,12 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Switch } from "@/components/ui/switch";
+import {
+  loadThemeConfig,
+  saveThemeConfig,
+  type ThemeConfig,
+} from "@/components/theme-configurator";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useToast } from "@/hooks/use-toast";
 
@@ -88,9 +96,25 @@ export default function HeaderRight({
   const [businessName, setBusinessName] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => loadThemeConfig().darkMode);
 
   useEffect(() => {
     fetchProfile();
+  }, []);
+
+  useEffect(() => {
+    const handleThemeConfigUpdate = (event: Event) => {
+      const updatedTheme = (event as CustomEvent<ThemeConfig>).detail;
+      if (updatedTheme) setDarkMode(updatedTheme.darkMode);
+    };
+
+    window.addEventListener("theme-config-updated", handleThemeConfigUpdate);
+    return () =>
+      window.removeEventListener(
+        "theme-config-updated",
+        handleThemeConfigUpdate
+      );
   }, []);
 
   async function fetchProfile() {
@@ -146,6 +170,11 @@ export default function HeaderRight({
   function navigateFromMenu(path: string) {
     setMenuOpen(false);
     navigate(path);
+  }
+
+  function handleDarkModeChange(enabled: boolean) {
+    saveThemeConfig({ ...loadThemeConfig(), darkMode: enabled });
+    setDarkMode(enabled);
   }
 
   async function handleLogout() {
@@ -228,7 +257,7 @@ export default function HeaderRight({
           <PopoverTrigger asChild>
             <Button
               type="button"
-              variant="ghost"
+              variant="outline"
               size="icon"
               aria-label={`${unreadCount} unread notifications`}
               className="relative h-9 w-9 rounded-full"
@@ -338,15 +367,41 @@ export default function HeaderRight({
           <TooltipContent side="bottom">Tasks</TooltipContent>
         </Tooltip>
 
-        <Button
-          type="button"
-          variant="outline"
-          size="icon"
-          aria-label="Settings"
-          className="h-9 w-9 rounded-full"
-        >
-          <Settings className="h-4 w-4" />
-        </Button>
+        <Popover open={settingsOpen} onOpenChange={setSettingsOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              aria-label="Settings"
+              className="h-9 w-9 rounded-full"
+            >
+              <Settings className="h-4 w-4" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent align="end" sideOffset={8} className="w-64 p-3">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-3">
+                {darkMode ? (
+                  <Moon className="h-4 w-4 shrink-0 text-muted-foreground" />
+                ) : (
+                  <Sun className="h-4 w-4 shrink-0 text-amber-500" />
+                )}
+                <div className="min-w-0">
+                  <p className="text-sm font-medium">Dark Mode</p>
+                  <p className="text-xs text-muted-foreground">
+                    Toggle between light and dark themes
+                  </p>
+                </div>
+              </div>
+              <Switch
+                checked={darkMode}
+                onCheckedChange={handleDarkModeChange}
+                aria-label="Dark Mode"
+              />
+            </div>
+          </PopoverContent>
+        </Popover>
 
         {profile && (
           <Popover open={menuOpen} onOpenChange={setMenuOpen}>

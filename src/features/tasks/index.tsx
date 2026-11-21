@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useSearchParams } from 'react-router-dom'
 import { Download, Plus } from 'lucide-react'
 
-import { useAppData } from '@/context/AppDataContext'
+import { useUserSites } from '@/hooks/useUserSites'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import {
@@ -109,7 +109,8 @@ export function Tasks() {
     isLoading: isAppDataLoading,
     error: appDataError,
     refreshAppData,
-  } = useAppData()
+    sitesQuery,
+  } = useUserSites()
   const [searchParams] = useSearchParams()
   const requestedSiteId = searchParams.get('site')
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -132,38 +133,15 @@ export function Tasks() {
   })
   const businessId = businessQuery.data ?? null
 
-  const siteQuery = useQuery<string | null>({
-    queryKey: ['tasks-site', user?.id, requestedSiteId],
-    enabled: !!user?.id && !isAppDataLoading,
-    queryFn: async () => {
-      if (!user?.id) throw new Error('User session not found.')
-
-      let siteQuery = supabase
-        .from('user_sites')
-        .select('id')
-
-      if (requestedSiteId) {
-        siteQuery = siteQuery
-          .eq('id', requestedSiteId)
-          .eq('user_id', user.id)
-      } else {
-        siteQuery = siteQuery
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false })
-          .limit(1)
-      }
-
-      const { data: site, error } = await siteQuery.maybeSingle()
-      if (error) throw error
-      if (requestedSiteId && !site) {
-        throw new Error('The selected site could not be found.')
-      }
-
-      return site?.id ?? null
-    },
-    staleTime: 5 * 60 * 1000,
-  })
-  const siteId = siteQuery.data ?? null
+  const sites = sitesQuery.data ?? []
+  const selectedSite = requestedSiteId
+    ? sites.find((site) => site.id === requestedSiteId)
+    : sites[0]
+  const siteId = selectedSite?.id ?? null
+  const siteSelectionError =
+    sitesQuery.isSuccess && requestedSiteId && !selectedSite
+      ? new Error('The selected site could not be found.')
+      : null
 
   const assigneesQuery = useQuery<Assignee[]>({
     queryKey: ['tasks-assignees', businessId],
@@ -346,7 +324,7 @@ export function Tasks() {
       await Promise.all([
         refreshAppData(),
         businessQuery.refetch(),
-        siteQuery.refetch(),
+        sitesQuery.refetch(),
         tasksQuery.refetch(),
       ])
     } catch (error) {
@@ -362,12 +340,13 @@ export function Tasks() {
   const isLoading =
     isAppDataLoading ||
     (businessQuery.isPending && businessQuery.fetchStatus !== 'idle') ||
-    (siteQuery.isPending && siteQuery.fetchStatus !== 'idle') ||
+    (sitesQuery.isPending && sitesQuery.fetchStatus !== 'idle') ||
     (!!businessId && !!siteId && tasksQuery.isPending)
   const pageError =
     appDataError ??
     businessQuery.error ??
-    siteQuery.error ??
+    sitesQuery.error ??
+    siteSelectionError ??
     (businessId && siteId ? tasksQuery.error : null)
 
   if (isLoading) return <TasksSkeleton />

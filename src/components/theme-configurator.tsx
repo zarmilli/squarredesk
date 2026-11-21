@@ -102,6 +102,13 @@ const notifyThemeConfigUpdate = (themeConfig: ThemeConfig) => {
   window.dispatchEvent(new CustomEvent("theme-config-updated", { detail: themeConfig }));
 };
 
+export const saveThemeConfig = (themeConfig: ThemeConfig) => {
+  if (typeof window === "undefined") return;
+  localStorage.setItem("theme-config", JSON.stringify(themeConfig));
+  applyThemeConfig(themeConfig);
+  notifyThemeConfigUpdate(themeConfig);
+};
+
 const predefinedColors = [
   { name: "Black", value: "0 0% 0%", foreground: "0 0% 100%" },
   { name: "Blue", value: "207 90% 54%", foreground: "0 0% 100%" },
@@ -133,6 +140,17 @@ export function ThemeConfigurator({ isOpen, onClose }: ThemeConfiguratorProps) {
 
   useEffect(() => {
     setTheme(loadThemeConfig());
+    const handleThemeConfigUpdate = (event: Event) => {
+      const updatedTheme = (event as CustomEvent<ThemeConfig>).detail;
+      if (updatedTheme) setTheme(updatedTheme);
+    };
+
+    window.addEventListener("theme-config-updated", handleThemeConfigUpdate);
+    return () =>
+      window.removeEventListener(
+        "theme-config-updated",
+        handleThemeConfigUpdate
+      );
   }, []);
 
   const handleThemeChange = (updates: Partial<ThemeConfig>) => {
@@ -154,9 +172,7 @@ export function ThemeConfigurator({ isOpen, onClose }: ThemeConfiguratorProps) {
   };
 
   const handleSave = () => {
-    localStorage.setItem("theme-config", JSON.stringify(theme));
-    applyThemeConfig(theme);
-    notifyThemeConfigUpdate(theme);
+    saveThemeConfig(theme);
     onClose();
   };
 

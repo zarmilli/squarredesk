@@ -4,70 +4,37 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
+import {
+  useUserSiteDetails,
+  type UserSiteDetails,
+} from "@/hooks/useUserSiteDetails";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import squeakImage from "/images/speaking.png";
 
-type SiteRow = {
-  id: string;
-  site_name: string;
-  is_published: boolean;
-  live_url: string | null;
-  created_at: string;
-  template_name: string;
-  has_inventory: boolean;
-};
-
 export default function Tables() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [sites, setSites] = useState<SiteRow[]>([]);
-  const [deleteTarget, setDeleteTarget] = useState<SiteRow | null>(null);
+  const {
+    isLoading: isAppDataLoading,
+    error: appDataError,
+    sitesQuery: accessibleSitesQuery,
+    siteDetailsQuery,
+  } = useUserSiteDetails();
+  const sites = siteDetailsQuery.data ?? [];
+  const sitesError =
+    appDataError ?? accessibleSitesQuery.error ?? siteDetailsQuery.error;
+  const [deleteTarget, setDeleteTarget] = useState<UserSiteDetails | null>(null);
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    loadSites();
-  }, []);
-
-  async function loadSites() {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { data, error } = await supabase
-      .from("user_sites")
-      .select(`
-            id,
-            site_name,
-            is_published,
-            live_url,
-            created_at,
-            templates (
-              name,
-              has_inventory
-            )
-          `)
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error(error);
-      return;
-    }
-
-    const rows: SiteRow[] = (data || []).map((s: any) => ({
-      id: s.id,
-      site_name: s.site_name,
-      is_published: s.is_published,
-      live_url: s.live_url,
-      created_at: s.created_at,
-      template_name: s.templates?.name ?? "Unknown",
-      has_inventory: s.templates?.has_inventory ?? false,
-    }));
-
-    setSites(rows);
-  }
+    if (!sitesError) return;
+    toast({
+      title: "Unable to load websites",
+      description: sitesError.message,
+      variant: "destructive",
+    });
+  }, [sitesError, toast]);
 
   async function confirmDelete() {
     if (!deleteTarget) return;
@@ -82,7 +49,7 @@ export default function Tables() {
       toast({ title: "Delete failed", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Website deleted" });
-      setSites((prev) => prev.filter((s) => s.id !== deleteTarget!.id));
+      await accessibleSitesQuery.refetch();
     }
 
     setDeleting(false);
@@ -119,7 +86,7 @@ export default function Tables() {
         <Card className="border-border">
           <CardHeader className="border-b border-border">
             <CardTitle className="text-lg font-semibold text-foreground">
-              My Websites
+              Websites
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
@@ -138,7 +105,23 @@ export default function Tables() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {sites.length === 0 ? (
+                  {isAppDataLoading ||
+                  (accessibleSitesQuery.isPending &&
+                    accessibleSitesQuery.fetchStatus !== "idle") ||
+                  (accessibleSitesQuery.isSuccess &&
+                    siteDetailsQuery.isPending) ? (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-12 text-center text-sm text-muted-foreground">
+                        Loading websites...
+                      </td>
+                    </tr>
+                  ) : sitesError ? (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-12 text-center text-sm text-destructive">
+                        Unable to load websites.
+                      </td>
+                    </tr>
+                  ) : sites.length === 0 ? (
                     <tr>
                       <td
                         colSpan={5}

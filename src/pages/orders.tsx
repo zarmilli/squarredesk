@@ -16,7 +16,7 @@ import SalesMetricsCard from '@/components/orders/chart-sales-metrics'
 import StatisticsCard from '@/components/orders/statistics-card'
 import TotalEarningCard from '@/components/orders/widget-total-earning'
 import TransactionDatatable, { type Item } from '@/components/orders/datatable-transaction'
-import { useAppData } from '@/context/AppDataContext'
+import { useUserSites } from '@/hooks/useUserSites'
 import { supabase } from '@/lib/supabase'
 import { useToast } from '@/hooks/use-toast'
 
@@ -100,34 +100,25 @@ function getLatestThreeMonths() {
   })
 }
 
-async function fetchOrderData(userId: string, selectedSiteId: string | null): Promise<OrderData> {
-  let siteQuery = supabase.from('user_sites').select('id').eq('user_id', userId)
-  siteQuery = selectedSiteId
-    ? siteQuery.eq('id', selectedSiteId)
-    : siteQuery.order('created_at', { ascending: false }).limit(1)
-
-  const { data: site, error: siteError } = await siteQuery.maybeSingle()
-  if (siteError) throw siteError
-  if (!site) return { orders: [], customers: [], products: [], cartItems: [] }
-
+async function fetchOrderData(siteId: string): Promise<OrderData> {
   const [ordersResult, customersResult, productsResult, cartResult] = await Promise.all([
     supabase
       .from('orders')
       .select('id, customer_id, status, total, items, payfast_payment_id, created_at')
-      .eq('site_id', site.id)
+      .eq('site_id', siteId)
       .order('created_at', { ascending: false }),
     supabase
       .from('customers')
       .select('id, email, first_name, last_name')
-      .eq('site_id', site.id),
+      .eq('site_id', siteId),
     supabase
       .from('products')
       .select('id, name, price, cover_image')
-      .eq('site_id', site.id),
+      .eq('site_id', siteId),
     supabase
       .from('cart_items')
       .select('quantity')
-      .eq('site_id', site.id)
+      .eq('site_id', siteId)
   ])
 
   if (ordersResult.error) throw ordersResult.error
@@ -146,24 +137,49 @@ async function fetchOrderData(userId: string, selectedSiteId: string | null): Pr
 export default function OrdersDashboard() {
   const [searchParams] = useSearchParams()
   const selectedSiteId = searchParams.get('site')
-  const { user, isLoading: isAppDataLoading } = useAppData()
+  const {
+    user,
+    organisation,
+    isLoading: isAppDataLoading,
+    error: appDataError,
+    sitesQuery
+  } = useUserSites()
   const { toast } = useToast()
+  const sites = sitesQuery.data ?? []
+  const selectedSite = selectedSiteId
+    ? sites.find((site) => site.id === selectedSiteId)
+    : sites[0]
+  const siteSelectionError = useMemo(
+    () =>
+      sitesQuery.isSuccess && selectedSiteId && !selectedSite
+        ? new Error('The selected site could not be found.')
+        : null,
+    [selectedSite, selectedSiteId, sitesQuery.isSuccess]
+  )
 
   const ordersQuery = useQuery({
-    queryKey: ['orders-dashboard', user?.id, selectedSiteId],
-    enabled: !!user?.id && !isAppDataLoading,
-    queryFn: () => fetchOrderData(user!.id, selectedSiteId),
+    queryKey: ['orders-dashboard', user?.id, organisation?.id, selectedSite?.id],
+    enabled: !!user?.id && !!selectedSite && !isAppDataLoading,
+    queryFn: () => {
+      if (!selectedSite) throw new Error('The selected site could not be found.')
+      return fetchOrderData(selectedSite.id)
+    },
     staleTime: 60 * 1000
   })
 
   useEffect(() => {
-    if (!ordersQuery.error) return
+    const error =
+      appDataError ??
+      sitesQuery.error ??
+      siteSelectionError ??
+      ordersQuery.error
+    if (!error) return
     toast({
       title: 'Unable to load orders',
-      description: ordersQuery.error instanceof Error ? ordersQuery.error.message : 'Please try again.',
+      description: error instanceof Error ? error.message : 'Please try again.',
       variant: 'destructive'
     })
-  }, [ordersQuery.error, toast])
+  }, [appDataError, ordersQuery.error, siteSelectionError, sitesQuery.error, toast])
 
   const data = ordersQuery.data ?? { orders: [], customers: [], products: [], cartItems: [] }
   const orders = data.orders

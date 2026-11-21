@@ -1,11 +1,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import { Search, Plus, ChevronDown } from "lucide-react";
 
-import { supabase } from "@/lib/supabase";
-import { useAppData } from "@/context/AppDataContext";
+import { useUserSites } from "@/hooks/useUserSites";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,13 +17,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-type Site = {
-  id: string;
-  site_name: string;
-  updated_at: string;
-  is_published: boolean;
-};
-
 type SiteStatus = "published" | "draft";
 
 export default function Dashboard() {
@@ -34,10 +25,10 @@ export default function Dashboard() {
   const {
     user,
     profile,
-    organisation,
     isLoading: isAppDataLoading,
     error: appDataError,
-  } = useAppData();
+    sitesQuery,
+  } = useUserSites();
 
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -51,30 +42,13 @@ export default function Dashboard() {
     }
   }, [isAppDataLoading, user, profile, navigate]);
 
-  // Fetch sites using TanStack Query
   const {
     data: sites = [],
     isPending: isSitesLoading,
     isError: isSitesError,
     error: sitesError,
     refetch: refetchSites,
-  } = useQuery<Site[]>({
-    queryKey: ["user-sites", user?.id, organisation?.id],
-    enabled: !!user?.id && !isAppDataLoading && profile?.onboarding_complete === true,
-    queryFn: async () => {
-      if (!user?.id) throw new Error("User session not found.");
-
-      const { data, error } = await supabase
-        .from("user_sites")
-        .select("id, site_name, updated_at, is_published")
-        .order("updated_at", { ascending: false });
-
-      if (error) throw error;
-
-      return (data ?? []) as Site[];
-    },
-    staleTime: 5 * 60 * 1000,
-  });
+  } = sitesQuery;
 
   // Debounce search by 1.5 seconds
   useEffect(() => {
