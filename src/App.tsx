@@ -11,7 +11,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Card } from "@/components/ui/card";
 import { Sidebar } from "@/components/layout/sidebar";
-import { Footer } from "@/components/layout/footer";
 import HeaderRight from "@/components/layout/header-right";
 import { ThemeConfigurator } from "@/components/theme-configurator";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -38,6 +37,7 @@ import Onboarding from "@/pages/onboarding";
 import Marketplace from "@/pages/Marketplace";
 import MarketplaceProduct from "@/pages/MarketplaceProduct";
 import Analytics from "@/pages/analytics";
+import Traffic from "@/pages/traffic";
 import Orders from "@/pages/orders";
 import Stats from "@/pages/stats";
 import Overview from "@/pages/overview";
@@ -52,34 +52,15 @@ import PaymentCancelled from "./pages/payment/cancelled";
 // Dashboard layout
 function Layout({
   children,
-  title,
-  description,
   showSidebar = true,
   showCard = true,
 }: {
   children: React.ReactNode;
-  title?: string;
-  description?: string;
   showSidebar?: boolean;
   showCard?: boolean;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [themeConfigOpen, setThemeConfigOpen] = useState(false);
-
-  const pageContent = (
-    <>
-      {title && (
-        <div className="px-6 pb-4 pt-6">
-          <h1 className="text-xl font-semibold text-foreground">{title}</h1>
-          {description && (
-            <p className="text-sm text-muted-foreground">{description}</p>
-          )}
-          <div className="mt-4 border-b border-border" />
-        </div>
-      )}
-      {children}
-    </>
-  );
 
   return (
     <div className="flex h-screen flex-col bg-background text-foreground">
@@ -113,13 +94,12 @@ function Layout({
         >
           {showCard ? (
             <Card className="flex min-h-0 flex-1 flex-col border border-border bg-card text-card-foreground">
-              {pageContent}
+              {children}
             </Card>
           ) : (
-            <div className="flex-1">{pageContent}</div>
+            <div className="flex-1">{children}</div>
           )}
 
-          <Footer />
         </main>
       </div>
 
@@ -162,7 +142,7 @@ function Router() {
         <Route
           path="profile"
           element={
-            <Layout title="Profile">
+            <Layout>
               <Profile />
             </Layout>
           }
@@ -171,7 +151,7 @@ function Router() {
         <Route
           path="messages"
           element={
-            <Layout title="Messages">
+            <Layout>
               <Messages />
             </Layout>
           }
@@ -180,7 +160,7 @@ function Router() {
         <Route
           path="tasks"
           element={
-            <Layout title="Tasks">
+            <Layout>
               <TasksPage />
             </Layout>
           }
@@ -189,7 +169,7 @@ function Router() {
         <Route
           path="tables"
           element={
-            <Layout title="My Sites">
+            <Layout>
               <Tables />
             </Layout>
           }
@@ -198,7 +178,7 @@ function Router() {
         <Route
           path="notifications"
           element={
-            <Layout title="Notifications">
+            <Layout>
               <Notifications />
             </Layout>
           }
@@ -207,7 +187,7 @@ function Router() {
         <Route
           path="members"
           element={
-            <Layout title="Members">
+            <Layout>
               <Members />
             </Layout>
           }
@@ -216,7 +196,7 @@ function Router() {
         <Route
           path="subscriptions"
           element={
-            <Layout title="Subscriptions">
+            <Layout>
               <Subscriptions />
             </Layout>
           }
@@ -225,7 +205,7 @@ function Router() {
         <Route
           path="overview"
           element={
-            <Layout title="Overview">
+            <Layout>
               <Overview />
             </Layout>
           }
@@ -234,7 +214,7 @@ function Router() {
         <Route
           path="documentation"
           element={
-            <Layout title="Documentation">
+            <Layout>
               <Documentation />
             </Layout>
           }
@@ -243,7 +223,7 @@ function Router() {
         <Route
           path="marketplace"
           element={
-            <Layout title="Marketplace">
+            <Layout>
               <Marketplace />
             </Layout>
           }
@@ -252,7 +232,7 @@ function Router() {
         <Route
           path="marketplace/:id"
           element={
-            <Layout title="Marketplace">
+            <Layout>
               <MarketplaceProduct />
             </Layout>
           }
@@ -261,8 +241,17 @@ function Router() {
         <Route
           path="analytics"
           element={
-            <Layout title="Site Analytics">
+            <Layout>
               <Analytics />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="traffic"
+          element={
+            <Layout>
+              <Traffic />
             </Layout>
           }
         />
@@ -270,7 +259,7 @@ function Router() {
         <Route
           path="orders"
           element={
-            <Layout title="Orders">
+            <Layout>
               <Orders />
             </Layout>
           }
@@ -279,7 +268,7 @@ function Router() {
         <Route
           path="stats/:id"
           element={
-            <Layout title="Site Traffic">
+            <Layout>
               <Stats />
             </Layout>
           }
@@ -294,7 +283,7 @@ function Router() {
         <Route
           path="seo/:siteId"
           element={
-            <Layout title="SEO">
+            <Layout>
               <Seo />
             </Layout>
           }
@@ -303,7 +292,7 @@ function Router() {
         <Route
           path="inventory/:siteId"
           element={
-            <Layout title="Inventory">
+            <Layout>
               <Inventory />
             </Layout>
           }

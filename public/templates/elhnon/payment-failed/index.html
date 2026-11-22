@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Payment Failed - ELHNON ODNUFMON</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --beige: #f5ede0; --beige-deep: #d9c4a8; --green: #e4667f; --green-dark: #311e20; --bg: #faf7f2; --text-dark: #2a2218; --text-mid: #6b5f4f; --white: #fff; }
+    body { min-height: 100vh; background: var(--bg); color: var(--text-dark); font-family: 'Poppins', sans-serif; display: flex; flex-direction: column; }
+    .news-banner { background: var(--green-dark); color: var(--white); text-align: center; padding: 9px 16px; font-size: 12px; font-weight: 500; letter-spacing: .05em; }
+    nav { padding: 20px 48px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--beige-deep); background: var(--white); }
+    nav .logo { color: var(--green); font-size: 18px; font-weight: 700; text-transform: uppercase; text-decoration: none; }
+    nav .nav-links { display: flex; gap: 28px; }
+    nav .nav-links a { color: var(--green-dark); font-size: 13px; font-weight: 600; text-decoration: none; text-transform: uppercase; letter-spacing: .04em; }
+    .page-shell { width: min(100% - 48px, 760px); margin: auto; padding: 80px 0; }
+    .status-card { padding: 48px; border: 1px solid var(--beige-deep); border-radius: 12px; background: rgba(255,255,255,.55); box-shadow: 0 12px 40px rgba(49,30,32,.06); text-align: center; }
+    .status-mark { width: 64px; height: 64px; margin: 0 auto 24px; border: 1px solid #7d0610; border-radius: 50%; color: #7d0610; display: grid; place-items: center; font-size: 25px; }
+    h1 { color: #7d0610; font-size: clamp(30px, 5vw, 48px); font-weight: 600; line-height: 1.1; margin-bottom: 18px; }
+    p { color: var(--text-mid); font-size: 15px; line-height: 1.7; }
+    .actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+    .button { padding: 14px 22px; border-radius: 4px; background: #7d0610; color: var(--white); font-size: 13px; text-decoration: none; text-transform: uppercase; letter-spacing: .04em; }
+    .button.secondary { background: transparent; border: 1px solid #7d0610; color: #7d0610; }
+    footer { padding: 36px 24px; background: var(--green-dark); color: rgba(255,255,255,.5); text-align: center; font-size: 13px; }
+    @media (max-width: 700px) { nav { padding: 18px 20px; } nav .nav-links { gap: 14px; } .page-shell { width: min(100% - 32px, 760px); padding: 40px 0; } .status-card { padding: 32px 22px; } }
+  </style>
+</head>
+<body>
+  <div class="news-banner">OWN THE GLOW: Free shipping on orders over R300</div>
+  <nav>
+    <a href="/" class="logo">Elhnon Odnufmon</a>
+    <div class="nav-links"><a href="/products.html">Shop All</a><a href="/cart.html">Cart</a></div>
+  </nav>
+  <main class="page-shell">
+    <section class="status-card">
+      <div class="status-mark" aria-hidden="true">!</div>
+      <h1>Payment Failed</h1>
+      <p>Payfast could not complete this payment. No successful payment was recorded. Please return to your cart and try again.</p>
+      <div class="actions"><a class="button" href="/cart.html">Try again</a><a class="button secondary" href="/products.html">Continue shopping</a></div>
+    </section>
+  </main>
+  <footer>© 2026 Elhnon Odnufmon. All rights reserved.</footer>
+</body>
+</html>

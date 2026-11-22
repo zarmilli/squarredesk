@@ -179,7 +179,7 @@ export default function Tables() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => navigate(`/stats/${site.id}`)}
+                            onClick={() => navigate(`/traffic?site=${site.id}`)}
                           >
                             View traffic
                           </Button>

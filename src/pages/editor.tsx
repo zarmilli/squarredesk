@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown, StretchHorizontal } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import BackButton from "@/components/ui/BackButton";
@@ -274,17 +274,13 @@ function injectIframeScrollbarStyles(doc: Document) {
   doc.head?.appendChild(style);
 }
 
-function BlockVariantCard({
-  slot,
+function BlockVariantButton({
   variant,
   isSelected,
-  templateSlug,
   onSelect,
 }: {
-  slot: string;
   variant: string;
   isSelected: boolean;
-  templateSlug: string;
   onSelect: () => void;
 }) {
   return (
@@ -292,23 +288,14 @@ function BlockVariantCard({
       type="button"
       onClick={onSelect}
       className={cn(
-        "w-full overflow-hidden rounded-lg border-2 bg-card text-left text-card-foreground transition-all",
+        "flex min-h-10 w-full items-center justify-between rounded-md border px-3 py-2 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         isSelected
-          ? "border-primary shadow-md"
-          : "border-border hover:border-ring"
+          ? "border-primary bg-primary/10 text-foreground"
+          : "border-border hover:bg-accent"
       )}
     >
-      <img
-        src={`/templates/${templateSlug}/blocks/${slot}/${variant}.png`}
-        alt={`${variant} variant`}
-        className="w-full"
-      />
-      <div className="flex items-center justify-between bg-card px-2 py-1.5">
-        <span className="text-xs font-medium capitalize">
-          {variant}
-        </span>
-        {isSelected && <span className="text-xs text-muted-foreground">Active</span>}
-      </div>
+      <span className="font-medium capitalize">{variant}</span>
+      {isSelected && <Check className="size-4 shrink-0 text-primary" aria-label="Active" />}
     </button>
   );
 }
@@ -792,7 +779,7 @@ export default function Editor() {
   async function handleBack() {
     await persist();
     toast({ title: "Saved" });
-    navigate("/");
+    navigate("/overview");
   }
 
   function formatSaved() {
@@ -1084,6 +1071,7 @@ export default function Editor() {
               <h2 className="truncate text-sm font-semibold">{siteName}</h2>
               {availableBlocks.length > 0 && (
                 <Button size="sm" variant="outline" onClick={() => setThemesOpen(true)}>
+                  <StretchHorizontal className="mr-2 size-4" />
                   Themes
                 </Button>
               )}
@@ -1196,7 +1184,7 @@ export default function Editor() {
             <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border/50 bg-card px-4 py-3">
               <h2 className="text-sm font-semibold">Themes</h2>
               <Button size="sm" variant="outline" onClick={() => setThemesOpen(false)}>
-                Back
+                Close
               </Button>
             </div>
             <div className="space-y-6 p-4">
@@ -1207,12 +1195,10 @@ export default function Editor() {
                   </p>
                   <div className="grid grid-cols-2 gap-2">
                     {variants.map((variant) => (
-                      <BlockVariantCard
+                      <BlockVariantButton
                         key={variant}
-                        slot={slot}
                         variant={variant}
                         isSelected={current === variant}
-                        templateSlug={templateSlug}
                         onSelect={() => void swapBlock(slot, variant)}
                       />
                     ))}

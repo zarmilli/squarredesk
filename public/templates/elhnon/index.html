@@ -158,6 +158,27 @@
       text-align: center;
     }
     nav.scrolled .nav-account { color: var(--green-dark); }
+    .orders-fab {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 1050;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 13px 17px;
+      border-radius: 999px;
+      background: var(--green-dark);
+      color: var(--white);
+      box-shadow: 0 12px 30px rgba(49, 30, 32, 0.2);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+    .orders-fab:hover { background: var(--green); }
+    .orders-fab svg { width: 17px; height: 17px; }
     .login-modal {
       display: none;
       position: fixed;
@@ -330,6 +351,14 @@
       <a href="/products.html"  data-edit="nav_catalog">Shop All</a>
     </div>
   </nav>
+
+  <a href="/orders.html" class="orders-fab" data-auth="logged-in" aria-label="View my orders" style="display: none;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+      <path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z" />
+      <path d="M9 8h6M9 12h6" />
+    </svg>
+    <span>My orders</span>
+  </a>
 
   <div class="login-modal" id="login-modal" role="dialog" aria-modal="true" aria-labelledby="login-title">
     <form class="login-panel" id="login-form">

@@ -7,6 +7,7 @@ import {
   Globe,
   X,
   BarChart3,
+  Activity,
   ShoppingCart,
   MessagesSquare,
   ListTodo,
@@ -65,6 +66,12 @@ const navItems = [
     title: "Site Analytics",
     href: "/analytics",
     icon: BarChart3,
+    nested: true,
+  },
+  {
+    title: "Traffic",
+    href: "/traffic",
+    icon: Activity,
     nested: true,
   },
   {

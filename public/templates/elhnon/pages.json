@@ -3,5 +3,8 @@
   { "label": "Products", "file": "products.html", "editables": "editables.json" },
   { "label": "Cart", "file": "cart.html", "editables": "editables.json" },
   { "label": "Product", "file": "product.html", "editables": "editables.json" },
-  { "label": "Order Success", "file": "order-success/index.html", "editables": "editables.json" }
+  { "label": "Order Success", "file": "order-success/index.html", "editables": "editables.json" },
+  { "label": "Order Cancelled", "file": "order-cancelled/index.html", "editables": "editables.json" },
+  { "label": "Payment Failed", "file": "payment-failed/index.html", "editables": "editables.json" },
+  { "label": "Orders", "file": "orders.html", "editables": "editables.json" }
 ]

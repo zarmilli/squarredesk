@@ -226,6 +226,63 @@
       margin: auto;
     }
 
+    /* ===== WHY US ===== */
+    .why-us {
+      background: var(--white);
+      padding: 90px 48px;
+      text-align: center;
+    }
+    .why-us h2 {
+      font-size: 24px;
+      font-weight: 400;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      color: var(--text-dark);
+    }
+    .why-us-description {
+      max-width: 660px;
+      margin: 0 auto 48px;
+      color: var(--text-mid);
+      font-size: 16px;
+      line-height: 1.75;
+    }
+    .why-us-grid {
+      max-width: 1200px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px;
+      text-align: left;
+    }
+    .why-us-feature {
+      padding: 30px;
+      background: var(--white);
+      text-align: center;
+    }
+    .why-us-feature:not(:nth-child(3n + 1)) {
+      border-left: 1px solid var(--olive);
+    }
+    .why-us-feature h3 {
+      color: var(--olive);
+      font-size: 20px;
+      font-weight: 400;
+      margin-bottom: 12px;
+    }
+    .why-us-feature p {
+      color: var(--text-mid);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+    @media (max-width: 700px) {
+      .why-us { padding: 64px 20px; }
+      .why-us-grid { grid-template-columns: 1fr; gap: 16px; }
+      .why-us-description { margin-bottom: 32px; }
+      .why-us-feature:not(:nth-child(3n + 1)) {
+        border-left: 0;
+        border-top: 1px solid var(--olive);
+      }
+    }
+
     /* ===== PRODUCTS ===== */
     .products {
       background: var(--white);
@@ -277,6 +334,65 @@
       .products-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
+    /* ===== GALLERY ===== */
+    .gallery {
+      background: var(--white);
+      padding: 90px 48px;
+    }
+    .gallery h2 {
+      font-size: 24px;
+      font-weight: 400;
+      text-align: left;
+      margin-bottom: 12px;
+      color: var(--text-dark);
+    }
+    .gallery-intro {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .gallery-intro p {
+      max-width: 660px;
+      color: var(--text-mid);
+      font-size: 16px;
+      line-height: 1.75;
+    }
+    .gallery-whatsapp {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 24px;
+      border-radius: 0px;
+      background: #000;
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .gallery-whatsapp:hover { background: var(--olive); }
+    .gallery-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .gallery-grid img {
+      flex: 1;
+      min-width: 0;
+      height: 60dvh;
+      object-fit: cover;
+      display: block;
+    }
+    @media (max-width: 700px) {
+      .gallery { padding: 64px 20px; }
+      .gallery-intro { align-items: flex-start; flex-direction: column; gap: 16px; }
+      .gallery-grid img { flex: 1 1 calc(50% - 10px); }
+    }
+
     /* ===== TESTIMONIALS ===== */
     .testimonials {
       background: var(--beige);
@@ -284,8 +400,8 @@
       text-align: center;
     }
     .testimonials h2 {
-      font-size: clamp(36px, 6vw, 64px);
-      font-weight: 500;
+      font-size: 24px;
+      font-weight: 400;
       margin-bottom: 56px;
       color: var(--text-dark);
     }
@@ -495,6 +611,41 @@
         <div class="product-price" data-edit="price">65,600</div>
         <a class="product-cta" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">Learn More</a>
       </div>
+    </div>
+  </section>
+
+  <!-- WHY US -->
+  <section id="why-us" class="why-us">
+    <h2 data-edit="why_us_title">Why Choose Maison &amp; Co.</h2>
+    <p class="why-us-description" data-edit="why_us_description">Thoughtful design, lasting quality, and personal service make every piece feel right at home.</p>
+    <div class="why-us-grid">
+      <article class="why-us-feature">
+        <h3 data-edit="why_us_feature_1_title">Thoughtful Craftsmanship</h3>
+        <p data-edit="why_us_feature_1_description">Every piece is selected for its quality materials, considered details, and enduring comfort.</p>
+      </article>
+      <article class="why-us-feature">
+        <h3 data-edit="why_us_feature_2_title">Timeless Design</h3>
+        <p data-edit="why_us_feature_2_description">Versatile silhouettes and warm finishes bring lasting character to your home.</p>
+      </article>
+      <article class="why-us-feature">
+        <h3 data-edit="why_us_feature_3_title">Personal Service</h3>
+        <p data-edit="why_us_feature_3_description">Our team is here to help you find the right pieces and make your experience seamless.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section id="gallery" class="gallery">
+    <h2>The gallery</h2>
+    <div class="gallery-intro">
+      <p data-edit="gallery_description">Explore our collection of thoughtfully designed furniture, crafted to bring comfort and timeless style to your home.</p>
+      <a class="gallery-whatsapp" data-edit="whatsapp_link" data-edit-role="href" href="https://wa.me/1234567890">WhatsApp Us</a>
+    </div>
+    <div class="gallery-grid">
+      <img src="https://i.pinimg.com/736x/66/de/df/66dedf60d9d23f7e170ca3795e4d7de7.jpg" alt="Elm lounge couch" />
+      <img src="https://i.pinimg.com/736x/22/08/c0/2208c076a4a9b94d22e51820feab6b50.jpg" alt="Plush couch" />
+      <img src="https://i.pinimg.com/1200x/13/96/5f/13965fccffc51a41e9005869e2d11d55.jpg" alt="Maison plush couch" />
+      <img src="https://i.pinimg.com/1200x/bf/8e/02/bf8e02e3275059debf82d34bac29d337.jpg" alt="Elm modular sofa" />
     </div>
   </section>
 

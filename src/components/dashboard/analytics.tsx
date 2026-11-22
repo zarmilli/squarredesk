@@ -1,4 +1,9 @@
+import { useState } from "react";
+import { ChevronDown } from "lucide-react";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { getDeviceData, countUniqueVisitors, timeframeLabels, type Timeframe, type Visit } from "@/lib/site-analytics";
 import { AnalyticsChart } from "./analytics-chart";
 
@@ -9,27 +14,42 @@ type AnalyticsProps = {
 };
 
 export function Analytics({ visits, timeframe, onTimeframeChange }: AnalyticsProps) {
+  const [timeframeOpen, setTimeframeOpen] = useState(false);
   const devices = getDeviceData(visits);
   const totalDeviceVisits = devices.reduce((sum, device) => sum + device.value, 0);
 
   return (
     <div className="space-y-4">
-      <Card>
+      <Card className="border border-border">
         <CardHeader className="flex-row items-start justify-between gap-4">
           <div>
             <CardTitle>Traffic Overview</CardTitle>
             <CardDescription>{timeframeLabels[timeframe]} clicks and unique visitors</CardDescription>
           </div>
-          <select
-            aria-label="Analytics timeframe"
-            className="h-9 rounded-md border border-input bg-background px-3 text-sm"
-            value={timeframe}
-            onChange={(event) => onTimeframeChange(event.target.value as Timeframe)}
-          >
-            {(Object.keys(timeframeLabels) as Timeframe[]).map((option) => (
-              <option key={option} value={option}>{timeframeLabels[option]}</option>
-            ))}
-          </select>
+          <Popover open={timeframeOpen} onOpenChange={setTimeframeOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" aria-label={`Timeframe: ${timeframeLabels[timeframe]}`}>
+                {timeframeLabels[timeframe]}
+                <ChevronDown className="ml-2 size-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-40 p-1">
+              {(Object.keys(timeframeLabels) as Timeframe[]).map((option) => (
+                <Button
+                  key={option}
+                  variant="ghost"
+                  className="w-full justify-start"
+                  aria-pressed={option === timeframe}
+                  onClick={() => {
+                    onTimeframeChange(option);
+                    setTimeframeOpen(false);
+                  }}
+                >
+                  {timeframeLabels[option]}
+                </Button>
+              ))}
+            </PopoverContent>
+          </Popover>
         </CardHeader>
         <CardContent className="px-6"><AnalyticsChart visits={visits} timeframe={timeframe} /></CardContent>
       </Card>
@@ -40,7 +60,7 @@ export function Analytics({ visits, timeframe, onTimeframeChange }: AnalyticsPro
         <MetricCard title="Avg. Session" value="3m 24s" detail="Demo statistic" />
       </div>
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
-        <Card className="col-span-1 lg:col-span-4">
+        <Card className="col-span-1 border border-border lg:col-span-4">
           <CardHeader>
             <CardTitle>Referrers</CardTitle>
             <CardDescription>Top sources driving traffic</CardDescription>
@@ -58,7 +78,7 @@ export function Analytics({ visits, timeframe, onTimeframeChange }: AnalyticsPro
             />
           </CardContent>
         </Card>
-        <Card className="col-span-1 lg:col-span-3">
+        <Card className="col-span-1 border border-border lg:col-span-3">
           <CardHeader>
             <CardTitle>Devices</CardTitle>
             <CardDescription>How users access your site</CardDescription>
@@ -81,7 +101,7 @@ export function Analytics({ visits, timeframe, onTimeframeChange }: AnalyticsPro
 
 function MetricCard({ title, value, detail }: { title: string; value: string; detail: string }) {
   return (
-    <Card>
+    <Card className="border border-border">
       <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">{title}</CardTitle></CardHeader>
       <CardContent><div className="text-2xl font-bold">{value}</div><p className="text-xs text-muted-foreground">{detail}</p></CardContent>
     </Card>
