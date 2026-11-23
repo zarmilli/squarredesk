@@ -54,11 +54,11 @@ export default function CreateSite() {
 
           <div className="w-full overflow-hidden rounded-none border-0 bg-[--background]">
             <div
-              className="relative w-full bg-stone-200"
-              style={{ aspectRatio: "1920 / 1080", clipPath: "inset(0 0 22px 0)" }}
+              className="relative mx-auto w-full max-w-xs bg-transparent"
+              style={{ aspectRatio: "1920 / 1080", clipPath: "inset(0 0 0px 0)" }}
             >
               <img
-                src="/images/namesite.gif"
+                src="/images/thinking.png"
                 alt="Site naming preview"
                 className="h-full w-full object-cover"
               />

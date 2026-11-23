@@ -19,7 +19,7 @@ import FullscreenPrompt from "@/components/FullscreenPrompt";
 
 import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
-import Tables from "@/pages/tables";
+import Accounts from "@/pages/accounts";
 import Notifications from "@/pages/notifications";
 import Members from "@/pages/members";
 import Subscriptions from "@/pages/subscriptions";
@@ -36,9 +36,10 @@ import NotFound from "@/pages/not-found";
 import Onboarding from "@/pages/onboarding";
 import Marketplace from "@/pages/Marketplace";
 import MarketplaceProduct from "@/pages/MarketplaceProduct";
-import Analytics from "@/pages/analytics";
 import Traffic from "@/pages/traffic";
 import Orders from "@/pages/orders";
+import Logistics from "@/pages/logistics";
+import Integrations from "@/pages/integrations";
 import Stats from "@/pages/stats";
 import Overview from "@/pages/overview";
 import AccountOpen from "@/pages/accountOpen";
@@ -54,10 +55,12 @@ function Layout({
   children,
   showSidebar = true,
   showCard = true,
+  scrollWithinCard = false,
 }: {
   children: React.ReactNode;
   showSidebar?: boolean;
   showCard?: boolean;
+  scrollWithinCard?: boolean;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [themeConfigOpen, setThemeConfigOpen] = useState(false);
@@ -88,12 +91,18 @@ function Layout({
         )}
 
         <main
-          className={`flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto ${
+          className={`flex min-h-0 min-w-0 flex-1 flex-col ${
+            scrollWithinCard ? "overflow-hidden" : "overflow-y-auto"
+          } ${
             showCard ? "p-3 lg:p-6" : "p-0"
           }`}
         >
           {showCard ? (
-            <Card className="flex min-h-0 flex-1 flex-col border border-border bg-card text-card-foreground">
+            <Card
+              className={`flex min-h-0 flex-1 flex-col border border-border bg-card text-card-foreground ${
+                scrollWithinCard ? "overflow-hidden" : ""
+              }`}
+            >
               {children}
             </Card>
           ) : (
@@ -149,6 +158,15 @@ function Router() {
         />
 
         <Route
+          path="accounts"
+          element={
+            <Layout scrollWithinCard>
+              <Accounts />
+            </Layout>
+          }
+        />
+
+        <Route
           path="messages"
           element={
             <Layout>
@@ -162,15 +180,6 @@ function Router() {
           element={
             <Layout>
               <TasksPage />
-            </Layout>
-          }
-        />
-
-        <Route
-          path="tables"
-          element={
-            <Layout>
-              <Tables />
             </Layout>
           }
         />
@@ -239,15 +248,6 @@ function Router() {
         />
 
         <Route
-          path="analytics"
-          element={
-            <Layout>
-              <Analytics />
-            </Layout>
-          }
-        />
-
-        <Route
           path="traffic"
           element={
             <Layout>
@@ -261,6 +261,24 @@ function Router() {
           element={
             <Layout>
               <Orders />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="logistics"
+          element={
+            <Layout>
+              <Logistics />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="integrations"
+          element={
+            <Layout>
+              <Integrations />
             </Layout>
           }
         />

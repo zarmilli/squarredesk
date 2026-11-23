@@ -9,6 +9,14 @@ import PublishButton from "@/components/ui/PublishButton";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -336,6 +344,9 @@ export default function Editor() {
   const [deployModalOpen, setDeployModalOpen] = useState(false);
   const [deployStatus, setDeployStatus] = useState<"deploying" | "success" | "error">("deploying");
   const [deployUrl, setDeployUrl] = useState("");
+  const [payfastSetupModalOpen, setPayfastSetupModalOpen] = useState(false);
+  const [checkingPublishPrerequisites, setCheckingPublishPrerequisites] =
+    useState(false);
 
   // ─── Init ──────────────────────────────────────────────────────────────────
 
@@ -748,7 +759,65 @@ export default function Editor() {
   // ─── Publish ───────────────────────────────────────────────────────────────
 
   async function publishSite() {
-    if (!siteId) return;
+    if (!siteId || checkingPublishPrerequisites) return;
+
+    setCheckingPublishPrerequisites(true);
+    try {
+      const { data: site, error: siteError } = await supabase
+        .from("user_sites")
+        .select("template_id")
+        .eq("id", siteId)
+        .single();
+      if (siteError) throw siteError;
+
+      const { data: template, error: templateError } = await supabase
+        .from("templates")
+        .select("category")
+        .eq("id", site.template_id)
+        .single();
+      if (templateError) throw templateError;
+
+      const isEcommerce =
+        typeof template.category === "string" &&
+        template.category.toLowerCase().includes("ecommerce");
+
+      if (isEcommerce) {
+        const { data: sessionData, error: sessionError } =
+          await supabase.auth.getSession();
+        if (sessionError) throw sessionError;
+        const currentUserId = sessionData.session?.user.id;
+        if (!currentUserId) throw new Error("User session not found.");
+
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("payfast_merchant_id")
+          .eq("user_id", currentUserId)
+          .single();
+        if (profileError) throw profileError;
+
+        if (
+          typeof profile.payfast_merchant_id !== "string" ||
+          !profile.payfast_merchant_id.trim()
+        ) {
+          await persist();
+          setDeployModalOpen(false);
+          setPayfastSetupModalOpen(true);
+          return;
+        }
+      }
+    } catch (error) {
+      console.error("Failed to verify PayFast setup before publishing:", error);
+      toast({
+        title: "Unable to verify payment setup",
+        description:
+          error instanceof Error ? error.message : "Please try again.",
+        variant: "destructive",
+      });
+      return;
+    } finally {
+      setCheckingPublishPrerequisites(false);
+    }
+
     await persist();
     setDeployModalOpen(true);
     setDeployStatus("deploying");
@@ -1058,7 +1127,10 @@ export default function Editor() {
           >
             {dirty ? "Unsaved changes" : formatSaved()}
           </BadgeWithDot>
-          <PublishButton onClick={publishSite} />
+          <PublishButton
+            onClick={publishSite}
+            disabled={checkingPublishPrerequisites}
+          />
         </div>
       </div>
 
@@ -1209,6 +1281,36 @@ export default function Editor() {
           </div>
         </div>
       </div>
+
+      <Dialog
+        open={payfastSetupModalOpen}
+        onOpenChange={setPayfastSetupModalOpen}
+      >
+        <DialogContent className="sm:max-w-md">
+          <img
+            src={squeakImage}
+            className="mx-auto w-28"
+            alt="Squeak explaining payment setup"
+          />
+          <DialogHeader className="text-center sm:text-center">
+            <DialogTitle>Set up PayFast before publishing</DialogTitle>
+            <DialogDescription>
+              This ecommerce site can’t be deployed until PayFast is set up.
+              Without it, your customers won’t be able to make payments.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center">
+            <Button
+              onClick={() => {
+                setPayfastSetupModalOpen(false);
+                navigate("/integrations");
+              }}
+            >
+              Set up PayFast
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* DEPLOY MODAL */}
       {deployModalOpen && (

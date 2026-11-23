@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { useMemo, useState } from 'react'
 
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
@@ -22,7 +23,13 @@ export type Item = {
 
 const pageSize = 5
 
-const TransactionDatatable = ({ data }: { data: Item[] }) => {
+const TransactionDatatable = ({
+  data,
+  renderActions,
+}: {
+  data: Item[]
+  renderActions?: (row: Item) => ReactNode
+}) => {
   const [pageIndex, setPageIndex] = useState(0)
   const pageCount = Math.max(1, Math.ceil(data.length / pageSize))
   const rows = useMemo(() => data.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize), [data, pageIndex])
@@ -32,12 +39,13 @@ const TransactionDatatable = ({ data }: { data: Item[] }) => {
   return (
     <div className='w-full'>
       <div className='border-b'>
-        <Table className='min-w-[720px] table-fixed'>
+        <Table className={`${renderActions ? 'min-w-[860px]' : 'min-w-[720px]'} table-fixed`}>
           <colgroup>
-            <col className='w-[60%]' />
+            <col className={renderActions ? 'w-[44%]' : 'w-[60%]'} />
             <col className='w-[14%]' />
             <col className='w-[12%]' />
             <col className='w-[14%]' />
+            {renderActions && <col className='w-[16%]' />}
           </colgroup>
           <TableHeader>
             <TableRow>
@@ -45,6 +53,7 @@ const TransactionDatatable = ({ data }: { data: Item[] }) => {
               <TableHead className='text-muted-foreground h-14 pr-3 text-right'>Amount</TableHead>
               <TableHead className='text-muted-foreground h-14 pr-3 text-right'>Status</TableHead>
               <TableHead className='text-muted-foreground h-14 pr-10 text-right'>Date</TableHead>
+              {renderActions && <TableHead className='text-muted-foreground h-14 pr-6 text-right'>Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -72,11 +81,12 @@ const TransactionDatatable = ({ data }: { data: Item[] }) => {
                     month: 'short',
                     year: 'numeric'
                   })}</TableCell>
+                  {renderActions && <TableCell className='pr-6 text-right'>{renderActions(row)}</TableCell>}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={4} className='h-24 text-center'>
+                <TableCell colSpan={renderActions ? 5 : 4} className='h-24 text-center'>
                   No results.
                 </TableCell>
               </TableRow>

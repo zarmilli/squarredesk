@@ -11,6 +11,7 @@ import {
   LogOut,
   Menu,
   Moon,
+  Plug,
   ShoppingBag,
   Settings,
   Sparkles,
@@ -20,7 +21,7 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -73,6 +74,7 @@ type Profile = {
   first_name: string | null;
   last_name: string | null;
   membership_tier: string | null;
+  avatar_url: string | null;
   email: string;
 };
 
@@ -126,7 +128,7 @@ export default function HeaderRight({
 
     const { data, error } = await supabase
       .from("profiles")
-      .select("first_name, last_name, membership_tier")
+      .select("first_name, last_name, membership_tier, avatar_url")
       .eq("user_id", session.user.id)
       .single();
 
@@ -380,6 +382,17 @@ export default function HeaderRight({
             </Button>
           </PopoverTrigger>
           <PopoverContent align="end" sideOffset={8} className="w-64 p-3">
+            <button
+              type="button"
+              onClick={() => {
+                setSettingsOpen(false);
+                navigate("/integrations");
+              }}
+              className="mb-3 flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground"
+            >
+              <Plug className="h-4 w-4" />
+              Integrations
+            </button>
             <div className="flex items-center justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
                 {darkMode ? (
@@ -412,6 +425,7 @@ export default function HeaderRight({
                 className="h-9 w-9 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <Avatar className="h-9 w-9">
+                  <AvatarImage src={profile.avatar_url ?? undefined} alt={fullName || "Account avatar"} />
                   <AvatarFallback className="bg-stone-900 text-xs font-medium text-white">
                     {initials}
                   </AvatarFallback>
@@ -435,22 +449,11 @@ export default function HeaderRight({
               <div className="space-y-1 p-2">
                 <button
                   type="button"
-                  onClick={() => navigateFromMenu("/profile")}
+                  onClick={() => navigateFromMenu("/accounts")}
                   className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground"
                 >
                   <User className="h-4 w-4" />
                   Account
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMenuOpen(false);
-                    onOpenSettings();
-                  }}
-                  className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground"
-                >
-                  <Settings className="h-4 w-4" />
-                  Settings
                 </button>
                 <button
                   type="button"

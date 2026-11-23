@@ -281,13 +281,18 @@ export default function Seo() {
   if (loading) return <div className="p-6 text-sm text-muted-foreground">Loading SEO settings...</div>;
 
   return (
-    <div className="p-6">
+    <div className="min-h-0 flex-1 overflow-y-auto p-6">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold">{siteName}</h2>
           <p className="text-sm text-muted-foreground">Search engine settings</p>
         </div>
-        <Button variant="outline" onClick={() => navigate("/tables")}>Back</Button>
+        <Button
+          variant="outline"
+          onClick={() => navigate(`/overview?site=${encodeURIComponent(siteId ?? "")}`)}
+        >
+          Back
+        </Button>
       </div>
 
       <div className="max-w-3xl space-y-5">

@@ -231,7 +231,7 @@ export default function Inventory() {
   }
 
   return (
-    <div className="relative min-h-full p-6">
+    <div className="relative min-h-0 flex-1 overflow-y-auto p-6">
 
       {/* HEADER */}
       <div className="mb-6 flex items-center justify-between">
@@ -239,7 +239,12 @@ export default function Inventory() {
           <h1 className="text-xl font-semibold">Products</h1>
           <p className="text-sm text-muted-foreground">{siteName}</p>
         </div>
-        <Button variant="outline" onClick={() => navigate("/tables")}>Back</Button>
+        <Button
+          variant="outline"
+          onClick={() => navigate(`/overview?site=${encodeURIComponent(siteId ?? "")}`)}
+        >
+          Back
+        </Button>
       </div>
 
       {/* TABLE */}

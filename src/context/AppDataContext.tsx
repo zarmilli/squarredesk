@@ -20,12 +20,14 @@ export interface Profile {
   account_type: string;
   membership_tier: string;
   avatar_url: string | null;
+  role: string | null;
   personal_bio: string | null;
   company_name: string | null;
   company_size: string | null;
   business_field: string | null;
   business_location: string | null;
   company_bio: string | null;
+  services_offered: string[] | null;
   onboarding_complete: boolean;
 }
 
@@ -83,12 +85,14 @@ async function fetchAppData(user: User): Promise<AppData> {
       account_type,
       membership_tier,
       avatar_url,
+      role,
       personal_bio,
       company_name,
       company_size,
       business_field,
       business_location,
       company_bio,
+      services_offered,
       onboarding_complete
     `)
     .eq("user_id", user.id)

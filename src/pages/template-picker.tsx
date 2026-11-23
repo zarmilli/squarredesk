@@ -3,10 +3,17 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { BadgeWithDot } from "@/components/base/badges/badges";
-import { Badge } from "@/components/base/badges/badges";
-import { ArrowLeft } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import {
+  ArrowLeft,
+  BriefcaseBusiness,
+  LayoutGrid,
+  Palette,
+  ShoppingBag,
+  UserRound,
+} from "lucide-react";
 import { cx } from "@/lib/utils/cx";
 
 type Plan = "free" | "basic" | "pro";
@@ -24,12 +31,13 @@ const siteLimits: Record<Plan, number> = {
   pro: Infinity,
 };
 
-const categoryColors: Record<Category, any> = {
-  personal: "blue",
-  portfolio: "purple",
-  ecommerce: "orange",
-  business: "brand",
-};
+const categories = [
+  { value: "all", label: "All", icon: LayoutGrid },
+  { value: "personal", label: "Personal", icon: UserRound },
+  { value: "portfolio", label: "Portfolio", icon: Palette },
+  { value: "ecommerce", label: "Ecommerce", icon: ShoppingBag },
+  { value: "business", label: "Business", icon: BriefcaseBusiness },
+] as const;
 
 export default function TemplatePicker() {
   const navigate = useNavigate();
@@ -132,70 +140,90 @@ export default function TemplatePicker() {
         </div>
       </div>
 
-      <div className="flex justify-center gap-2 mb-6 flex-wrap">
-        {(["all","personal","portfolio","ecommerce","business"] as const).map(cat => (
-          <Button
-            key={cat}
-            size="sm"
-            variant="ghost"
-            className={cx("capitalize", activeCategory === cat && "ring-2")}
-            onClick={() => setActiveCategory(cat)}
-          >
-            {cat === "all" ? (
-              <Badge type="pill-color" color="gray">all</Badge>
-            ) : (
-              <Badge type="pill-color" color={categoryColors[cat]}>
-                {cat}
-              </Badge>
-            )}
-          </Button>
-        ))}
+      <div className="mb-6">
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          {categories.map(({ value, label, icon: Icon }) => (
+            <Button
+              key={value}
+              type="button"
+              size="sm"
+              variant="ghost"
+              aria-pressed={activeCategory === value}
+              className={cx(
+                "gap-2 rounded-none text-muted-foreground hover:text-foreground",
+                activeCategory === value && "font-semibold text-foreground"
+              )}
+              onClick={() => setActiveCategory(value)}
+            >
+              <Icon className="size-4" aria-hidden="true" />
+              {label}
+            </Button>
+          ))}
+        </div>
+        <Separator className="mt-2" />
       </div>
 
       {loading && (
-        <div className="grid grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Card key={i} className="p-4 animate-pulse space-y-3">
-              <div className="h-40 bg-stone-200 rounded" />
-              <div className="h-4 bg-stone-200 rounded w-2/3" />
+            <Card key={i} className="w-full animate-pulse overflow-hidden p-0">
+              <div className="aspect-video bg-stone-200" />
+              <div className="flex items-center justify-between gap-3 p-3">
+                <div className="h-4 w-2/3 rounded bg-stone-200" />
+                <div className="h-5 w-14 rounded-sm bg-stone-200" />
+              </div>
             </Card>
           ))}
         </div>
       )}
 
       {!loading && (
-        <div className="grid grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map(t => (
-            <Card key={t.id} className="w-fit max-w-full space-y-3 border-0 p-4">
-
-              <div className="relative">
-                <img src={t.thumbnail_url} className="block h-auto max-w-full rounded" />
-
-                {t.availability !== "free" && (
-                  <div className="absolute top-2 right-2">
-                    <BadgeWithDot type="pill-color" color="success">
-                      {t.availability}
-                    </BadgeWithDot>
+            <Card
+              key={t.id}
+              className="group w-full overflow-hidden border-border p-0"
+            >
+              <div className="relative aspect-video overflow-hidden bg-muted">
+                <img
+                  src={t.thumbnail_url}
+                  alt={`${t.name} template preview`}
+                  className="h-full w-full object-cover"
+                />
+                <div className="pointer-events-none absolute inset-0 flex items-end justify-center bg-black/45 p-4 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100 [@media(hover:none)]:pointer-events-auto [@media(hover:none)]:opacity-100">
+                  <div className="flex w-full max-w-sm gap-2">
+                    <Button
+                      className="min-w-0 flex-1"
+                      onClick={() => chooseTemplate(t)}
+                    >
+                      Choose
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="min-w-0 flex-1"
+                      onClick={() => window.open(t.preview_url)}
+                    >
+                      Demo
+                    </Button>
                   </div>
-                )}
+                </div>
               </div>
 
-              <h3 className="font-medium">{t.name}</h3>
-
-              <div className="flex w-full gap-2">
-                <Button className="min-w-0 flex-1" onClick={() => chooseTemplate(t)}>
-                  Choose
-                </Button>
-
-                <Button
-                  variant="outline"
-                  className="min-w-0 flex-1"
-                  onClick={() => window.open(t.preview_url)}
+              <div className="flex min-w-0 items-center justify-between gap-3 p-3">
+                <h3 className="min-w-0 truncate font-medium">{t.name}</h3>
+                <Badge
+                  variant="secondary"
+                  className={cx(
+                    "shrink-0 rounded-sm px-2 py-0.5 capitalize",
+                    t.availability === "basic" &&
+                      "bg-blue-100 text-blue-800 hover:bg-blue-100 dark:bg-blue-950 dark:text-blue-300 dark:hover:bg-blue-950",
+                    t.availability === "pro" &&
+                      "bg-violet-100 text-violet-800 hover:bg-violet-100 dark:bg-violet-950 dark:text-violet-300 dark:hover:bg-violet-950"
+                  )}
                 >
-                  Demo
-                </Button>
+                  {t.availability ?? "free"}
+                </Badge>
               </div>
-
             </Card>
           ))}
         </div>
